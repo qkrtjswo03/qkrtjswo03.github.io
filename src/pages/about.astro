@@ -1,14 +1,43 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Cmd from '../components/Cmd.astro';
 import { site } from '../config';
 ---
 
 <BaseLayout title="소개" description="관측 노트를 쓰는 사람과 이 블로그가 다루는 범위입니다.">
   <article class="prose prose-page">
     <header class="page-intro">
-      <p class="eyebrow">소개</p>
+      <Cmd command="kubectl describe engineer" />
       <h1>소개</h1>
     </header>
+    <section class="describe-panel" aria-label="엔지니어">
+      <dl class="describe-list">
+        <div>
+          <dt>Name</dt>
+          <dd>박선재 <span class="muted">SunJae Park</span></dd>
+        </div>
+        <div>
+          <dt>Handle</dt>
+          <dd><code>{site.author}</code></dd>
+        </div>
+        <div>
+          <dt>Role</dt>
+          <dd>Cloud-Native Platform Engineer <span class="muted">클라우드 네이티브 플랫폼 엔지니어</span></dd>
+        </div>
+        <div>
+          <dt>Labels</dt>
+          <dd class="chip-row">
+            <span class="label-chip">kubernetes</span>
+            <span class="label-chip">observability</span>
+            <span class="label-chip">istio</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+        </div>
+      </dl>
+    </section>
     <p>
       클라우드와 인프라를 운영하며 남는 기록입니다. Kubernetes 위에서 서비스를 올리고, 메트릭과 로그로 상태를
       보고, 장애가 나면 원인을 좁히는 일을 합니다. 최근에는 그 과정에 LLM을 어디까지 끼워 넣을 수 있는지도 같이

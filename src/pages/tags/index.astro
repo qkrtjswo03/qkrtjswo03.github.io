@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Cmd from '../../components/Cmd.astro';
 import { countTerms, getPosts, termUrl } from '../../lib/posts';
 
 const terms = countTerms(await getPosts(), 'tags');
@@ -7,7 +8,7 @@ const terms = countTerms(await getPosts(), 'tags');
 
 <BaseLayout title="태그" description="글에 붙인 태그 목록입니다.">
   <header class="page-intro">
-    <p class="eyebrow">태그</p>
+    <Cmd command="kubectl get tags" />
     <h1>태그</h1>
     <p>글의 frontmatter <code>tags</code>로 모입니다.</p>
   </header>

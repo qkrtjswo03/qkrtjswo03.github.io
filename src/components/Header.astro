@@ -5,24 +5,33 @@ const path = Astro.url.pathname;
 function current(href: string) {
   return path === href || path.startsWith(href);
 }
+
+const commands: Record<string, string> = {
+  '/blog/': 'get posts',
+  '/archive/': 'get archive',
+  '/categories/': 'get categories',
+  '/tags/': 'get tags',
+  '/search/': 'grep',
+  '/about/': 'describe me',
+};
 ---
 
 <a class="skip" href="#content">본문으로 건너뛰기</a>
 <header class="site-header">
   <div class="shell header-inner">
-    <a class="brand" href="/">
-      <svg class="mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
-        <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
-        <circle cx="16" cy="16" r="2.3" fill="currentColor"></circle>
-        <path d="M16 1.6v5M16 25.4v5M1.6 16h5M25.4 16h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
-      </svg>
-      <span>{site.title}</span>
+    <a class="brand" href="/" aria-label={`${site.title} 홈`}>
+      <span class="ps1">
+        <span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span>
+      </span>
+      <span class="caret" aria-hidden="true"></span>
+      <span class="brand-note"># {site.title}</span>
     </a>
     <nav id="site-nav" class="site-nav" aria-label="주요">
       {
         nav.map((item) => (
-          <a href={item.href} aria-current={current(item.href) ? 'page' : undefined}>
-            {item.label}
+          <a href={item.href} aria-current={current(item.href) ? 'page' : undefined} title={item.label}>
+            <span class="nav-cmd">{commands[item.href] ?? item.label}</span>
+            <span class="nav-ko">{item.label}</span>
           </a>
         ))
       }
@@ -47,37 +56,58 @@ function current(href: string) {
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
-  const nav = document.getElementById('site-nav');
+  const navEl = document.getElementById('site-nav');
   const themeButton = document.getElementById('theme-toggle');
 
-  const syncThemeLabel = () => {
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const themeName = () => (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+
+  const syncThemeChrome = () => {
+    const dark = themeName() === 'dark';
     themeButton?.setAttribute('aria-label', dark ? '밝은 테마로 전환' : '어두운 테마로 전환');
     themeButton?.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0e1110' : '#f4f7f5');
   };
-  syncThemeLabel();
+
+  const syncGiscus = (theme: string) => {
+    document.querySelector('script[src*="giscus.app/client.js"]')?.setAttribute('data-theme', theme);
+    const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+    frame?.contentWindow?.postMessage({ giscus: { setConfig: { theme } } }, 'https://giscus.app');
+  };
+
+  syncThemeChrome();
 
   themeButton?.addEventListener('click', () => {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    const next = themeName() === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
-    syncThemeLabel();
-    const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-    frame?.contentWindow?.postMessage(
-      { giscus: { setConfig: { theme: next } } },
-      'https://giscus.app',
-    );
+    syncThemeChrome();
+    syncGiscus(next);
   });
 
+  const closeNav = (focusToggle = false) => {
+    navEl?.classList.remove('is-open');
+    toggle?.setAttribute('aria-expanded', 'false');
+    if (focusToggle) toggle?.focus();
+  };
+
   toggle?.addEventListener('click', () => {
-    const open = nav?.classList.toggle('is-open') ?? false;
+    const open = navEl?.classList.toggle('is-open') ?? false;
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 
-  nav?.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      nav.classList.remove('is-open');
-      toggle?.setAttribute('aria-expanded', 'false');
-    });
+  navEl?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => closeNav());
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && navEl?.classList.contains('is-open')) closeNav(true);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!navEl?.classList.contains('is-open')) return;
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (navEl.contains(target) || toggle?.contains(target)) return;
+    closeNav();
   });
 </script>

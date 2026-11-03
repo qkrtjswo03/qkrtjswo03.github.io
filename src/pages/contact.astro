@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Cmd from '../components/Cmd.astro';
 import { site } from '../config';
 
 const placeholder = site.email === 'your-email@example.com';
@@ -8,7 +9,7 @@ const placeholder = site.email === 'your-email@example.com';
 <BaseLayout title="문의" description="운영자에게 이메일로 연락하는 방법입니다.">
   <article class="prose prose-page">
     <header class="page-intro">
-      <p class="eyebrow">문의</p>
+      <Cmd command="kubectl describe contact" />
       <h1>문의</h1>
     </header>
     <p>글의 정정, 개인정보, 제휴와 광고에 대한 문의는 이메일로 받습니다. 이 사이트는 별도의 접수 폼을 두지 않습니다.</p>

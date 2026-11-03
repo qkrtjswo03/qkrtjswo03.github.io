@@ -38,16 +38,17 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0e1110" />
 <script is:inline>
   (function () {
     try {
       var stored = localStorage.getItem('theme');
-      var theme = stored === 'light' || stored === 'dark'
-        ? stored
-        : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
       document.documentElement.setAttribute('data-theme', theme);
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f7f5' : '#0e1110');
     } catch (e) {
-      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.setAttribute('data-theme', 'dark');
     }
   })();
 </script>
@@ -57,8 +58,6 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <link rel="canonical" href={canonical} />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="alternate" type="application/rss+xml" title={`${site.title} RSS`} href={absoluteUrl('/rss.xml')} />
-<meta name="theme-color" content="#f3f0e8" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#131210" media="(prefers-color-scheme: dark)" />
 <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'} />
 {google && <meta name="google-site-verification" content={google} />}
 {naver && <meta name="naver-site-verification" content={naver} />}

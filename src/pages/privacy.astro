@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Cmd from '../components/Cmd.astro';
 import { site } from '../config';
 ---
 
@@ -9,7 +10,7 @@ import { site } from '../config';
 >
   <article class="prose prose-page">
     <header class="page-intro">
-      <p class="eyebrow">개인정보처리방침</p>
+      <Cmd command="cat privacy.md" />
       <h1>개인정보처리방침</h1>
       <p>시행일: 2026년 11월 3일</p>
     </header>

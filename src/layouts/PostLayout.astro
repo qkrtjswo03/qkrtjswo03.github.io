@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import AdSlot from '../components/AdSlot.astro';
+import Cmd from '../components/Cmd.astro';
 import Comments from '../components/Comments.astro';
 import { site } from '../config';
 import { absoluteUrl } from '../lib/seo';
@@ -74,30 +75,72 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <article class="post-layout">
-    <header class="post-header">
-      <p class="post-byline">
-        {
-          categories.map((category, index) => (
-            <>
-              {index > 0 && <span aria-hidden="true">·</span>}
-              <a href={termUrl('categories', category)}>{category}</a>
-            </>
-          ))
-        }
-        {categories.length > 0 && <span aria-hidden="true">·</span>}
-        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+    <header class="post-header describe-panel">
+      <Cmd command={`kubectl describe post/${postSlug(post.id)}`} />
+      <dl class="describe-list">
+        <div>
+          <dt title="이름">Name</dt>
+          <dd><h1>{post.data.title}</h1></dd>
+        </div>
+        <div>
+          <dt title="주제">Categories</dt>
+          <dd>
+            {
+              categories.length > 0 ? (
+                <span class="chip-row">
+                  {categories.map((category) => (
+                    <a class="tag-pill" href={termUrl('categories', category)}>
+                      {category}
+                    </a>
+                  ))}
+                </span>
+              ) : (
+                <span class="none">&lt;none&gt;</span>
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt title="태그">Labels</dt>
+          <dd>
+            {
+              tags.length > 0 ? (
+                <span class="chip-row">
+                  {tags.map((tag) => (
+                    <a class="tag-pill" href={termUrl('tags', tag)}>
+                      {tag}
+                    </a>
+                  ))}
+                </span>
+              ) : (
+                <span class="none">&lt;none&gt;</span>
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt title="작성일">Created</dt>
+          <dd>
+            <time class="meta-mono" datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          </dd>
+        </div>
         {
           post.data.updatedDate && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>수정 {formatDate(post.data.updatedDate)}</span>
-            </>
+            <div>
+              <dt title="수정일">Updated</dt>
+              <dd>
+                <time class="meta-mono" datetime={post.data.updatedDate.toISOString()}>
+                  {formatDate(post.data.updatedDate)}
+                </time>
+              </dd>
+            </div>
           )
         }
-        <span aria-hidden="true">·</span>
-        <span>{minutes}분 읽기</span>
-      </p>
-      <h1>{post.data.title}</h1>
+        <div>
+          <dt title="읽기 시간">Reading</dt>
+          <dd><span class="meta-mono">{minutes}분</span></dd>
+        </div>
+      </dl>
       <p class="lede">{post.data.description}</p>
     </header>
     <div class="post-main">

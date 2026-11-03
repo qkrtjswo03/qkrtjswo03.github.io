@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Cmd from '../components/Cmd.astro';
 import PostList from '../components/PostList.astro';
 import { site } from '../config';
 import { absoluteUrl } from '../lib/seo';
@@ -30,7 +31,7 @@ const jsonLd = {
 <BaseLayout jsonLd={jsonLd}>
   <div class="home-grid">
     <section class="home-intro">
-      <p class="eyebrow">기술 블로그</p>
+      <Cmd command="kubectl get posts" />
       <h1 class="home-title">운영하며 다시 찾는 절차를 남깁니다</h1>
       <p class="lede">{site.tagline} {site.description}</p>
       {
@@ -50,7 +51,7 @@ const jsonLd = {
     <section aria-labelledby="latest-heading">
       <div class="section-head">
         <h2 id="latest-heading">최근 글</h2>
-        <a href="/blog/">모든 글</a>
+        <a class="text-cmd" href="/blog/">모든 글</a>
       </div>
       <PostList posts={latest} />
     </section>
