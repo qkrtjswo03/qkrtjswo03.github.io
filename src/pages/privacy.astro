@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config';
+---
+
+<BaseLayout
+  title="개인정보처리방침"
+  description="관측 노트가 쿠키, Google AdSense, Google Analytics, 댓글을 어떻게 다루는지 설명합니다."
+>
+  <article class="prose prose-page">
+    <header class="page-intro">
+      <p class="eyebrow">개인정보처리방침</p>
+      <h1>개인정보처리방침</h1>
+      <p>시행일: 2026년 11월 3일</p>
+    </header>
+    <p>
+      {site.title}(이하 "블로그")는 회원 가입을 받지 않습니다. 방문자가 계정을 만들거나 글을 쓰기 위해 이름, 이메일,
+      비밀번호를 블로그에 저장하지 않습니다. 이 문서는 광고, 접속 통계, 댓글, 제휴 링크를 켰을 때 어떤 정보가
+      처리될 수 있는지를 설명합니다.
+    </p>
+    <h2>블로그가 직접 보관하지 않는 것</h2>
+    <p>
+      페이지는 GitHub Pages의 정적 파일로 제공됩니다. 운영자는 방문 기록을 담는 별도의 데이터베이스를 두지
+      않습니다. 색 테마(밝게/어둡게) 선택은 브라우저의 localStorage에만 남고 서버로 전송되지 않습니다.
+    </p>
+    <h2>Google Analytics</h2>
+    <p>
+      접속 통계를 켜면 Google Analytics 4가 쿠키 등을 통해 방문 페이지, 대략적인 지역, 기기와 브라우저, 사이트 안에서의
+      이동을 수집할 수 있습니다. 측정 ID(<code>ga4MeasurementId</code>)가 비어 있으면 이 스크립트는 로드되지 않습니다.
+      수집을 거부하는 방법은 <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener noreferrer">Google Analytics Opt-out</a>에서
+      확인할 수 있습니다.
+    </p>
+    <h2>Google AdSense와 쿠키</h2>
+    <p>
+      광고를 켜면 Google AdSense가 쿠키를 사용해 광고를 표시하고 성과를 측정할 수 있습니다. 여기에는 맞춤 광고를
+      위한 쿠키가 포함될 수 있습니다. 게시자 ID(<code>adsensePublisherId</code>)가 비어 있으면 광고 스크립트와 본문·사이드바
+      광고 영역은 출력되지 않습니다.
+    </p>
+    <p>
+      광고 개인화는 <a href="https://adssettings.google.com" rel="noopener noreferrer">Google 광고 설정</a>에서 조정할 수
+      있습니다. 쿠키는 브라우저 설정에서 지우거나 차단할 수 있습니다. Google의 처리 내용은
+      <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google 개인정보처리방침</a>과
+      <a href="https://policies.google.com/technologies/ads" rel="noopener noreferrer">Google 광고 정책</a>을 따릅니다.
+    </p>
+    <h2>제휴 링크</h2>
+    <p>
+      글에 제휴 링크(예: 쿠팡 파트너스)가 포함될 수 있습니다. 링크를 누르면 제휴사가 쿠키를 설정하고, 구매가 일어나면
+      운영자에게 수수료가 지급될 수 있습니다. 수수료는 결제 금액에 더해지지 않습니다. 제휴 문구가 있는 글에는
+      "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."를 표시합니다.
+    </p>
+    <h2>댓글</h2>
+    <p>
+      댓글(giscus)을 켜면 댓글은 GitHub Discussions에 저장됩니다. GitHub 계정으로 작성하며, 댓글 내용과 GitHub 프로필
+      정보는 <a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" rel="noopener noreferrer">GitHub 개인정보처리방침</a>을
+      따릅니다. 기본값은 꺼짐입니다.
+    </p>
+    <h2>이용자의 요청</h2>
+    <p>
+      운영자가 블로그 서버에 방문자 개인정보를 보관하지 않으므로, 제3자가 가진 정보의 열람·삭제는 해당 사업자의
+      절차를 따릅니다. 블로그와 관련한 문의는 <a href={`mailto:${site.email}`}>{site.email}</a>로 보내 주세요.
+    </p>
+    <h2>변경</h2>
+    <p>도구 설정을 바꾸면 이 방침도 함께 고칩니다. 본문은 <code>src/pages/privacy.astro</code>에 있습니다.</p>
+  </article>
+</BaseLayout>

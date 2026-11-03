@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { countTerms, getPosts, termUrl } from '../../lib/posts';
+
+const terms = countTerms(await getPosts(), 'categories');
+---
+
+<BaseLayout title="주제" description="글에 붙인 주제별 목록입니다.">
+  <header class="page-intro">
+    <p class="eyebrow">주제</p>
+    <h1>주제</h1>
+    <p>글의 frontmatter <code>categories</code>로 모입니다. 새 주제를 쓰면 이 목록에 추가됩니다.</p>
+  </header>
+  {
+    terms.length === 0 ? (
+      <p class="empty">아직 주제가 없습니다.</p>
+    ) : (
+      <ul class="term-index">
+        {terms.map(([term, count]) => (
+          <li>
+            <a class="tag-pill" href={termUrl('categories', term)}>
+              {term} <span class="count">{count}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</BaseLayout>

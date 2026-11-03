@@ -1,0 +1,89 @@
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export type BlogPost = CollectionEntry<'blog'>;
+
+export function postSlug(id: string): string {
+  return id.replace(/\.(md|mdx)$/i, '');
+}
+
+export function postUrl(post: BlogPost): string {
+  return `/blog/${postSlug(post.id)}/`;
+}
+
+export function termUrl(kind: 'categories' | 'tags', value: string): string {
+  return `/${kind}/${encodeURIComponent(value)}/`;
+}
+
+export function formatDate(date: Date): string {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+}
+
+export function plainText(markdown: string): string {
+  return markdown
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/```[a-zA-Z0-9_-]*\n?/g, ' ')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/::affiliate/g, ' ')
+    .replace(/<\/?[a-zA-Z][^>]*>/g, ' ')
+    .replace(/[*_~]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function readingMinutes(markdown: string): number {
+  const chars = markdown.replace(/<!--[\s\S]*?-->/g, '').replace(/\s/g, '').length;
+  return Math.max(1, Math.round(chars / 450));
+}
+
+export function searchText(post: BlogPost): string {
+  return [
+    post.data.title,
+    post.data.description,
+    ...(post.data.categories ?? []),
+    ...(post.data.tags ?? []),
+    plainText(post.body ?? ''),
+  ]
+    .join(' ')
+    .toLowerCase();
+}
+
+export async function getPosts(): Promise<BlogPost[]> {
+  const posts = await getCollection('blog', ({ data }) => data.draft !== true);
+  return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+
+export function neighbors(posts: BlogPost[], slug: string): { newer: BlogPost | null; older: BlogPost | null } {
+  const index = posts.findIndex((post) => postSlug(post.id) === slug);
+  if (index < 0) return { newer: null, older: null };
+  return {
+    newer: index > 0 ? posts[index - 1] : null,
+    older: index < posts.length - 1 ? posts[index + 1] : null,
+  };
+}
+
+export function groupByYear(posts: BlogPost[]): Array<[number, BlogPost[]]> {
+  const map = new Map<number, BlogPost[]>();
+  for (const post of posts) {
+    const year = post.data.pubDate.getUTCFullYear();
+    const list = map.get(year);
+    if (list) list.push(post);
+    else map.set(year, [post]);
+  }
+  return [...map.entries()].sort((a, b) => b[0] - a[0]);
+}
+
+export function countTerms(posts: BlogPost[], key: 'categories' | 'tags'): Array<[string, number]> {
+  const map = new Map<string, number>();
+  for (const post of posts) {
+    for (const value of post.data[key] ?? []) {
+      map.set(value, (map.get(value) ?? 0) + 1);
+    }
+  }
+  return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+}

@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { countTerms, getPosts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return countTerms(posts, 'categories').map(([category]) => ({
+    params: { category },
+    props: {
+      category,
+      posts: posts.filter((post) => (post.data.categories ?? []).includes(category)),
+    },
+  }));
+}
+
+const { category, posts } = Astro.props;
+---
+
+<BaseLayout title={category} description={`${category} 주제의 글 ${posts.length}편입니다.`}>
+  <header class="page-intro">
+    <p class="eyebrow">주제</p>
+    <h1>{category}</h1>
+    <p>{posts.length}개의 글</p>
+  </header>
+  <PostList posts={posts} />
+</BaseLayout>

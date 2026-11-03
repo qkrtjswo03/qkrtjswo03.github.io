@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config';
+
+const placeholder = site.email === 'your-email@example.com';
+---
+
+<BaseLayout title="문의" description="운영자에게 이메일로 연락하는 방법입니다.">
+  <article class="prose prose-page">
+    <header class="page-intro">
+      <p class="eyebrow">문의</p>
+      <h1>문의</h1>
+    </header>
+    <p>글의 정정, 개인정보, 제휴와 광고에 대한 문의는 이메일로 받습니다. 이 사이트는 별도의 접수 폼을 두지 않습니다.</p>
+    <p>
+      이메일: <a href={`mailto:${site.email}`}>{site.email}</a>
+    </p>
+    {
+      placeholder && (
+        <p class="notice">
+          이 주소는 자리표시자입니다. <code>src/config.ts</code>의 <code>email</code>을 본인 주소로 바꾼 뒤 다시
+          배포하세요. 소개와 개인정보처리방침의 주소도 함께 바뀝니다.
+        </p>
+      )
+    }
+    <p>댓글은 기본으로 꺼져 있습니다. 켜는 방법은 README의 giscus 항목을 보면 됩니다.</p>
+  </article>
+</BaseLayout>

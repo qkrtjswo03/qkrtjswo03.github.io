@@ -1,0 +1,181 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AdSlot from '../components/AdSlot.astro';
+import Comments from '../components/Comments.astro';
+import { site } from '../config';
+import { absoluteUrl } from '../lib/seo';
+import {
+  formatDate,
+  postSlug,
+  postUrl,
+  readingMinutes,
+  termUrl,
+  type BlogPost,
+} from '../lib/posts';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  post: BlogPost;
+  headings: Heading[];
+  older?: BlogPost | null;
+  newer?: BlogPost | null;
+}
+
+const { post, headings, older = null, newer = null } = Astro.props;
+const categories = post.data.categories ?? [];
+const tags = post.data.tags ?? [];
+const minutes = readingMinutes(post.body ?? post.data.description);
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const canonical = absoluteUrl(postUrl(post));
+const heroIsRaster = Boolean(post.data.heroImage?.match(/\.(png|jpe?g|webp|gif)$/i));
+const image = heroIsRaster && post.data.heroImage ? post.data.heroImage : '/og-default.png';
+const modified = post.data.updatedDate ?? post.data.pubDate;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.pubDate.toISOString(),
+    dateModified: modified.toISOString(),
+    inLanguage: 'ko-KR',
+    author: { '@type': 'Person', name: site.author, url: site.url },
+    publisher: { '@type': 'Person', name: site.author },
+    mainEntityOfPage: canonical,
+    image: absoluteUrl(image),
+    keywords: tags.join(', '),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: absoluteUrl('/') },
+      { '@type': 'ListItem', position: 2, name: '글', item: absoluteUrl('/blog/') },
+      { '@type': 'ListItem', position: 3, name: post.data.title, item: canonical },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  ogType="article"
+  image={image}
+  publishedTime={post.data.pubDate}
+  modifiedTime={modified}
+  tags={tags}
+  jsonLd={jsonLd}
+>
+  <article class="post-layout">
+    <header class="post-header">
+      <p class="post-byline">
+        {
+          categories.map((category, index) => (
+            <>
+              {index > 0 && <span aria-hidden="true">·</span>}
+              <a href={termUrl('categories', category)}>{category}</a>
+            </>
+          ))
+        }
+        {categories.length > 0 && <span aria-hidden="true">·</span>}
+        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+        {
+          post.data.updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>수정 {formatDate(post.data.updatedDate)}</span>
+            </>
+          )
+        }
+        <span aria-hidden="true">·</span>
+        <span>{minutes}분 읽기</span>
+      </p>
+      <h1>{post.data.title}</h1>
+      <p class="lede">{post.data.description}</p>
+    </header>
+    <div class="post-main">
+      {
+        post.data.sample && (
+          <p class="sample-banner">
+            <strong>예시 글입니다.</strong> 지울 때는 <code>src/content/blog/{postSlug(post.id)}.md</code> 파일을
+            삭제하세요. 내용은 남기고 이 안내만 없애려면 frontmatter의 <code>sample</code>을 <code>false</code>로
+            바꾸면 됩니다.
+          </p>
+        )
+      }
+      {
+        post.data.heroImage && (
+          <figure class="hero">
+            <img
+              src={post.data.heroImage}
+              alt={post.data.heroAlt ?? ''}
+              width="1200"
+              height="675"
+            />
+          </figure>
+        )
+      }
+      <div class="prose">
+        <slot />
+      </div>
+      {
+        tags.length > 0 && (
+          <ul class="tag-row">
+            {tags.map((tag) => (
+              <li>
+                <a class="tag-pill" href={termUrl('tags', tag)}>
+                  {tag}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      {
+        (older || newer) && (
+          <nav class="pager" aria-label="다른 글">
+            {older ? (
+              <a href={postUrl(older)}>
+                <span>이전 글</span>
+                <strong>{older.data.title}</strong>
+              </a>
+            ) : (
+              <span></span>
+            )}
+            {newer && (
+              <a class="next" href={postUrl(newer)}>
+                <span>다음 글</span>
+                <strong>{newer.data.title}</strong>
+              </a>
+            )}
+          </nav>
+        )
+      }
+      <Comments />
+    </div>
+    <aside class="post-side">
+      {
+        toc.length > 0 && (
+          <nav class="toc" aria-label="목차">
+            <p>목차</p>
+            <ol>
+              {toc.map((heading) => (
+                <li class={heading.depth === 3 ? 'toc-sub' : undefined}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <AdSlot />
+    </aside>
+  </article>
+</BaseLayout>

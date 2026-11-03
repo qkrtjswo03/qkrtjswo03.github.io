@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config';
+---
+
+<BaseLayout title="소개" description="관측 노트를 쓰는 사람과 이 블로그가 다루는 범위입니다.">
+  <article class="prose prose-page">
+    <header class="page-intro">
+      <p class="eyebrow">소개</p>
+      <h1>소개</h1>
+    </header>
+    <p>
+      클라우드와 인프라를 운영하며 남는 기록입니다. Kubernetes 위에서 서비스를 올리고, 메트릭과 로그로 상태를
+      보고, 장애가 나면 원인을 좁히는 일을 합니다. 최근에는 그 과정에 LLM을 어디까지 끼워 넣을 수 있는지도 같이
+      봅니다.
+    </p>
+    <p>이 블로그는 그 작업 메모를 다음에 그대로 쓸 수 있게 정리하는 곳입니다. 주제는 글마다 붙이고, 나중에 늘어나도 주소 체계는 그대로 둡니다.</p>
+    <h2>주로 다루는 것</h2>
+    <ul>
+      <li>Kubernetes와 배포</li>
+      <li>관측 가능성. 메트릭, 로그, 트레이스</li>
+      <li>장애 원인 분석</li>
+      <li>LLM을 곁들인 운영</li>
+    </ul>
+    <h2>이 사이트</h2>
+    <p>
+      GitHub Pages에 올라가는 정적 사이트입니다. 새 글은 Markdown 파일 하나를 추가하면 생깁니다. 광고와 접속
+      통계는 <code>src/config.ts</code>에 값을 넣기 전에는 로드되지 않습니다.
+    </p>
+    <p>
+      운영자: {site.author}<br />
+      연락: <a href={`mailto:${site.email}`}>{site.email}</a>
+    </p>
+    <p>소개 문구는 <code>src/pages/about.astro</code>에서 고칩니다.</p>
+  </article>
+</BaseLayout>

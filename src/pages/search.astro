@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+---
+
+<BaseLayout title="검색" description="제목, 본문, 주제, 태그로 글을 찾습니다.">
+  <header class="page-intro">
+    <p class="eyebrow">검색</p>
+    <h1>글 검색</h1>
+    <p id="search-count">{posts.length}개의 글에서 찾습니다. 목록은 이 페이지 안에 있어서 따로 서버를 거치지 않습니다.</p>
+  </header>
+  <form class="search-form" role="search">
+    <label class="sr-only" for="q">검색어</label>
+    <input id="q" name="q" type="search" placeholder="제목, 본문, 태그" autocomplete="off" enterkeyhint="search" />
+  </form>
+  <p id="search-empty" class="empty" hidden>일치하는 글이 없습니다.</p>
+  <PostList posts={posts} searchable />
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.search-form');
+  const input = document.querySelector<HTMLInputElement>('#q');
+  const items = [...document.querySelectorAll<HTMLElement>('#results li')];
+  const empty = document.querySelector<HTMLElement>('#search-empty');
+  const count = document.querySelector<HTMLElement>('#search-count');
+
+  const apply = () => {
+    if (!input) return;
+    const term = input.value.trim().toLowerCase();
+    let visible = 0;
+    for (const item of items) {
+      const haystack = item.dataset.search ?? '';
+      const show = term.length === 0 || haystack.includes(term);
+      item.hidden = !show;
+      if (show) visible += 1;
+    }
+    if (empty) empty.hidden = visible !== 0;
+    if (count) {
+      count.textContent = term
+        ? `${visible}개가 일치합니다.`
+        : `${items.length}개의 글에서 찾습니다. 목록은 이 페이지 안에 있어서 따로 서버를 거치지 않습니다.`;
+    }
+  };
+
+  const params = new URLSearchParams(location.search);
+  const initial = params.get('q');
+  if (input && initial) {
+    input.value = initial;
+    apply();
+  }
+
+  input?.addEventListener('input', () => {
+    const url = new URL(location.href);
+    const term = input.value.trim();
+    if (term) url.searchParams.set('q', term);
+    else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+    apply();
+  });
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    apply();
+  });
+</script>

@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config';
+import { adsensePublisherId } from '../lib/ads';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
+  image?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: unknown;
+}
+
+const { title = site.title, description = site.description, ...rest } = Astro.props;
+const documentTitle = title === site.title ? site.title : `${title} · ${site.title}`;
+const showAds = Boolean(adsensePublisherId());
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <BaseHead title={documentTitle} description={description} {...rest} />
+  </head>
+  <body>
+    <Header />
+    <main id="content" class="shell page">
+      <slot />
+    </main>
+    <Footer />
+    {
+      showAds && (
+        <script is:inline>
+          (function () {
+            function push() {
+              var nodes = document.querySelectorAll('ins.adsbygoogle');
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].getAttribute('data-adsbygoogle-status')) continue;
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+              }
+            }
+            if (document.readyState === 'complete') push();
+            else window.addEventListener('load', push);
+          })();
+        </script>
+      )
+    }
+  </body>
+</html>

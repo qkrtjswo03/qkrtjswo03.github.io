@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts, groupByYear } from '../lib/posts';
+
+const groups = groupByYear(await getPosts());
+---
+
+<BaseLayout title="아카이브" description="연도별로 모은 글 목록입니다.">
+  <header class="page-intro">
+    <p class="eyebrow">아카이브</p>
+    <h1>연도별 글</h1>
+    <p>발행일 기준입니다. 수정일은 글 안에서 따로 표시합니다.</p>
+  </header>
+  {
+    groups.length === 0 ? (
+      <p class="empty">아직 공개된 글이 없습니다.</p>
+    ) : (
+      groups.map(([year, posts]) => (
+        <section class="archive-block">
+          <h2 class="archive-year">{year}</h2>
+          <PostList posts={posts} />
+        </section>
+      ))
+    )
+  }
+</BaseLayout>

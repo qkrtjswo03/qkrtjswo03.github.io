@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { countTerms, getPosts, termUrl } from '../../lib/posts';
+
+const terms = countTerms(await getPosts(), 'tags');
+---
+
+<BaseLayout title="태그" description="글에 붙인 태그 목록입니다.">
+  <header class="page-intro">
+    <p class="eyebrow">태그</p>
+    <h1>태그</h1>
+    <p>글의 frontmatter <code>tags</code>로 모입니다.</p>
+  </header>
+  {
+    terms.length === 0 ? (
+      <p class="empty">아직 태그가 없습니다.</p>
+    ) : (
+      <ul class="term-index">
+        {terms.map(([term, count]) => (
+          <li>
+            <a class="tag-pill" href={termUrl('tags', term)}>
+              {term} <span class="count">{count}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</BaseLayout>

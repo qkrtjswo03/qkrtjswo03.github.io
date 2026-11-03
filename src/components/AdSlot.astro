@@ -1,0 +1,7 @@
+---
+import { sidebarAdHtml } from '../lib/ads';
+
+const html = sidebarAdHtml();
+---
+
+{html && <Fragment set:html={html} />}

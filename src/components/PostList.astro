@@ -1,0 +1,39 @@
+---
+import { formatDate, postUrl, readingMinutes, searchText, type BlogPost } from '../lib/posts';
+
+interface Props {
+  posts: BlogPost[];
+  searchable?: boolean;
+}
+
+const { posts, searchable = false } = Astro.props;
+---
+
+{
+  posts.length === 0 ? (
+    <p class="empty">아직 공개된 글이 없습니다.</p>
+  ) : (
+    <ul class="post-list" id={searchable ? 'results' : undefined}>
+      {posts.map((post) => {
+        const category = post.data.categories?.[0];
+        const minutes = readingMinutes(post.body ?? post.data.description);
+        return (
+          <li data-search={searchable ? searchText(post) : undefined}>
+            <a href={postUrl(post)}>
+              <time class="post-date" datetime={post.data.pubDate.toISOString()}>
+                {formatDate(post.data.pubDate)}
+              </time>
+              <span>
+                <span class="post-kicker">
+                  {category ?? '글'} · {minutes}분
+                </span>
+                <span class="post-title">{post.data.title}</span>
+                <span class="post-desc">{post.data.description}</span>
+              </span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
