@@ -1,0 +1,22 @@
+---
+interface Link {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  links: Link[];
+}
+
+const { links } = Astro.props;
+---
+
+<div class="owner-actions">
+  {
+    links.map((link) => (
+      <a href={link.href} target="_blank" rel="noopener noreferrer">
+        {link.label}
+      </a>
+    ))
+  }
+</div>

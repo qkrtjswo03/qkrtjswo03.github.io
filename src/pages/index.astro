@@ -1,13 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
+import OwnerActions from '../components/OwnerActions.astro';
 import PostList from '../components/PostList.astro';
+import { newPostUrl } from '../lib/github';
 import { site } from '../config';
 import { absoluteUrl } from '../lib/seo';
 import { getPosts } from '../lib/posts';
 
 const posts = await getPosts();
-const latest = posts.slice(0, 6);
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -29,8 +30,11 @@ const jsonLd = {
 
 <BaseLayout jsonLd={jsonLd}>
   <section class="home-main" aria-labelledby="latest-heading">
-    <Cmd command="kubectl get posts" />
+    <div class="list-head">
+      <Cmd command="kubectl get posts" />
+      <OwnerActions links={[{ href: newPostUrl(), label: 'new post' }]} />
+    </div>
     <h2 id="latest-heading" class="sr-only">최근 글</h2>
-    <PostList posts={latest} />
+    <PostList posts={posts} grouped />
   </section>
 </BaseLayout>

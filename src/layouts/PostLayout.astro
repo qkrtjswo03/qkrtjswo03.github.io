@@ -3,6 +3,8 @@ import BaseLayout from './BaseLayout.astro';
 import AdSlot from '../components/AdSlot.astro';
 import Cmd from '../components/Cmd.astro';
 import Comments from '../components/Comments.astro';
+import OwnerActions from '../components/OwnerActions.astro';
+import { deletePostUrl, editPostUrl } from '../lib/github';
 import { site } from '../config';
 import { absoluteUrl } from '../lib/seo';
 import {
@@ -76,7 +78,15 @@ const jsonLd = [
 >
   <article class="post-layout">
     <header class="post-header describe-panel">
-      <Cmd command={`kubectl describe post/${postSlug(post.id)}`} />
+      <div class="list-head">
+        <Cmd command={`kubectl describe post/${postSlug(post.id)}`} />
+        <OwnerActions
+          links={[
+            { href: editPostUrl(post), label: 'edit' },
+            { href: deletePostUrl(post), label: 'delete' },
+          ]}
+        />
+      </div>
       <dl class="describe-list">
         <div>
           <dt title="이름">Name</dt>

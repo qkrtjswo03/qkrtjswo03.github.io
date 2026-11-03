@@ -78,6 +78,22 @@ export function groupByYear(posts: BlogPost[]): Array<[number, BlogPost[]]> {
   return [...map.entries()].sort((a, b) => b[0] - a[0]);
 }
 
+export function groupByCategory(posts: BlogPost[]): Array<{ category: string; posts: BlogPost[] }> {
+  const map = new Map<string, BlogPost[]>();
+  for (const post of posts) {
+    const category = post.data.categories?.[0] ?? '미분류';
+    const list = map.get(category);
+    if (list) list.push(post);
+    else map.set(category, [post]);
+  }
+  return [...map.entries()]
+    .map(([category, list]) => ({
+      category,
+      posts: [...list].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    }))
+    .sort((a, b) => b.posts[0].data.pubDate.valueOf() - a.posts[0].data.pubDate.valueOf());
+}
+
 export function countTerms(posts: BlogPost[], key: 'categories' | 'tags'): Array<[string, number]> {
   const map = new Map<string, number>();
   for (const post of posts) {

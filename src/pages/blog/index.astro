@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Cmd from '../../components/Cmd.astro';
+import OwnerActions from '../../components/OwnerActions.astro';
 import PostList from '../../components/PostList.astro';
+import { newPostUrl } from '../../lib/github';
 import { getPosts } from '../../lib/posts';
 
 const posts = await getPosts();
@@ -9,9 +11,12 @@ const posts = await getPosts();
 
 <BaseLayout title="글" description="관측 노트에 올린 글을 최신순으로 봅니다.">
   <header class="page-intro">
-    <Cmd command="kubectl get posts" />
+    <div class="list-head">
+      <Cmd command="kubectl get posts" />
+      <OwnerActions links={[{ href: newPostUrl(), label: 'new post' }]} />
+    </div>
     <h1>모든 글</h1>
-    <p>최신 글이 위에 있습니다. 초안은 <code>draft: true</code>인 동안 목록에 나오지 않습니다.</p>
+    <p>주제별로 묶고, 각 주제 안에서는 최신이 위입니다. 초안은 <code>draft: true</code>인 동안 목록에 나오지 않습니다.</p>
   </header>
-  <PostList posts={posts} />
+  <PostList posts={posts} grouped />
 </BaseLayout>

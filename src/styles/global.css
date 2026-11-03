@@ -408,6 +408,156 @@ h4 {
   margin-bottom: 0.85rem;
 }
 
+.list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.list-head .cmd {
+  margin-bottom: 0.35rem;
+}
+
+.owner-actions {
+  display: none;
+  gap: 0.4rem;
+}
+
+html[data-owner='1'] .owner-actions {
+  display: flex;
+}
+
+.owner-actions a {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-decoration: none;
+  color: var(--bg);
+  background: var(--accent);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+}
+
+.owner-actions a:last-child {
+  color: var(--warn);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--warn) 55%, var(--line));
+}
+
+.jump-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1.1rem;
+}
+
+.jump-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: var(--cyan);
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.12rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+.post-group {
+  scroll-margin-top: calc(var(--header-h) + 0.8rem);
+}
+
+.post-group + .post-group,
+.project-group + .project-group {
+  margin-top: 1.6rem;
+}
+
+.post-group-title {
+  margin: 0 0 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.post-group-title .count {
+  margin-left: 0.35rem;
+}
+
+.project-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.project-card {
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  border-radius: 6px;
+  padding: 0.9rem 1rem 1rem;
+  min-width: 0;
+}
+
+.project-card h3 {
+  margin: 0 0 0.7rem;
+  font-family: var(--sans);
+  font-size: 1.08rem;
+  letter-spacing: -0.03em;
+}
+
+.project-card dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.project-card dl div {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.project-card dt {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding-top: 0.15rem;
+}
+
+.project-card dd {
+  margin: 0;
+}
+
+.project-stack {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.project-results {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.project-results li + li {
+  margin-top: 0.28rem;
+}
+
+.project-posts {
+  margin: 0.8rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+@media (min-width: 900px) {
+  .project-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .rail-topics {
   margin: 0;
 }
@@ -1380,7 +1530,8 @@ pre.astro-code code {
   .sample-banner,
   .nav-toggle,
   .icon-button,
-  .caret {
+  .caret,
+  .owner-actions {
     display: none !important;
   }
 
