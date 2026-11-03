@@ -3,7 +3,6 @@ import { nav, site } from '../config';
 import { countTerms, getPosts, termUrl } from '../lib/posts';
 
 const path = Astro.url.pathname;
-const isHome = path === '/';
 const topics = countTerms(await getPosts(), 'categories');
 const year = new Date().getFullYear();
 
@@ -48,13 +47,7 @@ const commands: Record<string, string> = {
     </div>
     <div class="rail-body" id="site-nav">
       <div class="rail-intro">
-        {
-          isHome ? (
-            <h1>{site.title}</h1>
-          ) : (
-            <p class="rail-title"><a href="/">{site.title}</a></p>
-          )
-        }
+        <p class="rail-title"><a href="/">{site.title}</a></p>
         <p class="rail-lede">{site.tagline}</p>
       </div>
       <nav class="site-nav" aria-label="주요">

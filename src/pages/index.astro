@@ -29,7 +29,28 @@ const jsonLd = {
 ---
 
 <BaseLayout jsonLd={jsonLd}>
-  <section class="home-main" aria-labelledby="latest-heading">
+  <section class="hero-banner" aria-label={site.title}>
+    <img
+      src="/images/hero/hero-banner-1280.webp"
+      srcset="/images/hero/hero-banner-960.webp 960w, /images/hero/hero-banner-1280.webp 1280w"
+      sizes="(max-width: 860px) 100vw, 960px"
+      width="1280"
+      height="720"
+      alt=""
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="hero-copy">
+      <h1 class="hero-title">{site.title}</h1>
+      <p class="hero-sub">{site.tagline}</p>
+      <div class="hero-actions">
+        <a href="#posts">글 보기</a>
+        <a href="/projects/">프로젝트</a>
+      </div>
+    </div>
+  </section>
+  <section id="posts" class="home-main" aria-labelledby="latest-heading">
     <div class="list-head">
       <Cmd command="kubectl get posts" />
       <OwnerActions links={[{ href: newPostUrl(), label: 'new post' }]} />

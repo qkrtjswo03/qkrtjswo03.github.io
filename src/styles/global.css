@@ -7,19 +7,20 @@
 
 :root {
   --bg: #050b1f;
-  --bg-elev: rgba(12, 26, 58, 0.72);
-  --bg-muted: rgba(37, 99, 235, 0.16);
+  --bg-elev: rgba(15, 30, 80, 0.35);
+  --bg-muted: rgba(59, 130, 246, 0.18);
   --ink: #e7eefc;
   --ink-soft: #b7c5e4;
-  --line: rgba(96, 165, 250, 0.38);
+  --line: rgba(120, 170, 255, 0.25);
   --accent: #60a5fa;
   --accent-ink: #93c5fd;
   --cyan: #22d3ee;
   --warn: #fbbf24;
-  --code-bg: #07122a;
+  --code-bg: rgba(15, 30, 80, 0.35);
   --code-fg: #dbeafe;
-  --bg-rail: rgba(7, 18, 46, 0.78);
-  --glow: 0 0 22px rgba(59, 130, 246, 0.28);
+  --bg-rail: rgba(15, 30, 80, 0.35);
+  --glass-solid: #0d1b3d;
+  --glow: 0 0 28px rgba(59, 130, 246, 0.42);
   --header-h: 0px;
   --sans: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", "D2Coding", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -45,10 +46,11 @@
   --accent-ink: #1e3a8a;
   --cyan: #0e7490;
   --warn: #b45309;
-  --code-bg: #f8fbff;
+  --code-bg: rgba(255, 255, 255, 0.72);
   --code-fg: #1e3a8a;
-  --bg-rail: rgba(255, 255, 255, 0.72);
-  --glow: 0 0 16px rgba(37, 99, 235, 0.16);
+  --bg-rail: rgba(255, 255, 255, 0.62);
+  --glass-solid: #f7faff;
+  --glow: 0 0 18px rgba(37, 99, 235, 0.22);
   color-scheme: light;
 }
 
@@ -69,9 +71,10 @@ body {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(1100px 640px at 8% -12%, rgba(59, 130, 246, 0.22), transparent 58%),
-    radial-gradient(820px 520px at 100% 0%, rgba(34, 211, 238, 0.1), transparent 52%),
-    linear-gradient(180deg, #0a1433 0%, var(--bg) 42%, #040816 100%);
+    radial-gradient(980px 560px at 12% -8%, rgba(59, 130, 246, 0.38), transparent 58%),
+    radial-gradient(760px 480px at 92% 8%, rgba(34, 211, 238, 0.22), transparent 55%),
+    radial-gradient(640px 420px at 70% 92%, rgba(37, 99, 235, 0.28), transparent 60%),
+    linear-gradient(180deg, #0a1433 0%, var(--bg) 46%, #040816 100%);
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
@@ -128,7 +131,7 @@ h4 {
   line-height: 1.35;
   letter-spacing: -0.03em;
   font-weight: 600;
-  text-shadow: 0 0 16px color-mix(in srgb, var(--accent) 28%, transparent);
+  text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 48%, transparent);
 }
 
 .prose p,
@@ -343,7 +346,7 @@ h4 {
   color: var(--ink);
   background: var(--bg-muted);
   border-color: transparent;
-  box-shadow: inset 0 -2px 0 var(--cyan), var(--glow);
+  box-shadow: inset 0 -2px 0 var(--cyan), 0 8px 22px rgba(34, 211, 238, 0.28);
 }
 
 .nav-ko {
@@ -448,6 +451,124 @@ h4 {
 
 .home-main .cmd {
   margin-bottom: 0.85rem;
+}
+
+.hero-banner {
+  position: relative;
+  margin: 0 0 1.2rem;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 1280 / 620;
+  border: 1px solid rgba(120, 170, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(190, 215, 255, 0.4),
+    0 0 0 1px rgba(34, 211, 238, 0.18),
+    0 0 36px rgba(59, 130, 246, 0.42);
+  background: #07122e;
+}
+
+.hero-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: left center;
+}
+
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 38%;
+  background: linear-gradient(180deg, transparent, rgba(5, 11, 31, 0.92));
+  pointer-events: none;
+}
+
+.hero-copy {
+  position: absolute;
+  z-index: 1;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(26rem, 62%);
+  padding: 1.4rem 1.5rem 1.8rem;
+  background: linear-gradient(90deg, rgba(5, 11, 31, 0.72) 0%, rgba(5, 11, 31, 0.28) 72%, transparent 100%);
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2rem, 4.2vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #f4f8ff;
+  text-shadow:
+    0 0 12px rgba(147, 197, 253, 0.95),
+    0 0 32px rgba(34, 211, 238, 0.55);
+}
+
+.hero-sub {
+  margin: 0.55rem 0 0;
+  color: #e7eefc;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  text-shadow: none;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.95rem;
+}
+
+.hero-actions a {
+  text-decoration: none;
+  color: #f4f8ff;
+  border: 1px solid rgba(180, 210, 255, 0.45);
+  background: rgba(15, 30, 80, 0.42);
+  border-radius: 999px;
+  padding: 0.38rem 0.9rem;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(220, 235, 255, 0.45), 0 0 16px rgba(59, 130, 246, 0.28);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.hero-actions a:hover {
+  color: #fff;
+  border-color: var(--cyan);
+  box-shadow: inset 0 1px 0 rgba(220, 235, 255, 0.55), 0 0 22px rgba(34, 211, 238, 0.4);
+}
+
+@media (max-width: 860px) {
+  .hero-banner {
+    aspect-ratio: 16 / 10;
+  }
+
+  .hero-banner img {
+    object-position: center right;
+  }
+
+  .hero-copy {
+    width: min(18rem, 78%);
+    padding: 0.9rem 0.95rem 1.2rem;
+    background: linear-gradient(90deg, rgba(5, 11, 31, 0.82) 0%, rgba(5, 11, 31, 0.45) 78%, transparent 100%);
+  }
+
+  .hero-title {
+    font-size: 1.65rem;
+  }
+
+  .hero-sub {
+    font-size: 0.86rem;
+    margin-top: 0.35rem;
+  }
 }
 
 .list-head {
@@ -752,15 +873,40 @@ html[data-owner='1'] .owner-actions {
   color: var(--accent);
 }
 
+.rail,
 .term-panel,
 .describe-panel,
 .project-card,
 .toc,
-.search-line {
+.search-line,
+.tag-pill,
+.label-chip,
+.topic-list a,
+.jump-nav a,
+pre.astro-code {
+  background-color: var(--glass-solid);
+  background-color: var(--bg-elev);
   border: 1px solid var(--line);
-  background: var(--bg-elev);
-  box-shadow: var(--glow);
-  backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(190, 215, 255, 0.34), var(--glow);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .rail,
+  .term-panel,
+  .describe-panel,
+  .project-card,
+  .toc,
+  .search-line,
+  .tag-pill,
+  .label-chip,
+  .topic-list a,
+  .jump-nav a,
+  pre.astro-code,
+  .hero-actions a {
+    background-color: var(--glass-solid);
+  }
 }
 
 .term-panel {
@@ -1155,7 +1301,7 @@ pre.astro-code {
   line-height: 1.7;
   border: 1px solid var(--line);
   background-color: var(--code-bg) !important;
-  box-shadow: var(--glow);
+  box-shadow: inset 0 1px 0 rgba(190, 215, 255, 0.34), var(--glow);
   tab-size: 2;
 }
 
