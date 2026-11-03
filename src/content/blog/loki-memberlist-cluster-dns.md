@@ -18,6 +18,12 @@ Loki Distributed를 올렸더니 Compactor, Ingester, Distributor, Gateway가 �
 
 > Pod 주소와 이 클러스터의 kube-dns ClusterIP는 예시 값(10.0.0.x)으로 바꿨다. `10.233.0.3`은 Kubespray 기본 cluster DNS Service IP라서 그대로 적는다.
 
+<figure>
+  <a href="/images/blog/loki-memberlist-cluster-dns/diagram-1.png">
+    <img src="/images/blog/loki-memberlist-cluster-dns/diagram-1.png" alt="kubelet clusterDNS가 resolv.conf로 들어가고, 잘못된 10.233.0.3 대신 kube-dns ClusterIP 10.0.0.10으로 고치는 경로" />
+  </a>
+</figure>
+
 ## 배경과 증상
 
 Loki Distributed 구성에서 다음 증상이 동시에 나타났다.

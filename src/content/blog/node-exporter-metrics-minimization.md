@@ -15,6 +15,12 @@ draft: false
 
 node-exporter는 기본 설정만으로도 메트릭을 꽤 많이 내보낸다. 대시보드와 알람에서 실제로 쓰는 건 그중 일부라서, 나머지는 저장 공간과 scrape 시간만 잡아먹는다. kube-prometheus-stack 환경에서 메트릭을 줄인 방법을 정리한다.
 
+<figure>
+  <a href="/images/blog/node-exporter-metrics-minimization/diagram-1.png">
+    <img src="/images/blog/node-exporter-metrics-minimization/diagram-1.png" alt="node-exporter collector를 끈 뒤 ServiceMonitor keep 필터로 메트릭을 한 번 더 줄여 TSDB에 남기는 두 단계" />
+  </a>
+</figure>
+
 ## 배경
 
 목표는 네 가지였다.
