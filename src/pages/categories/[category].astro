@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Cmd from '../../components/Cmd.astro';
 import PostList from '../../components/PostList.astro';
 import { countTerms, getPosts } from '../../lib/posts';
 
@@ -19,7 +20,7 @@ const { category, posts } = Astro.props;
 
 <BaseLayout title={category} description={`${category} 주제의 글 ${posts.length}편입니다.`}>
   <header class="page-intro">
-    <p class="eyebrow">주제</p>
+    <Cmd command={`kubectl get posts -l category=${category}`} />
     <h1>{category}</h1>
     <p>{posts.length}개의 글</p>
   </header>

@@ -1,0 +1,14 @@
+---
+interface Props {
+  command: string;
+}
+
+const { command } = Astro.props;
+---
+
+<p class="cmd">
+  <span class="ps1" aria-hidden="true">
+    <span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span>
+  </span>
+  <span class="cmd-text">{command}</span>
+</p>

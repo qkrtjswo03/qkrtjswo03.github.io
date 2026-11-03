@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Cmd from '../../components/Cmd.astro';
 import PostList from '../../components/PostList.astro';
 import { getPosts } from '../../lib/posts';
 
@@ -8,7 +9,7 @@ const posts = await getPosts();
 
 <BaseLayout title="글" description="관측 노트에 올린 글을 최신순으로 봅니다.">
   <header class="page-intro">
-    <p class="eyebrow">글</p>
+    <Cmd command="kubectl get posts" />
     <h1>모든 글</h1>
     <p>최신 글이 위에 있습니다. 초안은 <code>draft: true</code>인 동안 목록에 나오지 않습니다.</p>
   </header>

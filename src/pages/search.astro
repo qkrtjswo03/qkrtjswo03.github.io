@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Cmd from '../components/Cmd.astro';
 import PostList from '../components/PostList.astro';
 import { getPosts } from '../lib/posts';
 
@@ -8,13 +9,18 @@ const posts = await getPosts();
 
 <BaseLayout title="검색" description="제목, 본문, 주제, 태그로 글을 찾습니다.">
   <header class="page-intro">
-    <p class="eyebrow">검색</p>
+    <Cmd command="grep -i" />
     <h1>글 검색</h1>
     <p id="search-count">{posts.length}개의 글에서 찾습니다. 목록은 이 페이지 안에 있어서 따로 서버를 거치지 않습니다.</p>
   </header>
   <form class="search-form" role="search">
     <label class="sr-only" for="q">검색어</label>
-    <input id="q" name="q" type="search" placeholder="제목, 본문, 태그" autocomplete="off" enterkeyhint="search" />
+    <div class="search-line">
+      <span class="ps1" aria-hidden="true">
+        <span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span>
+      </span>
+      <input id="q" name="q" type="search" placeholder="제목, 본문, 태그" autocomplete="off" enterkeyhint="search" />
+    </div>
   </form>
   <p id="search-empty" class="empty" hidden>일치하는 글이 없습니다.</p>
   <PostList posts={posts} searchable />
