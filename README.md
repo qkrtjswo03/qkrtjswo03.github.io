@@ -1,4 +1,4 @@
-# 관측 노트
+# SunJae.Log
 
 클라우드, 인프라, AI 운영을 적는 한국어 기술 블로그입니다. 주소는 [https://qkrtjswo03.github.io](https://qkrtjswo03.github.io) 이고, GitHub Pages 사용자 사이트라 저장소 루트에서 제공됩니다.
 
