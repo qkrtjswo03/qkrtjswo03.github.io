@@ -23,6 +23,9 @@
   --sans: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", "D2Coding", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --display: "JetBrains Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --prose-size: 0.97rem;
+  --prose-measure: 42rem;
+  --content-max: 54rem;
   color-scheme: dark;
   --shiki-light: #24292e;
   --shiki-light-bg: #f6f8fa;
@@ -453,11 +456,11 @@ h4 {
 .page-intro p {
   color: var(--ink-soft);
   margin-top: 0;
-  max-width: 42rem;
+  max-width: var(--prose-measure);
 }
 
 .page-intro {
-  max-width: 46rem;
+  max-width: var(--content-max);
   margin-bottom: 1.5rem;
 }
 
@@ -781,7 +784,7 @@ h4 {
 }
 
 .prose {
-  font-size: 1.03rem;
+  font-size: var(--prose-size);
   line-height: 1.85;
 }
 
@@ -815,6 +818,21 @@ h4 {
 .prose figure,
 .prose table {
   margin: 0.95rem 0;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose h2,
+.prose h3 {
+  max-width: var(--prose-measure);
+}
+
+.prose pre,
+.prose table,
+.prose figure {
+  max-width: 100%;
 }
 
 .prose ul,
@@ -1078,7 +1096,7 @@ pre.astro-code code {
 }
 
 .prose-page {
-  max-width: 44rem;
+  max-width: var(--content-max);
 }
 
 .prose-page h2 {
@@ -1148,11 +1166,36 @@ pre.astro-code code {
   margin-top: 1.8rem;
 }
 
-@media (min-width: 1360px) {
+.post-layout {
+  width: min(100%, var(--content-max));
+}
+
+@media (min-width: 861px) and (max-width: 1679px) {
+  .post-header {
+    order: 1;
+  }
+
+  .post-side {
+    order: 2;
+  }
+
+  .post-main {
+    order: 3;
+  }
+}
+
+@media (min-width: 1680px) {
   .post-layout {
-    grid-template-columns: minmax(0, 42rem) 15.5rem;
+    width: min(100%, calc(var(--content-max) + 15.5rem + 2.4rem));
+    grid-template-columns: minmax(0, var(--content-max)) 15.5rem;
     column-gap: 2.4rem;
-    justify-content: center;
+    justify-content: start;
+  }
+
+  .post-header,
+  .post-main,
+  .post-side {
+    order: 0;
   }
 
   .post-header,
@@ -1240,6 +1283,14 @@ pre.astro-code code {
 
   .page {
     padding: 1.15rem 1rem 2.4rem;
+  }
+
+  .prose {
+    font-size: 1.03rem;
+  }
+
+  .post-layout {
+    width: auto;
   }
 }
 
