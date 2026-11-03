@@ -36,7 +36,7 @@ export interface SiteConfig {
 }
 
 export const site: SiteConfig = {
-  title: 'Sunjae.log',
+  title: 'SunJae.Log',
   description:
     'Kubernetes, 관측 가능성, 장애 원인 분석, LLM 운영을 다루는 한국어 기술 블로그입니다.',
   tagline: '클라우드, 인프라, AI 운영을 기록합니다.',
