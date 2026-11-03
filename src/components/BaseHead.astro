@@ -38,7 +38,7 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#0e1110" />
+<meta name="theme-color" content="#050b1f" />
 <script is:inline>
   (function () {
     try {
@@ -57,7 +57,7 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
       var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
       document.documentElement.setAttribute('data-theme', theme);
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f7f5' : '#0e1110');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#eef4ff' : '#050b1f');
     } catch (e) {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
