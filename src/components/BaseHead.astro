@@ -42,6 +42,17 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <script is:inline>
   (function () {
     try {
+      var params = new URLSearchParams(location.search);
+      var owner = params.get('owner');
+      if (owner === '1') localStorage.setItem('owner-mode', '1');
+      if (owner === '0') localStorage.removeItem('owner-mode');
+      if (localStorage.getItem('owner-mode') === '1') {
+        document.documentElement.setAttribute('data-owner', '1');
+      } else {
+        document.documentElement.removeAttribute('data-owner');
+      }
+    } catch (e) {}
+    try {
       var stored = localStorage.getItem('theme');
       var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
       document.documentElement.setAttribute('data-theme', theme);

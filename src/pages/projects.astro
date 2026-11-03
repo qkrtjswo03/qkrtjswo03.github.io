@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Cmd from '../components/Cmd.astro';
+import { careerProjects, personalProjects, type Project } from '../data/projects';
+
+const groups: Array<{ title: string; projects: Project[] }> = [
+  { title: '경력 프로젝트', projects: careerProjects },
+  { title: '개인·학부 프로젝트', projects: personalProjects },
+];
+---
+
+<BaseLayout title="프로젝트" description="Kubernetes와 클라우드 플랫폼을 운영하며 맡은 프로젝트입니다.">
+  <header class="page-intro">
+    <Cmd command="kubectl get projects" />
+    <h1>프로젝트</h1>
+    <p>경력은 최근 일이 위입니다. 숫자는 포트폴리오에 적힌 것만 옮겼습니다.</p>
+  </header>
+  {
+    groups.map((group) => (
+      <section class="project-group">
+        <h2 class="post-group-title">{group.title}</h2>
+        <div class="project-grid">
+          {group.projects.map((project) => (
+            <article class="project-card">
+              <h3>{project.title}</h3>
+              <dl>
+                <div>
+                  <dt>기간</dt>
+                  <dd>{project.period}</dd>
+                </div>
+                <div>
+                  <dt>역할</dt>
+                  <dd>{project.role}</dd>
+                </div>
+              </dl>
+              <ul class="chip-row project-stack">
+                {project.stack.map((item) => (
+                  <li class="label-chip">{item}</li>
+                ))}
+              </ul>
+              <ul class="project-results">
+                {project.results.map((result) => (
+                  <li>{result}</li>
+                ))}
+              </ul>
+              {project.posts && project.posts.length > 0 && (
+                <p class="project-posts">
+                  {project.posts.map((post, index) => (
+                    <>
+                      {index > 0 && ' · '}
+                      <a href={post.href}>{post.label}</a>
+                    </>
+                  ))}
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>

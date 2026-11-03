@@ -63,6 +63,7 @@ export const site: SiteConfig = {
 
 export const nav = [
   { href: '/blog/', label: '글' },
+  { href: '/projects/', label: '프로젝트' },
   { href: '/archive/', label: '아카이브' },
   { href: '/categories/', label: '주제' },
   { href: '/tags/', label: '태그' },

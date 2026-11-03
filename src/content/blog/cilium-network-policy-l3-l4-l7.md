@@ -17,6 +17,12 @@ Kubernetes 기본 `NetworkPolicy`는 L3(누가)와 L4(어느 포트로)까지는
 
 그래서 같은 백엔드에 L3 → L4 → L7 순서로 정책을 하나씩 걸어 보면서 어디까지 제어되는지 직접 확인해 봤다. Hubble 없이 `kubectl`과 `curl`만으로 검증했다.
 
+<figure>
+  <a href="/images/blog/cilium-network-policy-l3-l4-l7/diagram-1.png">
+    <img src="/images/blog/cilium-network-policy-l3-l4-l7/diagram-1.png" alt="CiliumNetworkPolicy에서 L3 라벨, L4 포트, L7 HTTP 경로 순서로 요청이 통과하거나 막히는 지점" />
+  </a>
+</figure>
+
 ## 배경
 
 테스트 범위는 다음 세 가지다.

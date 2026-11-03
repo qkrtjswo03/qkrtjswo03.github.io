@@ -1,17 +1,67 @@
 ---
-import { formatDate, postUrl, searchText, type BlogPost } from '../lib/posts';
+import { formatDate, groupByCategory, postUrl, searchText, type BlogPost } from '../lib/posts';
 
 interface Props {
   posts: BlogPost[];
   searchable?: boolean;
+  grouped?: boolean;
 }
 
-const { posts, searchable = false } = Astro.props;
+const { posts, searchable = false, grouped = false } = Astro.props;
+const groups = grouped ? groupByCategory(posts) : [];
 ---
 
 {
   posts.length === 0 ? (
     <p class="empty">아직 공개된 글이 없습니다.</p>
+  ) : grouped ? (
+    <>
+      <nav class="jump-nav" aria-label="주제 바로가기">
+        {groups.map((group, index) => (
+          <a href={`#group-${index}`}>
+            {group.category} <span class="count">{group.posts.length}</span>
+          </a>
+        ))}
+      </nav>
+      {groups.map((group, index) => (
+        <section class="post-group" id={`group-${index}`} aria-labelledby={`group-${index}-title`}>
+          <h2 class="post-group-title" id={`group-${index}-title`}>
+            {group.category} <span class="count">{group.posts.length}</span>
+          </h2>
+          <div class="term-panel">
+            <div class="term-scroll">
+              <div class="post-row post-row-head" aria-hidden="true">
+                <span>NAME</span>
+                <span>CATEGORY</span>
+                <span>DATE</span>
+              </div>
+              <ul class="post-list">
+                {group.posts.map((post) => {
+                  const categories = post.data.categories ?? [];
+                  const categoryLabel = categories.length > 0 ? categories.join(', ') : '—';
+                  return (
+                    <li>
+                      <a class="post-row" href={postUrl(post)}>
+                        <span class="post-title">{post.data.title}</span>
+                        <span class="post-desc">{post.data.description}</span>
+                        <span class="post-cat">
+                          <span class="sr-only">주제 </span>
+                          {categoryLabel}
+                        </span>
+                        <time class="post-date" datetime={post.data.pubDate.toISOString()}>
+                          <span class="sr-only">날짜 </span>
+                          {formatDate(post.data.pubDate)}
+                        </time>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </section>
+      ))}
+    </>
   ) : (
     <div class="term-panel">
       <p class="sr-only">글 목록. 이름, 주제, 날짜.</p>

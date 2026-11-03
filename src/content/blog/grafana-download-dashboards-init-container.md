@@ -15,6 +15,12 @@ draft: false
 
 kube-prometheus-stack으로 Grafana를 배포했는데, 대시보드가 어떤 때는 뜨고 어떤 때는 비어 있었다. Pod 안을 열어 보니 대시보드 JSON 파일이 이름만 있고 크기가 0바이트였다. 원인을 찾고 고친 과정을 정리한다.
 
+<figure>
+  <a href="/images/blog/grafana-download-dashboards-init-container/diagram-1.png">
+    <img src="/images/blog/grafana-download-dashboards-init-container/diagram-1.png" alt="values.yaml이 Grafana 서브차트 initContainer를 만들고, 그 컨테이너가 대시보드 JSON을 받아 오는 흐름" />
+  </a>
+</figure>
+
 ## 배경과 증상
 
 구성은 이랬다.

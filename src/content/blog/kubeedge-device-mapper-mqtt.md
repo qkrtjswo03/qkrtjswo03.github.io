@@ -27,34 +27,11 @@ KubeEdge로 장치를 다루다 보면 Device, Mapper, EventBus, DeviceTwin, Mos
 
 전체 그림은 다음과 같다.
 
-```txt
-                        Cloud
-                          │
-                       WebSocket
-                          │
-                       EdgeHub
-                          │
-                     DeviceTwin
-                          │
-                       EventBus
-                          │
-                         MQTT
-                          │
-                    ┌───────────┐
-                    │ Mosquitto │
-                    │   Broker  │
-                    └─────┬─────┘
-                          │
-                         MQTT
-                          │
-                       Mapper
-                    ┌─────┼─────┐
-                    │     │     │
-                 Modbus OPC-UA  BLE
-                    │     │     │
-                    ▼     ▼     ▼
-                  Device Device Device
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-1.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-1.png" alt="클라우드의 CloudCore에서 EdgeHub, DeviceTwin, EventBus, Mosquitto, Mapper를 거쳐 Modbus·OPC-UA·BLE 장치까지 이어지는 전체 경로" />
+  </a>
+</figure>
 
 ## 개념
 
@@ -73,16 +50,11 @@ Device 자체가 Modbus나 OPC-UA로 통신하지는 않는다. **장치를 표�
 
 Mapper는 실제 장치와 KubeEdge 사이의 통신을 맡는 별도 애플리케이션이다. EdgeCore 내부 컴포넌트가 아니다.
 
-```txt
-EdgeCore
-├── EdgeHub
-├── DeviceTwin
-├── EventBus
-└── MetaManager
-
-별도 Application
-└── Mapper
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-2.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-2.png" alt="EdgeCore 안의 EdgeHub, DeviceTwin, MetaManager, EventBus와 별도 애플리케이션인 Mapper" />
+  </a>
+</figure>
 
 Mapper가 하는 일은 다음과 같다.
 
@@ -100,37 +72,25 @@ Mapper가 하는 일은 다음과 같다.
 
 **Modbus**: PLC, 센서, 계측기 같은 산업 장비에서 널리 쓰는 프로토콜이다. RS-485 같은 시리얼 기반의 Modbus RTU와 TCP/IP 기반의 Modbus TCP가 있다.
 
-```txt
-Device ── Modbus ──► Modbus Mapper
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-3.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-3.png" alt="Modbus, OPC-UA, BLE 장치가 각자 Mapper를 거쳐 Mosquitto로 모이고 KubeEdge로는 MQTT만 전달되는 두 구간" />
+  </a>
+</figure>
 
 **OPC-UA**: 산업 자동화 환경에서 장치 데이터를 표준화해서 주고받기 위한 표준이다. Modbus보다 구조화된 데이터와 정보 모델을 표현하는 데 적합하다.
 
-```txt
-Device ── OPC-UA ──► OPC-UA Mapper
-```
-
 **BLE**: Bluetooth Low Energy, 저전력 근거리 무선 통신이다. 배터리로 도는 센서나 소형 IoT 장치에 주로 쓴다.
-
-```txt
-Device ── BLE ──► BLE Mapper
-```
 
 ### MQTT와 Broker
 
 MQTT(Message Queuing Telemetry Transport)는 Pub/Sub 방식으로 메시지를 전달하는 애플리케이션 계층 프로토콜이다.
 
-```txt
-Publisher
-    │
-    │ PUBLISH
-    ▼
-MQTT Broker
-    │
-    │ 전달
-    ▼
-Subscriber
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-4.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-4.png" alt="Publisher가 device/temperature로 보낸 메시지를 브로커가 그 토픽을 구독한 Client A와 C에게만 전달하는 그림" />
+  </a>
+</figure>
 
 - **Publisher**: 토픽에 메시지를 발행하는 클라이언트 역할
 - **Subscriber**: 관심 있는 토픽을 구독하는 클라이언트 역할
@@ -138,38 +98,7 @@ Subscriber
 
 Broker는 메시지를 무조건 뿌리지 않는다. 다음처럼 구독이 걸려 있다고 하자.
 
-```txt
-Client A
-  └── SUBSCRIBE device/temperature
-
-Client B
-  └── SUBSCRIBE device/status
-
-Client C
-  └── SUBSCRIBE device/temperature
-```
-
-여기에 `device/temperature`로 메시지가 들어오면,
-
-```txt
-Publisher
-    │
-    │ PUBLISH
-    │ Topic: device/temperature
-    │ Data : 25.3
-    ▼
-MQTT Broker
-```
-
-Broker는 그 토픽을 구독한 클라이언트에게만 보낸다.
-
-```txt
-MQTT Broker
-    ├──► Client A
-    └──► Client C
-
-Client B → 전달하지 않음
-```
+여기에 `device/temperature`로 메시지가 들어오면, Broker는 그 토픽을 구독한 클라이언트에게만 보낸다.
 
 Broker가 맡는 일을 모으면 이렇다.
 
@@ -186,23 +115,6 @@ Broker가 맡는 일을 모으면 이렇다.
 
 Mosquitto는 MQTT Broker의 구현체다. 그러니 Mosquitto가 Modbus, OPC-UA, BLE를 직접 처리하지 않는다.
 
-```txt
-Modbus Device
-      │
-      │ Modbus
-      ▼
-Modbus Mapper
-      │
-      │ MQTT
-      ▼
-┌─────────────┐
-│  Mosquitto  │
-│ MQTT Broker │
-└──────┬──────┘
-       │ MQTT
-       ▼
-   KubeEdge
-```
 
 Mosquitto는 MQTT 클라이언트가 보낸 메시지를 받아 토픽에 따라 필요한 클라이언트에게 넘겨줄 뿐이다.
 
@@ -212,66 +124,23 @@ Publisher와 Subscriber는 고정된 프로그램이 아니라 MQTT 클라이언
 
 장치 상태를 보고할 때는 Mapper가 발행한다.
 
-```txt
-Mapper
-  │
-  │ PUBLISH
-  ▼
-Mosquitto
-  │
-  ▼
-KubeEdge
-```
-
-```txt
-Mapper     = Publisher
-Mosquitto  = Broker
-KubeEdge   = Subscriber
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-5.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-5.png" alt="상태 보고에서는 Mapper가 Publisher이고, 장치 제어에서는 KubeEdge가 Publisher가 되는 역할 전환" />
+  </a>
+</figure>
 
 장치를 제어할 때는 반대로 KubeEdge가 발행한다.
-
-```txt
-KubeEdge
-  │
-  │ PUBLISH
-  ▼
-Mosquitto
-  │
-  ▼
-Mapper
-  │
-  ▼
-Device
-```
-
-```txt
-KubeEdge = Publisher
-Mosquitto = Broker
-Mapper = Subscriber
-```
 
 ### MQTT는 TCP를 대체하지 않는다
 
 MQTT는 TCP, UDP와 같은 계층이 아니다. HTTP처럼 애플리케이션 계층에 있고, 보통 TCP 위에서 동작한다.
 
-```txt
-┌─────────────────────────────┐
-│ Application Layer           │
-│                             │
-│ HTTP              MQTT      │
-├─────────────────────────────┤
-│ Transport Layer             │
-│                             │
-│ TCP               UDP       │
-├─────────────────────────────┤
-│ Network Layer               │
-│                             │
-│ IP                          │
-├─────────────────────────────┤
-│ Ethernet / Wi-Fi            │
-└─────────────────────────────┘
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-6.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-6.png" alt="MQTT가 HTTP와 같은 애플리케이션 계층이고 TCP 위, 1883과 8883 포트로 동작하는 계층" />
+  </a>
+</figure>
 
 | 프로토콜 | 역할 |
 | --- | --- |
@@ -282,55 +151,19 @@ MQTT는 TCP, UDP와 같은 계층이 아니다. HTTP처럼 애플리케이션 �
 
 TCP가 데이터를 실어 나르는 기반을 주고, MQTT는 그 연결 위에서 메시지와 Pub/Sub 동작을 정의한다. 대표 포트는 다음과 같다.
 
-```txt
-TCP/1883 → MQTT
-TCP/8883 → MQTT over TLS
-```
 
 ## 실습: 테스트 환경 구조
 
 테스트 환경에는 실제 센서나 산업 장비 대신, 가상 장치를 대상으로 동작하는 테스트용 Mapper(`demo-virtual-mapper`)를 붙였다.
 
-```txt
-Kubernetes Device
-        │
-        ▼
-   DeviceTwin
-        ▲
-        │
-     EventBus
-        ▲
-        │ MQTT
-        ▼
-    Mosquitto
-        ▲
-        │ MQTT
-        ▼
-demo-virtual-mapper
-        │
-        ▼
-  Virtual Device
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-7.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-7.png" alt="테스트 환경의 가상 Mapper와, 실장치에서는 Mapper 아래만 Modbus·OPC-UA·BLE로 바꾸는 구성" />
+  </a>
+</figure>
 
 실제 장치를 연결하게 되면 Mapper 아래쪽만 바꿔서 다음처럼 확장하면 된다.
 
-```txt
-                         KubeEdge
-                            │
-                            │ MQTT
-                            ▼
-                       Mosquitto
-                            │
-                            │ MQTT
-                            ▼
-                          Mapper
-                     ┌──────┼──────┐
-                     │      │      │
-                  Modbus  OPC-UA   BLE
-                     │      │      │
-                     ▼      ▼      ▼
-                  Device  Device  Device
-```
 
 ## 검증
 
@@ -365,32 +198,11 @@ default     demo-temp-edge-b    16h
 
 최종 구조는 이렇게 이해하면 된다.
 
-```txt
-┌───────────────────────────────────────────────────────────┐
-│                       KubeEdge                            │
-│                                                           │
-│  DeviceTwin ◄──── EventBus ◄──── MQTT                     │
-│       ▲                              ▲                    │
-│       │                              │                    │
-│       │                         Mosquitto                 │
-│       │                         MQTT Broker               │
-│       │                              ▲                    │
-│       │                              │ MQTT               │
-└───────┼──────────────────────────────┼────────────────────┘
-        │                              │
-        │                        ┌─────┴─────┐
-        │                        │   Mapper  │
-        │                        └─────┬─────┘
-        │                              │
-        │                    ┌─────────┼─────────┐
-        │                    │         │         │
-        │                 Modbus    OPC-UA      BLE
-        │                    │         │         │
-        │                    ▼         ▼         ▼
-        │                 Device    Device    Device
-        │
-        └── Device CR
-```
+<figure>
+  <a href="/images/blog/kubeedge-device-mapper-mqtt/diagram-8.png">
+    <img src="/images/blog/kubeedge-device-mapper-mqtt/diagram-8.png" alt="DeviceTwin이 EventBus와 Mosquitto를 통해 Mapper, 장치 프로토콜, Device CR과 만나는 최종 경계" />
+  </a>
+</figure>
 
 한 문장으로 줄이면 이렇다.
 
