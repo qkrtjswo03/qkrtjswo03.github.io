@@ -58,7 +58,16 @@ import { site } from '../config';
     <h2>이용자의 요청</h2>
     <p>
       운영자가 블로그 서버에 방문자 개인정보를 보관하지 않으므로, 제3자가 가진 정보의 열람·삭제는 해당 사업자의
-      절차를 따릅니다. 블로그와 관련한 문의는 <a href={`mailto:${site.email}`}>{site.email}</a>로 보내 주세요.
+      절차를 따릅니다. 블로그와 관련한 문의는{' '}
+      {
+        site.email.map((address, index) => (
+          <>
+            {index > 0 && ' · '}
+            <a href={`mailto:${address}`}>{address}</a>
+          </>
+        ))
+      }
+      로 보내 주세요.
     </p>
     <h2>변경</h2>
     <p>도구 설정을 바꾸면 이 방침도 함께 고칩니다. 본문은 <code>src/pages/privacy.astro</code>에 있습니다.</p>
