@@ -474,14 +474,15 @@ h4 {
   max-width: none;
   object-fit: cover;
   object-position: left center;
+  filter: none;
 }
 
 .hero-banner::after {
   content: "";
   position: absolute;
   inset: auto 0 0;
-  height: 38%;
-  background: linear-gradient(180deg, transparent, rgba(5, 11, 31, 0.92));
+  height: 30%;
+  background: linear-gradient(180deg, transparent, #050b1fcc);
   pointer-events: none;
 }
 
