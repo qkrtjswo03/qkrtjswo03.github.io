@@ -1,5 +1,14 @@
 ---
-import { formatDate, groupByCategory, postUrl, searchText, type BlogPost } from '../lib/posts';
+import {
+  formatDate,
+  groupByCategory,
+  postsInSeries,
+  postUrl,
+  searchText,
+  seriesLabel,
+  seriesTitle,
+  type BlogPost,
+} from '../lib/posts';
 
 interface Props {
   posts: BlogPost[];
@@ -9,6 +18,11 @@ interface Props {
 
 const { posts, searchable = false, grouped = false } = Astro.props;
 const groups = grouped ? groupByCategory(posts) : [];
+
+function categoryLabel(post: BlogPost) {
+  const categories = post.data.categories ?? [];
+  return categories.length > 0 ? categories.join(', ') : '—';
+}
 ---
 
 {
@@ -23,44 +37,68 @@ const groups = grouped ? groupByCategory(posts) : [];
           </a>
         ))}
       </nav>
-      {groups.map((group, index) => (
-        <section class="post-group" id={`group-${index}`} aria-labelledby={`group-${index}-title`}>
-          <h2 class="post-group-title" id={`group-${index}-title`}>
-            {group.category} <span class="count">{group.posts.length}</span>
-          </h2>
-          <div class="term-panel">
-            <div class="term-scroll">
-              <div class="post-row post-row-head" aria-hidden="true">
-                <span>NAME</span>
-                <span>CATEGORY</span>
-                <span>DATE</span>
-              </div>
-              <ul class="post-list">
-                {group.posts.map((post) => {
-                  const categories = post.data.categories ?? [];
-                  const categoryLabel = categories.length > 0 ? categories.join(', ') : '—';
-                  return (
-                    <li>
-                      <a class="post-row" href={postUrl(post)}>
-                        <span class="post-title">{post.data.title}</span>
-                        <span class="post-desc">{post.data.description}</span>
-                        <span class="post-cat">
-                          <span class="sr-only">주제 </span>
-                          {categoryLabel}
-                        </span>
-                        <time class="post-date" datetime={post.data.pubDate.toISOString()}>
-                          <span class="sr-only">날짜 </span>
-                          {formatDate(post.data.pubDate)}
-                        </time>
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
+      {groups.map((group, index) => {
+        const seriesIds = [
+          ...new Set(group.posts.map((post) => post.data.series).filter((id): id is string => Boolean(id))),
+        ];
+        const loose = group.posts.filter((post) => !post.data.series);
+        return (
+          <section class="post-group" id={`group-${index}`} aria-labelledby={`group-${index}-title`}>
+            <h2 class="post-group-title" id={`group-${index}-title`}>
+              {group.category} <span class="count">{group.posts.length}</span>
+            </h2>
+            <div class="term-panel">
+              {seriesIds.map((id) => {
+                const parts = postsInSeries(group.posts, id);
+                return (
+                  <div class="series-list">
+                    <p class="series-list-title">
+                      {seriesTitle(id)} <span class="count">{parts.length}</span>
+                    </p>
+                    <ol>
+                      {parts.map((post) => (
+                        <li>
+                          <a href={postUrl(post)}>
+                            <span class="series-num">{post.data.seriesOrder}</span>
+                            {seriesLabel(post)}
+                          </a>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                );
+              })}
+              {loose.length > 0 && (
+                <div class="term-scroll">
+                  <div class="post-row post-row-head" aria-hidden="true">
+                    <span>NAME</span>
+                    <span>CATEGORY</span>
+                    <span>DATE</span>
+                  </div>
+                  <ul class="post-list">
+                    {loose.map((post) => (
+                      <li>
+                        <a class="post-row" href={postUrl(post)}>
+                          <span class="post-title">{post.data.title}</span>
+                          <span class="post-desc">{post.data.description}</span>
+                          <span class="post-cat">
+                            <span class="sr-only">주제 </span>
+                            {categoryLabel(post)}
+                          </span>
+                          <time class="post-date" datetime={post.data.pubDate.toISOString()}>
+                            <span class="sr-only">날짜 </span>
+                            {formatDate(post.data.pubDate)}
+                          </time>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
-          </div>
-        </section>
-      ))}
+          </section>
+        );
+      })}
     </>
   ) : (
     <div class="term-panel">
@@ -72,26 +110,22 @@ const groups = grouped ? groupByCategory(posts) : [];
           <span>DATE</span>
         </div>
         <ul class="post-list" id={searchable ? 'results' : undefined}>
-          {posts.map((post) => {
-            const categories = post.data.categories ?? [];
-            const categoryLabel = categories.length > 0 ? categories.join(', ') : '—';
-            return (
-              <li data-search={searchable ? searchText(post) : undefined}>
-                <a class="post-row" href={postUrl(post)}>
-                  <span class="post-title">{post.data.title}</span>
-                  <span class="post-desc">{post.data.description}</span>
-                  <span class="post-cat">
-                    <span class="sr-only">주제 </span>
-                    {categoryLabel}
-                  </span>
-                  <time class="post-date" datetime={post.data.pubDate.toISOString()}>
-                    <span class="sr-only">날짜 </span>
-                    {formatDate(post.data.pubDate)}
-                  </time>
-                </a>
-              </li>
-            );
-          })}
+          {posts.map((post) => (
+            <li data-search={searchable ? searchText(post) : undefined}>
+              <a class="post-row" href={postUrl(post)}>
+                <span class="post-title">{post.data.title}</span>
+                <span class="post-desc">{post.data.description}</span>
+                <span class="post-cat">
+                  <span class="sr-only">주제 </span>
+                  {categoryLabel(post)}
+                </span>
+                <time class="post-date" datetime={post.data.pubDate.toISOString()}>
+                  <span class="sr-only">날짜 </span>
+                  {formatDate(post.data.pubDate)}
+                </time>
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
     </div>

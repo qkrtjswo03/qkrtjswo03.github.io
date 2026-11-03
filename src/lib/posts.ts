@@ -80,6 +80,21 @@ export function groupByYear(posts: BlogPost[]): Array<[number, BlogPost[]]> {
   return [...map.entries()].sort((a, b) => b[0] - a[0]);
 }
 
+export function seriesTitle(id: string): string {
+  if (id === 'k8s-hardway') return 'Kubernetes Hard Way HA 설치';
+  return id;
+}
+
+export function seriesLabel(post: BlogPost): string {
+  return post.data.title.replace(/^\[[^\]]+\]\s*/, '');
+}
+
+export function postsInSeries(posts: BlogPost[], id: string): BlogPost[] {
+  return posts
+    .filter((post) => post.data.series === id)
+    .sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0));
+}
+
 export function groupByCategory(posts: BlogPost[]): Array<{ category: string; posts: BlogPost[] }> {
   const map = new Map<string, BlogPost[]>();
   for (const post of posts) {
