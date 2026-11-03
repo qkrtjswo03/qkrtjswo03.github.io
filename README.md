@@ -18,7 +18,7 @@ Jekyll 기본 빌드 대신 Actions를 쓰는 이유는 광고 스크립트와 �
 
 ## 새 글 쓰기
 
-`src/content/blog/파일-이름.md`를 추가합니다. 파일 이름이 주소가 됩니다. 예를 들어 `src/content/blog/metrics-before-dashboards.md`는 `/blog/metrics-before-dashboards/`입니다.
+`src/content/blog/파일-이름.md`를 추가합니다. 파일 이름이 주소가 됩니다. 예를 들어 `src/content/blog/loki-memberlist-cluster-dns.md`는 `/blog/loki-memberlist-cluster-dns/`입니다.
 
 ```md
 ---
@@ -57,16 +57,6 @@ sample: false
 빌드하면 다음 문장으로 바뀝니다.
 
 > 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
-
-## 예시 글 지우기
-
-처음 들어 있는 글은 모두 `sample: true`입니다. 글 위에 안내가 붙습니다. 아래 파일을 지우면 사이트에서도 사라집니다.
-
-- `src/content/blog/welcome.md`
-- `src/content/blog/metrics-before-dashboards.md`
-- `src/content/blog/ask-llm-after-notes.md`
-
-내용을 고쳐서 쓸 거면 `sample: false`로 바꾸면 안내만 없어집니다.
 
 ## 설정
 
