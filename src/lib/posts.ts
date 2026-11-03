@@ -11,7 +11,9 @@ export function postUrl(post: BlogPost): string {
 }
 
 export function termUrl(kind: 'categories' | 'tags', value: string): string {
-  return `/${kind}/${encodeURIComponent(value)}/`;
+  const segment =
+    kind === 'tags' ? value.split('/').map((part) => encodeURIComponent(part)).join('/') : encodeURIComponent(value);
+  return `/${kind}/${segment}/`;
 }
 
 export function formatDate(date: Date): string {
