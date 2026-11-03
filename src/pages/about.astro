@@ -34,7 +34,15 @@ import { site } from '../config';
         </div>
         <div>
           <dt>Email</dt>
-          <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+          <dd>
+            {
+              site.email.map((address) => (
+                <div>
+                  <a href={`mailto:${address}`}>{address}</a>
+                </div>
+              ))
+            }
+          </dd>
         </div>
       </dl>
     </section>
@@ -58,7 +66,15 @@ import { site } from '../config';
     </p>
     <p>
       운영자: {site.author}<br />
-      연락: <a href={`mailto:${site.email}`}>{site.email}</a>
+      연락:{' '}
+      {
+        site.email.map((address, index) => (
+          <>
+            {index > 0 && ' · '}
+            <a href={`mailto:${address}`}>{address}</a>
+          </>
+        ))
+      }
     </p>
     <p>소개 문구는 <code>src/pages/about.astro</code>에서 고칩니다.</p>
   </article>

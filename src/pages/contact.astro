@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
 import { site } from '../config';
 
-const placeholder = site.email === 'your-email@example.com';
+const placeholder = site.email.includes('your-email@example.com');
 ---
 
 <BaseLayout title="문의" description="운영자에게 이메일로 연락하는 방법입니다.">
@@ -14,7 +14,15 @@ const placeholder = site.email === 'your-email@example.com';
     </header>
     <p>글의 정정, 개인정보, 제휴와 광고에 대한 문의는 이메일로 받습니다. 이 사이트는 별도의 접수 폼을 두지 않습니다.</p>
     <p>
-      이메일: <a href={`mailto:${site.email}`}>{site.email}</a>
+      이메일:{' '}
+      {
+        site.email.map((address, index) => (
+          <>
+            {index > 0 && ' · '}
+            <a href={`mailto:${address}`}>{address}</a>
+          </>
+        ))
+      }
     </p>
     {
       placeholder && (

@@ -17,7 +17,7 @@ export interface SiteConfig {
   tagline: string;
   url: string;
   author: string;
-  email: string;
+  email: string[];
   lang: string;
   locale: string;
   /** 예: "ca-pub-1234567890123456". 비우면 광고 스크립트와 광고 영역을 넣지 않습니다. */
@@ -42,7 +42,7 @@ export const site: SiteConfig = {
   tagline: '클라우드, 인프라, AI 운영을 기록합니다.',
   url: 'https://qkrtjswo03.github.io',
   author: 'qkrtjswo03',
-  email: 'your-email@example.com',
+  email: ['xodids0341@gmail.com', 'qkrtjswo03@naver.com'],
   lang: 'ko',
   locale: 'ko_KR',
   adsensePublisherId: '',
