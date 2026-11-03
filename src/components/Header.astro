@@ -1,7 +1,12 @@
 ---
 import { nav, site } from '../config';
+import { countTerms, getPosts, termUrl } from '../lib/posts';
 
 const path = Astro.url.pathname;
+const isHome = path === '/';
+const topics = countTerms(await getPosts(), 'categories');
+const year = new Date().getFullYear();
+
 function current(href: string) {
   return path === href || path.startsWith(href);
 }
@@ -17,26 +22,15 @@ const commands: Record<string, string> = {
 ---
 
 <a class="skip" href="#content">본문으로 건너뛰기</a>
-<header class="site-header">
-  <div class="shell header-inner">
-    <a class="brand" href="/" aria-label={`${site.title} 홈`}>
-      <span class="ps1">
-        <span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span>
-      </span>
-      <span class="caret" aria-hidden="true"></span>
-      <span class="brand-note"># {site.title}</span>
-    </a>
-    <nav id="site-nav" class="site-nav" aria-label="주요">
-      {
-        nav.map((item) => (
-          <a href={item.href} aria-current={current(item.href) ? 'page' : undefined} title={item.label}>
-            <span class="nav-cmd">{commands[item.href] ?? item.label}</span>
-            <span class="nav-ko">{item.label}</span>
-          </a>
-        ))
-      }
-    </nav>
-    <div class="header-tools">
+<div class="console">
+  <aside class="rail">
+    <div class="rail-head">
+      <a class="brand" href="/" aria-label={`${site.title} 홈`}>
+        <span class="ps1">
+          <span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span>
+        </span>
+        <span class="caret" aria-hidden="true"></span>
+      </a>
       <button class="icon-button" id="theme-toggle" type="button" aria-label="색 테마 전환">
         <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
           <path fill="currentColor" d="M14.5 2.4a.8.8 0 0 1 .2.9 7.2 7.2 0 0 0 6 9.8.8.8 0 0 1 .2 1.5A8.8 8.8 0 1 1 13.5 2a.8.8 0 0 1 1 .4Z"></path>
@@ -51,11 +45,62 @@ const commands: Record<string, string> = {
         <span class="sr-only">메뉴</span>
       </button>
     </div>
-  </div>
-</header>
+    <div class="rail-body" id="site-nav">
+      <div class="rail-intro">
+        {
+          isHome ? (
+            <h1>{site.title}</h1>
+          ) : (
+            <p class="rail-title"><a href="/">{site.title}</a></p>
+          )
+        }
+        <p class="rail-lede">{site.tagline}</p>
+      </div>
+      <nav class="site-nav" aria-label="주요">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={current(item.href) ? 'page' : undefined} title={item.label}>
+              <span class="nav-cmd">{commands[item.href] ?? item.label}</span>
+              <span class="nav-ko">{item.label}</span>
+            </a>
+          ))
+        }
+      </nav>
+      {
+        topics.length > 0 && (
+          <ul class="topic-list rail-topics">
+            {topics.map(([topic, count]) => (
+              <li>
+                <a href={termUrl('categories', topic)}>
+                  {topic} <span class="count">{count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <div class="rail-foot">
+        <nav class="rail-links" aria-label="바닥">
+          <a href="/privacy/">개인정보처리방침</a>
+          <a href="/contact/">문의</a>
+          <a href="/rss.xml">RSS</a>
+        </nav>
+        <p class="rail-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span class="status-word">Ready</span>
+          <span class="dim">© {year} {site.author}</span>
+        </p>
+      </div>
+    </div>
+  </aside>
+  <main id="content" class="page">
+    <slot />
+  </main>
+</div>
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const rail = document.querySelector('.rail');
   const navEl = document.getElementById('site-nav');
   const themeButton = document.getElementById('theme-toggle');
 
@@ -85,13 +130,13 @@ const commands: Record<string, string> = {
   });
 
   const closeNav = (focusToggle = false) => {
-    navEl?.classList.remove('is-open');
+    rail?.classList.remove('is-open');
     toggle?.setAttribute('aria-expanded', 'false');
     if (focusToggle) toggle?.focus();
   };
 
   toggle?.addEventListener('click', () => {
-    const open = navEl?.classList.toggle('is-open') ?? false;
+    const open = rail?.classList.toggle('is-open') ?? false;
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 
@@ -100,14 +145,14 @@ const commands: Record<string, string> = {
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && navEl?.classList.contains('is-open')) closeNav(true);
+    if (event.key === 'Escape' && rail?.classList.contains('is-open')) closeNav(true);
   });
 
   document.addEventListener('click', (event) => {
-    if (!navEl?.classList.contains('is-open')) return;
+    if (!rail?.classList.contains('is-open')) return;
     const target = event.target;
     if (!(target instanceof Node)) return;
-    if (navEl.contains(target) || toggle?.contains(target)) return;
+    if (rail.contains(target)) return;
     closeNav();
   });
 </script>
