@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
-import { getPosts, neighbors, postSlug } from '../../lib/posts';
+import { getPosts, neighbors, postsInSeries, postSlug } from '../../lib/posts';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -13,9 +13,11 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
-const { older, newer } = neighbors(await getPosts(), postSlug(post.id));
+const posts = await getPosts();
+const { older, newer } = neighbors(posts, postSlug(post.id));
+const seriesList = post.data.series ? postsInSeries(posts, post.data.series) : [];
 ---
 
-<PostLayout post={post} headings={headings} older={older} newer={newer}>
+<PostLayout post={post} headings={headings} older={older} newer={newer} seriesList={seriesList}>
   <Content />
 </PostLayout>

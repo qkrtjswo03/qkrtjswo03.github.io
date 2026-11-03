@@ -12,6 +12,8 @@ import {
   postSlug,
   postUrl,
   readingMinutes,
+  seriesLabel,
+  seriesTitle,
   termUrl,
   type BlogPost,
 } from '../lib/posts';
@@ -27,9 +29,20 @@ interface Props {
   headings: Heading[];
   older?: BlogPost | null;
   newer?: BlogPost | null;
+  seriesList?: BlogPost[];
 }
 
-const { post, headings, older = null, newer = null } = Astro.props;
+const { post, headings, older = null, newer = null, seriesList = [] } = Astro.props;
+const seriesIndex = seriesList.findIndex((item) => postSlug(item.id) === postSlug(post.id));
+const inSeries = seriesIndex >= 0 && seriesList.length > 1;
+const prevPost = inSeries ? (seriesIndex > 0 ? seriesList[seriesIndex - 1] : null) : older;
+const nextPost = inSeries
+  ? seriesIndex < seriesList.length - 1
+    ? seriesList[seriesIndex + 1]
+    : null
+  : newer;
+const prevLabel = inSeries ? '이전' : '이전 글';
+const nextLabel = inSeries ? '다음' : '다음 글';
 const categories = post.data.categories ?? [];
 const tags = post.data.tags ?? [];
 const minutes = readingMinutes(post.body ?? post.data.description);
@@ -77,6 +90,28 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <article class="post-layout">
+    {
+      inSeries && (
+        <nav class="series-box" id="series" aria-label={`${seriesTitle(post.data.series ?? '')} 목차`}>
+          <p class="series-kicker">
+            {seriesTitle(post.data.series ?? '')}
+            <span class="count">
+              {seriesIndex + 1}/{seriesList.length}
+            </span>
+          </p>
+          <ol>
+            {seriesList.map((item) => (
+              <li>
+                <a href={postUrl(item)} aria-current={postSlug(item.id) === postSlug(post.id) ? 'page' : undefined}>
+                  <span class="series-num">{item.data.seriesOrder}</span>
+                  {seriesLabel(item)}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
     <header class="post-header describe-panel">
       <div class="list-head">
         <Cmd command={`kubectl describe post/${postSlug(post.id)}`} />
@@ -192,20 +227,20 @@ const jsonLd = [
         )
       }
       {
-        (older || newer) && (
-          <nav class="pager" aria-label="다른 글">
-            {older ? (
-              <a href={postUrl(older)}>
-                <span>이전 글</span>
-                <strong>{older.data.title}</strong>
+        (prevPost || nextPost) && (
+          <nav class:list={['pager', { 'series-pager': inSeries }]} aria-label={inSeries ? '시리즈 이동' : '다른 글'}>
+            {prevPost ? (
+              <a href={postUrl(prevPost)}>
+                <span>{prevLabel}</span>
+                <strong>{inSeries ? seriesLabel(prevPost) : prevPost.data.title}</strong>
               </a>
             ) : (
               <span></span>
             )}
-            {newer && (
-              <a class="next" href={postUrl(newer)}>
-                <span>다음 글</span>
-                <strong>{newer.data.title}</strong>
+            {nextPost && (
+              <a class="next" href={postUrl(nextPost)}>
+                <span>{nextLabel}</span>
+                <strong>{inSeries ? seriesLabel(nextPost) : nextPost.data.title}</strong>
               </a>
             )}
           </nav>
