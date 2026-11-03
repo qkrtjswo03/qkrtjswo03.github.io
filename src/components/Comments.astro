@@ -1,0 +1,40 @@
+---
+import { site } from '../config';
+
+const g = site.giscus;
+const ready = Boolean(g.enabled && g.repo && g.repoId && g.category && g.categoryId);
+---
+
+{
+  g.enabled && !ready && (
+    <p class="comments-pending">
+      댓글을 쓰려면 <code>src/config.ts</code>의 giscus 항목에 repo, repoId, category, categoryId를 넣으세요.
+      값은 giscus.app에서 발급합니다.
+    </p>
+  )
+}
+{
+  ready && (
+    <section class="comments" aria-label="댓글">
+      <h2>댓글</h2>
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={g.repo}
+        data-repo-id={g.repoId}
+        data-category={g.category}
+        data-category-id={g.categoryId}
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang={g.lang}
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      />
+    </section>
+  )
+}

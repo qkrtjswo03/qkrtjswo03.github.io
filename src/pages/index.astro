@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { site } from '../config';
+import { absoluteUrl } from '../lib/seo';
+import { countTerms, getPosts, termUrl } from '../lib/posts';
+
+const posts = await getPosts();
+const latest = posts.slice(0, 6);
+const topics = countTerms(posts, 'categories');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.title,
+  url: site.url,
+  description: site.description,
+  inLanguage: 'ko-KR',
+  author: { '@type': 'Person', name: site.author },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${absoluteUrl('/search/')}?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <div class="home-grid">
+    <section class="home-intro">
+      <p class="eyebrow">기술 블로그</p>
+      <h1 class="home-title">운영하며 다시 찾는 절차를 남깁니다</h1>
+      <p class="lede">{site.tagline} {site.description}</p>
+      {
+        topics.length > 0 && (
+          <ul class="topic-list">
+            {topics.map(([topic, count]) => (
+              <li>
+                <a href={termUrl('categories', topic)}>
+                  {topic} <span class="count">{count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+    <section aria-labelledby="latest-heading">
+      <div class="section-head">
+        <h2 id="latest-heading">최근 글</h2>
+        <a href="/blog/">모든 글</a>
+      </div>
+      <PostList posts={latest} />
+    </section>
+  </div>
+</BaseLayout>

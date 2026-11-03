@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img">
+  <rect width="1200" height="675" fill="#f7f3eb"/>
+  <rect x="300" y="70" width="600" height="535" rx="24" fill="#fffdf8" stroke="#ddd6c8"/>
+  <text x="348" y="140" fill="#1b1914" font-family="Pretendard, Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic, sans-serif" font-size="36" font-weight="720">;0 – î T®</text>
+  <g font-family="Pretendard, Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic, sans-serif" font-size="28">
+    <circle cx="372" cy="210" r="16" fill="#b8431f"/>
+    <text x="372" y="218" text-anchor="middle" fill="#fffdf8" font-size="16" font-weight="700">1</text>
+    <text x="406" y="218" fill="#1b1914">ù¡</text>
+    <circle cx="372" cy="278" r="16" fill="#b8431f"/>
+    <text x="372" y="286" text-anchor="middle" fill="#fffdf8" font-size="16" font-weight="700">2</text>
+    <text x="406" y="286" fill="#1b1914">‹ë</text>
+    <circle cx="372" cy="346" r="16" fill="#b8431f"/>
+    <text x="372" y="354" text-anchor="middle" fill="#fffdf8" font-size="16" font-weight="700">3</text>
+    <text x="406" y="354" fill="#1b1914">î</text>
+    <circle cx="372" cy="414" r="16" fill="#b8431f"/>
+    <text x="372" y="422" text-anchor="middle" fill="#fffdf8" font-size="16" font-weight="700">4</text>
+    <text x="406" y="422" fill="#1b1914">¿Ω</text>
+    <circle cx="372" cy="482" r="16" fill="#b8431f"/>
+    <text x="372" y="490" text-anchor="middle" fill="#fffdf8" font-size="16" font-weight="700">5</text>
+    <text x="406" y="490" fill="#1b1914">ùp</text>
+  </g>
+  <text x="348" y="560" fill="#5c564c" font-family="Pretendard, Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic, sans-serif" font-size="22">∆î ¨‰@ DÃ T‰</text>
+</svg>
