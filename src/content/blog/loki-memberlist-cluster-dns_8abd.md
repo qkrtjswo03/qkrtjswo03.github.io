@@ -16,7 +16,7 @@ draft: false
 
 Loki Distributed를 올렸더니 Compactor, Ingester, Distributor, Gateway가 한꺼번에 무너졌다. 처음에는 Loki 설정부터 의심했지만, 끝까지 따라가 보니 원인은 kubelet 설정 파일의 IP 한 줄이었다. 그 과정을 정리해 둔다.
 
-> 글에 나오는 IP는 모두 예시 값(10.0.0.x)으로 바꿨다.
+> Pod 주소와 이 클러스터의 kube-dns ClusterIP는 예시 값(10.0.0.x)으로 바꿨다. `10.233.0.3`은 Kubespray 기본 cluster DNS Service IP라서 그대로 적는다.
 
 ## 배경과 증상
 
@@ -33,11 +33,11 @@ Loki Distributed 구성에서 다음 증상이 동시에 나타났다.
 
 ```bash
 level=warn ts=2025-12-05T05:21:44.302145651Z caller=memberlist_client.go:595 msg="joining memberlist cluster: failed to reach any nodes" retries=0 err="1 error occurred:
-        * Failed to resolve prometheus-stack-loki-distributed-memberlist: lookup prometheus-stack-loki-distributed-memberlist on 10.0.0.3:53: read udp 10.0.1.153:50418->10.0.0.3:53: i/o timeout
+        * Failed to resolve prometheus-stack-loki-distributed-memberlist: lookup prometheus-stack-loki-distributed-memberlist on 10.233.0.3:53: read udp 10.0.1.153:50418->10.233.0.3:53: i/o timeout
 "
 ```
 
-Compactor가 memberlist headless Service 이름을 DNS로 풀지 못했다. 그런데 질의를 보낸 대상인 `10.0.0.3`이 이상했다. 이건 kube-dns Service의 ClusterIP가 아니라 **CoreDNS Pod의 IP**였다.
+Compactor가 memberlist headless Service 이름을 DNS로 풀지 못했다. 그런데 질의를 보낸 대상인 `10.233.0.3`이 이 클러스터의 kube-dns ClusterIP와 달랐다. 이 주소는 CoreDNS Pod IP가 아니다. **Kubespray 기본 cluster DNS Service IP**이고, 서비스 CIDR `10.233.0.0/18`에서 coredns/nodelocaldns Service에 붙는 ClusterIP다.
 
 ### Compactor delete store 초기화 실패
 
@@ -62,12 +62,12 @@ kube-dns조차 찾지 못했다. 클러스터 DNS 전체가 죽은 게 아니라
 
 ```bash
 search monitoring.svc.cluster.local svc.cluster.local cluster.local openstacklocal
-nameserver 10.0.0.3
+nameserver 10.233.0.3
 options ndots:5
 ```
 
-- 들어가 있는 값: `nameserver 10.0.0.3` (CoreDNS Pod IP)
-- 들어가야 할 값: `nameserver 10.0.0.10` (kube-dns ClusterIP)
+- 들어가 있는 값: `nameserver 10.233.0.3` (Kubespray 기본 cluster DNS Service IP)
+- 들어가야 할 값: `nameserver 10.0.0.10` (이 클러스터의 kube-dns ClusterIP)
 
 ## 원인
 
@@ -76,13 +76,13 @@ Pod의 `resolv.conf`는 kubelet이 만들어 준다. 그리고 nameserver 값은
 설치 로그를 다시 보니 이미 경고가 찍혀 있었다.
 
 ```bash
-The recommended value for "clusterDNS" in "KubeletConfiguration" is: [10.0.0.10]; the provided value is: [10.0.0.3]
+The recommended value for "clusterDNS" in "KubeletConfiguration" is: [10.0.0.10]; the provided value is: [10.233.0.3]
 ```
 
 이 상태로 클러스터가 만들어졌으니 결과는 이렇게 이어진다.
 
-- 모든 Pod가 `resolv.conf`에 `10.0.0.3`을 nameserver로 갖는다.
-- CoreDNS Pod IP는 고정된 값이 아니라서 안정적으로 응답하지 못하고 계속 타임아웃이 난다.
+- 모든 Pod가 `resolv.conf`에 `10.233.0.3`을 nameserver로 갖는다.
+- 그 주소는 Kubespray 기본 cluster DNS Service IP라서, 서비스 CIDR이 다른 이 클러스터에서는 `:53`에 응답이 없고 계속 타임아웃이 난다.
 - Loki 컴포넌트의 DNS 기반 discovery가 전부 실패한다.
 - memberlist join이 100% 실패하고, Loki Distributed 전체가 무너진다.
 
@@ -173,5 +173,5 @@ msg="Starting compactor"
 배운 점도 적어 둔다.
 
 - 여러 컴포넌트가 동시에 이름 해석에서 실패하면 애플리케이션보다 Pod의 `resolv.conf`를 먼저 본다.
-- `nameserver`가 Service ClusterIP가 아니라 Pod IP라면 그 자체로 이상 신호다.
+- `nameserver`가 이 클러스터의 cluster DNS Service IP가 아니면 그 자체로 이상 신호다. Kubespray 기본값 `10.233.0.3`이 다른 서비스 CIDR 위에 그대로 남아 있는 경우가 그렇다.
 - 설치 로그의 경고는 넘기지 말자. 답이 이미 거기 적혀 있었다.

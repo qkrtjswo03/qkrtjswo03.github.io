@@ -103,15 +103,8 @@ metricRelabelings:
 
 특히 두 번째가 중요하다. keep 필터는 목록에 없는 건 조용히 버리기 때문에, 빠진 메트릭이 있어도 에러가 나지 않는다.
 
-다시 보면서 점검할 부분도 눈에 띄었다.
-
-- `node_uname_info`는 keep 목록에 있지만 `--no-collector.uname`으로 collector를 꺼서 만들어지지 않는다. 쓰는 대시보드가 있다면 uname collector를 다시 켜야 한다.
-- `node_procs_running`은 stat collector에서 나오는데, `--no-collector.stat`으로 꺼져 있다. 마찬가지로 둘 중 하나를 맞춰야 한다.
-- `instance:node_cpu:rate:sum`처럼 콜론이 들어간 이름은 recording rule이 Prometheus 안에서 만드는 메트릭이다. scrape 단계의 `metricRelabelings`에는 걸리지 않으니, 목록에 있어도 없어도 결과는 같다.
-
 ## 정리
 
 - 메트릭은 **collector 끄기**(수집 단계)와 **keep 필터**(저장 단계) 두 군데에서 줄인다.
 - 설정은 차트를 직접 고치지 말고 values.yaml override로 넣는다.
 - keep 목록은 대시보드와 알람에서 쓰는 이름을 기준으로 만든다.
-- collector를 끄는 목록과 keep 목록이 서로 어긋나지 않는지 한 번 맞춰 본다.
