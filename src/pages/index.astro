@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
+import KubeCube from '../components/KubeCube.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import PostList from '../components/PostList.astro';
 import { newPostUrl } from '../lib/github';
@@ -30,17 +31,20 @@ const jsonLd = {
 
 <BaseLayout jsonLd={jsonLd}>
   <section class="hero-banner" aria-label={site.title}>
-    <img
-      src="/images/hero/hero-banner-1600.webp"
-      srcset="/images/hero/hero-banner-960.webp 960w, /images/hero/hero-banner-1600.webp 1600w, /images/hero/hero-banner-2560.webp 2560w"
-      sizes="(max-width: 860px) calc(100vw - 2rem), calc(100vw - 272px - 3.2rem)"
-      width="2560"
-      height="1440"
-      alt=""
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-    />
+    <div class="hero-stage">
+      <img
+        src="/images/hero/hero-banner-1600.webp"
+        srcset="/images/hero/hero-banner-960.webp 960w, /images/hero/hero-banner-1600.webp 1600w, /images/hero/hero-banner-2560.webp 2560w"
+        sizes="(max-width: 860px) calc(100vw - 2rem), calc(100vw - 272px - 3.2rem)"
+        width="2560"
+        height="1440"
+        alt=""
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <KubeCube />
+    </div>
     <div class="hero-copy">
       <h1 class="hero-title">{site.title}</h1>
       <p class="hero-sub">{site.tagline}</p>
