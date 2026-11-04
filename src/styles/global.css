@@ -7,7 +7,7 @@
 
 :root {
   --bg: #050b1f;
-  --bg-elev: rgba(15, 30, 80, 0.35);
+  --bg-elev: rgba(15, 30, 80, 0.18);
   --bg-muted: rgba(59, 130, 246, 0.18);
   --ink: #e7eefc;
   --ink-soft: #b7c5e4;
@@ -16,9 +16,10 @@
   --accent-ink: #93c5fd;
   --cyan: #22d3ee;
   --warn: #fbbf24;
-  --code-bg: rgba(15, 30, 80, 0.35);
+  --code-bg: rgba(15, 30, 80, 0.24);
   --code-fg: #dbeafe;
-  --bg-rail: rgba(15, 30, 80, 0.35);
+  --bg-rail: rgba(15, 30, 80, 0.16);
+  --glass-blur: 26px;
   --glass-solid: #0d1b3d;
   --glow: 0 0 28px rgba(59, 130, 246, 0.42);
   --header-h: 0px;
@@ -37,7 +38,7 @@
 
 :root[data-theme="light"] {
   --bg: #eef4ff;
-  --bg-elev: rgba(255, 255, 255, 0.78);
+  --bg-elev: rgba(255, 255, 255, 0.5);
   --bg-muted: rgba(59, 130, 246, 0.1);
   --ink: #0b1b3a;
   --ink-soft: #334e7a;
@@ -46,9 +47,10 @@
   --accent-ink: #1e3a8a;
   --cyan: #0e7490;
   --warn: #b45309;
-  --code-bg: rgba(255, 255, 255, 0.72);
+  --code-bg: rgba(255, 255, 255, 0.58);
   --code-fg: #1e3a8a;
-  --bg-rail: rgba(255, 255, 255, 0.62);
+  --bg-rail: rgba(255, 255, 255, 0.4);
+  --glass-blur: 26px;
   --glass-solid: #f7faff;
   --glow: 0 0 18px rgba(37, 99, 235, 0.22);
   color-scheme: light;
@@ -250,7 +252,8 @@ h4 {
   background: var(--bg-rail);
   border-right: 1px solid var(--line);
   box-shadow: inset -1px 0 0 rgba(34, 211, 238, 0.28), 10px 0 32px rgba(59, 130, 246, 0.12);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
   overflow: auto;
 }
 
@@ -305,8 +308,8 @@ h4 {
   background: var(--bg-elev);
   border: 1px solid var(--line);
   box-shadow: inset 0 1px 0 rgba(190, 215, 255, 0.34), var(--glow);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 }
 
 .repo-link:hover {
@@ -398,6 +401,8 @@ h4 {
   color: var(--ink);
   cursor: pointer;
   flex-shrink: 0;
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 }
 
 .icon-button:hover,
@@ -1118,8 +1123,8 @@ pre.astro-code {
   background-color: var(--bg-elev);
   border: 1px solid var(--line);
   box-shadow: inset 0 1px 0 rgba(190, 215, 255, 0.34), var(--glow);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -1835,8 +1840,9 @@ pre.astro-code code {
     overflow: visible;
     border-right: 0;
     border-bottom: 1px solid var(--line);
-    background: color-mix(in srgb, var(--bg) 92%, transparent);
-    backdrop-filter: blur(14px);
+    background: var(--bg-rail);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
   }
 
   .rail-head {
@@ -1854,6 +1860,8 @@ pre.astro-code code {
     overflow: auto;
     padding: 0.35rem 0.85rem 1.1rem;
     background: var(--bg-rail);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
     border-bottom: 1px solid var(--line);
     box-shadow: 0 16px 36px color-mix(in srgb, black 28%, transparent);
   }
