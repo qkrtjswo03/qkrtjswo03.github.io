@@ -1,9 +1,4 @@
-@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
-@import "@fontsource/jetbrains-mono/latin-400.css";
-@import "@fontsource/jetbrains-mono/latin-500.css";
-@import "@fontsource/jetbrains-mono/latin-600.css";
-@import "@fontsource/jetbrains-mono/latin-700.css";
-@import "@fontsource/jetbrains-mono/latin-400-italic.css";
+@import "./fonts.css";
 
 :root {
   --bg: #050b1f;
@@ -1169,7 +1164,7 @@ pre.astro-code {
 }
 
 .post-row-head {
-  padding: 0.62rem 1rem;
+  padding: 0.42rem 0.85rem;
   color: var(--accent);
   font-family: var(--mono);
   font-size: 0.72rem;
@@ -1184,7 +1179,7 @@ pre.astro-code {
 }
 
 .post-list a.post-row {
-  padding: 0.8rem 1rem 0.9rem;
+  padding: 0.52rem 0.85rem 0.58rem;
   border-top: 1px solid var(--line);
   text-decoration: none;
   color: inherit;
@@ -1198,39 +1193,39 @@ pre.astro-code {
   grid-column: 1;
   grid-row: 1;
   font-family: var(--display);
-  font-size: 1.02rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.03em;
-  line-height: 1.4;
+  line-height: 1.32;
 }
 
 .post-desc {
   grid-column: 1;
   grid-row: 2;
-  margin-top: 0.18rem;
+  margin-top: 0.1rem;
   color: var(--ink-soft);
-  font-size: 0.92rem;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  line-height: 1.45;
 }
 
 .post-cat {
   grid-column: 2;
   grid-row: 1 / span 2;
   align-self: start;
-  padding-top: 0.18rem;
+  padding-top: 0.12rem;
   color: var(--cyan);
   font-family: var(--mono);
-  font-size: 0.78rem;
-  line-height: 1.45;
+  font-size: 0.72rem;
+  line-height: 1.35;
   word-break: keep-all;
 }
 
 .post-date {
   grid-column: 3;
   grid-row: 1;
-  padding-top: 0.18rem;
+  padding-top: 0.12rem;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--ink-soft);
   text-align: right;
   white-space: nowrap;
