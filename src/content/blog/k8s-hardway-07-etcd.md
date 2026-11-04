@@ -3,7 +3,7 @@ title: "[K8s Hard Way 7/12] etcd 클러스터 구성"
 description: "마스터 3대에서 etcd v3.5.17을 받아 클러스터를 구성하고, endpoint status로 세 노드를 확인한다."
 pubDate: 2025-01-14
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way

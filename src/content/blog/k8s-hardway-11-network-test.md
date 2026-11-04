@@ -3,7 +3,7 @@ title: "[K8s Hard Way 11/12] 네트워크 통신 테스트 (netshoot, echo, IPVS
 description: "netshoot DaemonSet으로 노드 통신을 확인하고, echo와 IPVS로 서비스 경로를 살펴본다."
 pubDate: 2025-01-18
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way

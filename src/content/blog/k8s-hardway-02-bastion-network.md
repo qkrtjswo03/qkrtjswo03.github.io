@@ -3,7 +3,7 @@ title: "[K8s Hard Way 2/12] Bastion과 노드 네트워크 구성"
 description: "Bastion에서 root SSH를 열고, Netplan으로 ens33(192.168.34.226/24)과 ens34(172.31.1.1/24) 고정 IP를 설정한다."
 pubDate: 2025-01-09
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way

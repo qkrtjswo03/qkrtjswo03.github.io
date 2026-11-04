@@ -3,7 +3,7 @@ title: "[K8s Hard Way 8/12] 컨트롤 플레인 부트스트랩"
 description: "마스터 3대에서 Kubernetes v1.29.7 바이너리를 설치하고 인증서와 kubeconfig를 둔 뒤 컨트롤 플레인을 띄운다."
 pubDate: 2025-01-15
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way
