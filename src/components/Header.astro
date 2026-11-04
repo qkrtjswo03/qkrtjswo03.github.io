@@ -14,8 +14,6 @@ const commands: Record<string, string> = {
   '/blog/': 'get posts',
   '/projects/': 'get projects',
   '/archive/': 'get archive',
-  '/categories/': 'get categories',
-  '/tags/': 'get tags',
   '/search/': 'grep',
   '/about/': 'describe me',
 };
@@ -69,12 +67,15 @@ const commands: Record<string, string> = {
       </div>
       <nav class="site-nav" aria-label="주요">
         {
-          nav.map((item) => (
-            <a href={item.href} aria-current={current(item.href) ? 'page' : undefined} title={item.label}>
-              <span class="nav-cmd">{commands[item.href] ?? item.label}</span>
-              <span class="nav-ko">{item.label}</span>
-            </a>
-          ))
+          nav.map((item) => {
+            const command = commands[item.href];
+            return (
+              <a href={item.href} aria-current={current(item.href) ? 'page' : undefined} title={item.label}>
+                <span class="nav-cmd">{command ?? item.label}</span>
+                {command && <span class="nav-ko">{item.label}</span>}
+              </a>
+            );
+          })
         }
       </nav>
       {
