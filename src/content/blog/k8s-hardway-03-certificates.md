@@ -3,7 +3,7 @@ title: "[K8s Hard Way 3/12] CA와 컴포넌트 클라이언트 인증서"
 description: "Bastion에서 CA 개인 키와 CSR, 자체 서명 인증서를 만든 뒤 관리자와 컴포넌트 클라이언트 인증서를 발급한다."
 pubDate: 2025-01-10
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way

@@ -3,7 +3,7 @@ title: "[K8s Hard Way 5/12] API 서버·etcd 인증서와 Service Account 키"
 description: "SAN이 포함된 openssl-kube-apiserver.cnf로 API 서버 인증서를 만들고, etcd 인증서와 Service Account 키를 준비한다."
 pubDate: 2025-01-12
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way

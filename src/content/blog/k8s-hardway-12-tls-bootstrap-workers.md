@@ -3,7 +3,7 @@ title: "[K8s Hard Way 12/12] TLS Bootstrapping으로 Worker02·03 조인"
 description: "부트스트랩 토큰은 CHANGE_ME_TOKEN_ID / CHANGE_ME_BOOTSTRAP_TOKEN_SECRET 자리표시자로 두고, Worker02·03을 TLS Bootstrap으로 조인한다."
 pubDate: 2025-01-19
 categories:
-  - 쿠버네티스
+  - Kubernetes 구축
 tags:
   - kubernetes
   - hard-way
