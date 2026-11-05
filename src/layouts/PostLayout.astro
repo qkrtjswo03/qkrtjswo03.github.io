@@ -263,6 +263,7 @@ const jsonLd = [
       <div class="prose" data-locked-prose={post.data.locked ? '' : undefined}>
         {!post.data.locked && <slot />}
       </div>
+      <AdSlot hidden={post.data.locked === true} />
       {
         tags.length > 0 && (
           <ul class="tag-row">
@@ -314,7 +315,6 @@ const jsonLd = [
           </nav>
         )
       }
-      <AdSlot />
     </aside>
   </article>
   <CopyGuard />

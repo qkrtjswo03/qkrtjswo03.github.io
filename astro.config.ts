@@ -1,8 +1,11 @@
+import { rm } from 'node:fs/promises';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { site } from './src/config';
+import { adsTxtBody } from './src/lib/ads';
 import { writeOgAssets } from './src/lib/og-build';
 import { OWNER_ONLY_PATHS, lockedBlogPathnames } from './src/lib/post-files';
 import { markdownPlugins } from './src/plugins/markdown';
@@ -24,8 +27,10 @@ export default defineConfig({
       name: 'post-og-images',
       hooks: {
         'astro:build:done': async ({ dir }) => {
-          const count = await writeOgAssets(fileURLToPath(dir));
+          const out = fileURLToPath(dir);
+          const count = await writeOgAssets(out);
           console.log(`[og] ${count} post images`);
+          if (!adsTxtBody()) await rm(join(out, 'ads.txt'), { force: true });
         },
       },
     },

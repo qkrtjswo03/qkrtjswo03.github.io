@@ -1,4 +1,3 @@
-import { inArticleAdHtml } from '../lib/ads';
 import { affiliateHtml } from '../lib/affiliate';
 
 type ParentNode = { type?: string } | undefined;
@@ -21,18 +20,6 @@ export const markdownPlugins = [
       if (!isTopLevel(node, context)) return;
       if (context.textContent(node).trim() !== '::affiliate') return;
       return { raw: affiliateHtml(), mdxExpressions: false as const };
-    },
-  },
-  {
-    name: 'in-article-ad',
-    paragraph(node: unknown, context: PluginContext) {
-      if (context.data.inArticleAdInserted) return;
-      if (!isTopLevel(node, context)) return;
-      if (context.textContent(node).trim() === '::affiliate') return;
-      const html = inArticleAdHtml();
-      if (!html) return;
-      context.data.inArticleAdInserted = true;
-      context.insertAfter(node, { raw: html, mdxExpressions: false });
     },
   },
 ];

@@ -1,7 +1,13 @@
 ---
-import { sidebarAdHtml } from '../lib/ads';
+import { inArticleAdHtml } from '../lib/ads';
 
-const html = sidebarAdHtml();
+interface Props {
+  /** 잠긴 글에는 광고를 넣지 않습니다. */
+  hidden?: boolean;
+}
+
+const { hidden = false } = Astro.props;
+const html = hidden ? null : inArticleAdHtml();
 ---
 
 {html && <Fragment set:html={html} />}

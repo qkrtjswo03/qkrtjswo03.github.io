@@ -104,6 +104,14 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isGithub(url)) return;
+  if (
+    url.hostname === 'pagead2.googlesyndication.com' ||
+    url.hostname.endsWith('.googlesyndication.com') ||
+    url.hostname.endsWith('.doubleclick.net') ||
+    url.hostname === 'googleads.g.doubleclick.net'
+  ) {
+    return;
+  }
   if (url.origin !== self.location.origin) return;
   if (url.pathname === '/sw.js') return;
 
