@@ -6,6 +6,7 @@ import {
   searchText,
   type BlogPost,
 } from '../lib/posts';
+import { editPostUrl } from '../lib/github';
 
 interface Props {
   posts: BlogPost[];
@@ -49,7 +50,8 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
           <span class="k9s-keys" aria-label="단축키">
             <span><b>&lt;enter&gt;</b> open</span>
             <span><b>/</b> filter</span>
-            <span><b>j/k</b> move</span>
+            <span><b>j/k ↑/↓</b> move</span>
+            <span><b>e</b> edit</span>
             <span><b>esc</b> clear</span>
           </span>
           <span class="k9s-crumbs" data-k9s-status>Ready</span>
@@ -69,7 +71,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
           <button type="button" data-k9s-filter-close class="k9s-filter-close">esc</button>
         </form>
 
-        <p class="sr-only">글 목록. 주제, 이름, 상태, 날짜. / 로 필터, Enter 로 열기, j/k 로 이동.</p>
+        <p class="sr-only">글 목록. 주제, 이름, 상태, 날짜. / 로 필터, Enter 로 열기, j/k 또는 화살표로 이동, e 로 편집.</p>
         <div class="k9s-table-wrap">
           <table class="k9s-table">
             <thead>
@@ -96,6 +98,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     data-desc={post.data.description}
                     data-ns={ns}
                     data-age={formatDate(post.data.pubDate)}
+                    data-edit={editPostUrl(post)}
                   >
                     <td class="k9s-ns">{ns}</td>
                     <td class="k9s-name">
@@ -213,6 +216,21 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
       if (link) window.location.href = link.href;
     };
 
+    const editActive = () => {
+      const row = activeRow();
+      const href = row?.dataset.edit;
+      if (!href) return;
+      if (!localStorage.getItem('blog-terminal-token')) {
+        if (statusEl) statusEl.textContent = 'e edit: 먼저 터미널에서 login 하세요';
+      }
+      const a = document.createElement('a');
+      a.href = href;
+      a.hidden = true;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
+
     const move = (delta: number) => {
       const list = visibleRows();
       if (!list.length) return;
@@ -276,6 +294,11 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
         move(-1);
         return;
       }
+      if (event.key === 'e' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault();
+        editActive();
+        return;
+      }
       if (event.key === 'Escape') {
         closeFilter(true);
       }
@@ -299,6 +322,19 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
         event.preventDefault();
         frame.focus();
         openFilter();
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (!root.querySelector('.k9s-frame') || !visibleRows().length) return;
+      if (event.key === 'ArrowDown' || event.key === 'j') {
+        event.preventDefault();
+        move(1);
+      } else if (event.key === 'ArrowUp' || event.key === 'k') {
+        event.preventDefault();
+        move(-1);
+      } else if (event.key === 'e') {
+        event.preventDefault();
+        editActive();
       }
     });
 
