@@ -620,6 +620,7 @@ const {
           localStorage.removeItem(WORK_KEY);
           setOwnerUi(false);
           setBranch('');
+          document.dispatchEvent(new CustomEvent('blog:owner-session', { detail: { ok: false } }));
           print('이 탭의 토큰을 지웠습니다.');
           break;
         case 'reset':
