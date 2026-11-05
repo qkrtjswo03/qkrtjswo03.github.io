@@ -59,7 +59,9 @@ const hash = site.postUnlockPasswordHash;
         body.setAttribute('aria-hidden', 'true');
       }
 
-      if (localStorage.getItem(STORAGE) === '1') {
+      // 잠긴 글은 열 때마다 비밀번호를 묻습니다 (탭 세션 동안만 유지).
+      const SESSION = 'blog-post-unlock-session';
+      if (sessionStorage.getItem(SESSION) === '1') {
         unlock();
       } else {
         showLock();
@@ -70,7 +72,8 @@ const hash = site.postUnlockPasswordHash;
         const value = input instanceof HTMLInputElement ? input.value : '';
         const digest = await sha256Hex(value);
         if (digest === expected) {
-          localStorage.setItem(STORAGE, '1');
+          sessionStorage.setItem(SESSION, '1');
+          localStorage.setItem(STORAGE, '1'); // edit/lock 액션과 공유용
           if (err instanceof HTMLElement) err.hidden = true;
           unlock();
         } else if (err instanceof HTMLElement) {
