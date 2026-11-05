@@ -78,11 +78,20 @@ const {
 
   type TreeEntry = { path: string; type: string };
 
+  let onTermClick: ((event: MouseEvent) => void) | null = null;
+  if (!window.__sunjaeTermClick) {
+    window.__sunjaeTermClick = true;
+    document.addEventListener('click', (event) => onTermClick?.(event), true);
+  }
+
+  const mountTerminal = () => {
   const shells = document.querySelectorAll<HTMLElement>('.term-shell');
-  if (!shells.length) throw new Error('terminal markup missing');
+  if (!shells.length) return;
+  const shell = document.querySelector<HTMLElement>('.term-shell');
+  if (!shell || shell.dataset.termBound === '1') return;
+  shell.dataset.termBound = '1';
 
   // One terminal instance per page (panel or full page).
-  const shell = shells[0]!;
   const log = shell.querySelector<HTMLElement>('#term-log');
   const form = shell.querySelector<HTMLFormElement>('#term-form');
   const input = shell.querySelector<HTMLInputElement>('#term-input');
@@ -1136,7 +1145,7 @@ draft: true
     return false;
   };
 
-  document.addEventListener('click', (event) => {
+  onTermClick = (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
     const link = target.closest('a[href^="#term-"]');
@@ -1144,9 +1153,10 @@ draft: true
     const href = link.getAttribute('href');
     if (!href) return;
     event.preventDefault();
+    event.stopPropagation();
     handleTermHash(href);
     history.replaceState(null, '', location.pathname + location.search);
-  });
+  };
 
   setBranch(branch);
   setCwd('');
@@ -1182,9 +1192,13 @@ draft: true
     if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login(또는 독의 login)으로 토큰을 넣어주세요.', 'dim');
     if (handleTermHash(location.hash)) {
       history.replaceState(null, '', location.pathname + location.search);
-    } else {
+    } else if (shell.dataset.variant === 'page') {
       input.focus();
     }
   })();
+  };
+
+  mountTerminal();
+  document.addEventListener('astro:page-load', mountTerminal);
 
 </script>

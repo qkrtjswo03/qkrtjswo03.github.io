@@ -1,4 +1,5 @@
 @import "./fonts.css";
+@import "./motion.css";
 
 :root {
   --bg: #050b1f;
@@ -882,19 +883,24 @@ html[data-owner='1'] .owner-actions {
   gap: 0.28rem 1rem;
 }
 
+.series-list li,
+.series-box li {
+  min-width: 0;
+}
+
 .series-list a,
 .series-box a {
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
+  display: block;
+  min-width: 0;
   color: var(--ink);
   text-decoration: none;
   line-height: 1.45;
 }
 
 .series-num {
-  flex: 0 0 auto;
+  display: inline-block;
   min-width: 1.3rem;
+  margin-right: 0.45rem;
   font-family: var(--mono);
   font-size: 0.75rem;
   color: var(--cyan);
@@ -1835,6 +1841,19 @@ pre.astro-code {
 .prose table,
 .prose figure {
   max-width: 100%;
+}
+
+.post-layout,
+.post-main,
+.prose {
+  width: 100%;
+  min-width: 0;
+}
+
+pre.astro-code {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .prose figure a {

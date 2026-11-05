@@ -138,20 +138,22 @@
       showToast();
     };
 
-    guard.addEventListener('selectstart', (event) => {
-      if (allowCopy || isEditable(event.target)) return;
+    const inCurrentGuard = (event: Event) => insideGuard(event.target instanceof Node ? event.target : null);
+
+    document.addEventListener('selectstart', (event) => {
+      if (allowCopy || isEditable(event.target) || !inCurrentGuard(event)) return;
       event.preventDefault();
-    });
+    }, true);
 
-    guard.addEventListener('contextmenu', (event) => {
-      if (allowCopy || isEditable(event.target)) return;
+    document.addEventListener('contextmenu', (event) => {
+      if (allowCopy || isEditable(event.target) || !inCurrentGuard(event)) return;
       block(event);
-    });
+    }, true);
 
-    guard.addEventListener('dragstart', (event) => {
-      if (allowCopy || isEditable(event.target)) return;
+    document.addEventListener('dragstart', (event) => {
+      if (allowCopy || isEditable(event.target) || !inCurrentGuard(event)) return;
       block(event);
-    });
+    }, true);
 
     document.addEventListener(
       'copy',
@@ -195,9 +197,11 @@
       setAllowed(Boolean(event.detail?.ok));
     }) as EventListener);
 
-    setAllowed(false);
-    void ensureOwner(owner).then((check) => {
-      setAllowed(check.ok);
-    });
+    const refreshCopy = () => {
+      if (!document.querySelector('[data-copy-guard]')) return;
+      void ensureOwner(owner).then((check) => setAllowed(check.ok));
+    };
+    refreshCopy();
+    document.addEventListener('astro:page-load', refreshCopy);
   }
 </script>

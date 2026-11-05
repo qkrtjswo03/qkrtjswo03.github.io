@@ -2,7 +2,7 @@
 /** 글 본문·히어로 이미지 클릭 확대 / 다시 클릭 축소 */
 ---
 
-<dialog class="img-zoom" id="img-zoom" aria-label="이미지 확대">
+<dialog class="img-zoom" id="img-zoom" aria-label="이미지 확대" transition:persist="img-zoom">
   <img alt="" />
 </dialog>
 
@@ -50,43 +50,41 @@
 </style>
 
 <script>
-  const dialog = document.getElementById('img-zoom');
-  if (dialog instanceof HTMLDialogElement) {
-    const preview = dialog.querySelector('img');
-    if (preview instanceof HTMLImageElement) {
-      const closeZoom = () => {
-        if (dialog.open) dialog.close();
-      };
-
-      const openZoom = (src: string, alt: string) => {
-        preview.src = src;
-        preview.alt = alt || '';
-        if (!dialog.open) dialog.showModal();
-      };
-
-      document.addEventListener('click', (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
-
-        if (dialog.open) {
-          event.preventDefault();
-          closeZoom();
-          return;
-        }
-
-        const img = target.closest('.prose img, .hero img');
-        if (!(img instanceof HTMLImageElement)) return;
-        if (!img.src) return;
-
+  const zoomDialog = () => {
+    const dialog = document.getElementById('img-zoom');
+    return dialog instanceof HTMLDialogElement ? dialog : null;
+  };
+  const bindZoom = () => {
+    const dialog = zoomDialog();
+    if (!dialog || dialog.dataset.zoomBound === '1') return;
+    dialog.dataset.zoomBound = '1';
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      if (dialog.open) dialog.close();
+    });
+  };
+  if (!window.__sunjaeZoom) {
+    window.__sunjaeZoom = true;
+    document.addEventListener('click', (event) => {
+      const dialog = zoomDialog();
+      const preview = dialog?.querySelector('img');
+      if (!dialog || !(preview instanceof HTMLImageElement)) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (dialog.open) {
         event.preventDefault();
-        event.stopPropagation();
-        openZoom(img.currentSrc || img.src, img.alt);
-      });
-
-      dialog.addEventListener('cancel', (event) => {
-        event.preventDefault();
-        closeZoom();
-      });
-    }
+        dialog.close();
+        return;
+      }
+      const img = target.closest('.prose img, .hero img');
+      if (!(img instanceof HTMLImageElement) || !img.src) return;
+      event.preventDefault();
+      event.stopPropagation();
+      preview.src = img.currentSrc || img.src;
+      preview.alt = img.alt || '';
+      dialog.showModal();
+    });
   }
+  bindZoom();
+  document.addEventListener('astro:page-load', bindZoom);
 </script>
