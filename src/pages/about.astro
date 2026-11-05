@@ -7,10 +7,28 @@ const notionUrl =
   'https://app.notion.com/p/sun-jae/b1d8cb1197ef40e2b4363133661d930b?v=31ba1d54a53e8093bec7000c315ecccf';
 
 const certifications = [
-  { name: 'CKAD', full: 'Certified Kubernetes Application Developer', org: 'CNCF', issued: '2023.04.30' },
-  { name: 'CKA', full: 'Certified Kubernetes Administrator', org: 'CNCF', issued: '2023.02.26' },
-  { name: 'NCP', full: 'Naver Cloud Platform Certified Professional', org: 'NAVER CLOUD PLATFORM', issued: '2022.08.04' },
-  { name: 'NCA', full: 'Naver Cloud Platform Certified Associate', org: 'NAVER CLOUD PLATFORM', issued: '2022.07.20' },
+  {
+    name: 'CKAD',
+    full: 'Certified Kubernetes Application Developer',
+    org: 'CNCF',
+    issued: '2023.04.30',
+    image: '/certs/ckad.png',
+  },
+  { name: 'CKA', full: 'Certified Kubernetes Administrator', org: 'CNCF', issued: '2023.02.26', image: '/certs/cka.png' },
+  {
+    name: 'NCP',
+    full: 'Naver Cloud Platform Certified Professional',
+    org: 'NAVER CLOUD PLATFORM',
+    issued: '2022.08.04',
+    image: '/certs/ncp.png',
+  },
+  {
+    name: 'NCA',
+    full: 'Naver Cloud Platform Certified Associate',
+    org: 'NAVER CLOUD PLATFORM',
+    issued: '2022.07.20',
+    image: '/certs/nca.png',
+  },
   { name: '컴퓨터활용능력 2급', full: '', org: '대한상공회의소', issued: '2021.05.24' },
   { name: '운전면허증 1종 보통', full: '', org: '울산경찰청', issued: '2014.12.17' },
 ];
@@ -90,12 +108,19 @@ const education = [
     <ul class="record-cards">
       {
         certifications.map((item) => (
-          <li class="record-card">
-            <span class="record-name">{item.name}</span>
-            {item.full && <span class="record-sub">{item.full}</span>}
-            <span class="record-meta">
-              <span class="record-org">{item.org}</span>
-              <time class="record-date">{item.issued}</time>
+          <li class={`record-card${item.image ? ' record-card--with-image' : ''}`}>
+            {item.image && (
+              <span class="record-thumb">
+                <img src={item.image} alt={`${item.name} 자격증`} loading="lazy" decoding="async" />
+              </span>
+            )}
+            <span class="record-body">
+              <span class="record-name">{item.name}</span>
+              {item.full && <span class="record-sub">{item.full}</span>}
+              <span class="record-meta">
+                <span class="record-org">{item.org}</span>
+                <time class="record-date">{item.issued}</time>
+              </span>
             </span>
           </li>
         ))
