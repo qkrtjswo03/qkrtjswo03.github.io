@@ -1,0 +1,579 @@
+---
+interface PostIndexItem {
+  path: string;
+  title: string;
+  date: string;
+  body: string;
+}
+
+interface Props {
+  posts: PostIndexItem[];
+  repo?: string;
+  base?: string;
+  /** page = 전체 페이지, panel = 오른쪽 사이드 패널 */
+  variant?: 'page' | 'panel';
+}
+
+const {
+  posts,
+  repo = 'qkrtjswo03/qkrtjswo03.github.io',
+  base = 'main',
+  variant = 'page',
+} = Astro.props;
+---
+
+<script type="application/json" id="term-posts" set:html={JSON.stringify(posts)} />
+<section class:list={['term-shell', variant === 'panel' && 'term-shell--panel']} data-repo={repo} data-base={base} data-variant={variant}>
+  <div class="term-titlebar" aria-hidden="true">
+    <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+    <span class="term-title">sunjae@github — {repo}</span>
+    <span class="term-branch" id="term-branch">{base}</span>
+  </div>
+  <div class="term-log" id="term-log" role="log" aria-live="polite" tabindex="0"></div>
+  <form class="term-line" id="term-form" autocomplete="off">
+    <span class="ps1" aria-hidden="true">
+      <span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">github</span><span class="ps1-path" id="term-cwd">:~</span><span class="ps1-sigil">$</span>
+    </span>
+    <label class="sr-only" for="term-input">명령</label>
+    <input
+      id="term-input"
+      name="cmd"
+      type="text"
+      spellcheck="false"
+      autocapitalize="off"
+      autocorrect="off"
+      enterkeyhint="send"
+      placeholder="help"
+    />
+  </form>
+
+  <div class="term-editor" id="term-editor" hidden>
+    <div class="term-editor-bar">
+      <span id="term-editor-path">-</span>
+      <span class="term-editor-state" id="term-editor-state"></span>
+    </div>
+    <textarea id="term-editor-text" spellcheck="false" aria-label="파일 내용"></textarea>
+    <div class="term-editor-actions">
+      <button type="button" class="term-btn" id="term-editor-save">저장 (<span id="term-editor-lines">0</span>줄)</button>
+      <button type="button" class="term-btn term-btn-ghost" id="term-editor-cancel">닫기</button>
+    </div>
+  </div>
+</section>
+
+<script>
+
+  type TreeEntry = { path: string; type: string };
+
+  const shells = document.querySelectorAll<HTMLElement>('.term-shell');
+  if (!shells.length) throw new Error('terminal markup missing');
+
+  // One terminal instance per page (panel or full page).
+  const shell = shells[0]!;
+  const log = shell.querySelector<HTMLElement>('#term-log');
+  const form = shell.querySelector<HTMLFormElement>('#term-form');
+  const input = shell.querySelector<HTMLInputElement>('#term-input');
+  const cwdEl = shell.querySelector<HTMLElement>('#term-cwd');
+  const branchEl = shell.querySelector<HTMLElement>('#term-branch');
+  const editor = shell.querySelector<HTMLElement>('#term-editor');
+  const editorPath = shell.querySelector<HTMLElement>('#term-editor-path');
+  const editorState = shell.querySelector<HTMLElement>('#term-editor-state');
+  const editorText = shell.querySelector<HTMLTextAreaElement>('#term-editor-text');
+  const editorLines = shell.querySelector<HTMLElement>('#term-editor-lines');
+  const editorSave = shell.querySelector<HTMLButtonElement>('#term-editor-save');
+  const editorCancel = shell.querySelector<HTMLButtonElement>('#term-editor-cancel');
+
+  if (!log || !form || !input || !cwdEl) throw new Error('terminal markup missing');
+
+  const REPO = shell.dataset.repo ?? '';
+  const BASE = shell.dataset.base ?? 'main';
+  const API = 'https://api.github.com';
+  const TOKEN_KEY = 'blog-terminal-token';
+  const USER_KEY = 'blog-terminal-user';
+  const WORK_KEY = 'blog-terminal-branch';
+
+  let token = localStorage.getItem(TOKEN_KEY) ?? '';
+  let login = localStorage.getItem(USER_KEY) ?? '';
+  let branch = localStorage.getItem(WORK_KEY) ?? '';
+  let cwd = '';
+  let tree: TreeEntry[] | null = null;
+  let dirty = new Map<string, string>();
+
+  const print = (text: string, cls = '') => {
+    const line = document.createElement('div');
+    line.className = `term-out${cls ? ` term-${cls}` : ''}`;
+    line.textContent = text;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  };
+
+  const printEcho = (cmd: string) => {
+    const line = document.createElement('div');
+    line.className = 'term-echo';
+    line.textContent = `sunjae@github:~$ ${cmd}`;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  };
+
+  const printHint = (label: string, href: string) => {
+    const line = document.createElement('div');
+    line.className = 'term-out';
+    line.append(`${label} `);
+    const link = document.createElement('a');
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = href;
+    line.appendChild(link);
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  };
+
+  const setCwd = (next: string) => {
+    cwd = next;
+    cwdEl.textContent = `:~${next ? `/${next}` : ''}`;
+  };
+
+  const setBranch = (next: string) => {
+    branch = next;
+    if (next) localStorage.setItem(WORK_KEY, next);
+    else localStorage.removeItem(WORK_KEY);
+    if (branchEl) branchEl.textContent = next || BASE;
+  };
+
+  const b64encode = (text: string) => {
+    const bytes = new TextEncoder().encode(text);
+    let binary = '';
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    return btoa(binary);
+  };
+
+  const b64decode = (data: string) => {
+    const binary = atob(data.replace(/\s/g, ''));
+    const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  };
+
+  const api = async (path: string, init: RequestInit = {}) => {
+    const method = (init.method ?? 'GET').toUpperCase();
+    if (!token && method !== 'GET') throw new Error('저장하려면 login 으로 토큰을 넣어야 합니다.');
+    const headers = new Headers(init.headers);
+    headers.set('Accept', 'application/vnd.github+json');
+    if (token) headers.set('Authorization', `Bearer ${token}`);
+    headers.set('X-GitHub-Api-Version', '2022-11-28');
+    if (init.body) headers.set('Content-Type', 'application/json');
+    const res = await fetch(`${API}${path}`, { ...init, headers });
+    if (!res.ok) {
+      let message = `${res.status}`;
+      try {
+        const body = (await res.json()) as { message?: string };
+        if (body.message) message = `${res.status} · ${body.message}`;
+      } catch {
+        /* keep status */
+      }
+      throw new Error(message);
+    }
+    if (res.status === 204) return null;
+    return (await res.json()) as unknown;
+  };
+
+  const refOf = () => branch || BASE;
+
+  const normalize = (p: string) => p.replace(/^\.?\//, '').replace(/\/+$/, '');
+
+  const resolvePath = (raw: string) => {
+    const target = raw.trim();
+    if (!target) return cwd;
+    if (target.startsWith('/')) return normalize(target);
+    return normalize(cwd ? `${cwd}/${target}` : target);
+  };
+
+  const loadTree = async () => {
+    const data = (await api(`/repos/${REPO}/git/trees/${refOf()}?recursive=1`)) as {
+      tree: TreeEntry[];
+    };
+    tree = data.tree;
+    return tree;
+  };
+
+  const ensureBranch = async () => {
+    if (branch) return branch;
+    const now = new Date();
+    const stamp = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0'),
+      '-',
+      String(now.getHours()).padStart(2, '0'),
+      String(now.getMinutes()).padStart(2, '0'),
+      String(now.getSeconds()).padStart(2, '0'),
+    ].join('');
+    const name = `webedit/${stamp}`;
+    const ref = (await api(`/repos/${REPO}/git/ref/heads/${BASE}`)) as { object: { sha: string } };
+    await api(`/repos/${REPO}/git/refs`, {
+      method: 'POST',
+      body: JSON.stringify({ ref: `refs/heads/${name}`, sha: ref.object.sha }),
+    });
+    setBranch(name);
+    print(`작업 브랜치를 만들었습니다: ${name}`, 'ok');
+    return name;
+  };
+
+  const readFile = async (path: string) => {
+    if (token) {
+      const data = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as {
+        content?: string;
+        sha: string;
+        encoding?: string;
+      };
+      const content = data.encoding === 'base64' && data.content ? b64decode(data.content) : '';
+      return { content, sha: data.sha };
+    }
+    const res = await fetch(`https://raw.githubusercontent.com/${REPO}/${refOf()}/${path}`);
+    if (!res.ok) throw new Error(`${res.status} · raw ${path}`);
+    return { content: await res.text(), sha: '' };
+  };
+
+  const writeFile = async (path: string, content: string, message: string) => {
+    const target = await ensureBranch();
+    let sha: string | undefined;
+    try {
+      sha = (await readFile(path)).sha;
+    } catch {
+      sha = undefined;
+    }
+    await api(`/repos/${REPO}/contents/${path}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message,
+        content: b64encode(content),
+        branch: target,
+        ...(sha ? { sha } : {}),
+      }),
+    });
+    dirty.delete(path);
+    tree = null;
+  };
+
+  const deleteFile = async (path: string, message: string) => {
+    const target = await ensureBranch();
+    const { sha } = await readFile(path);
+    await api(`/repos/${REPO}/contents/${path}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ message, sha, branch: target }),
+    });
+    tree = null;
+  };
+
+  const openEditor = (path: string, content: string) => {
+    if (!editor || !editorPath || !editorText || !editorState || !editorLines) return;
+    editor.hidden = false;
+    editorPath.textContent = path || '(새 파일)';
+    editor.dataset.path = path;
+    editorText.value = content;
+    editorState.textContent = '수정하면 Ctrl+S 또는 저장 버튼';
+    const count = () => {
+      if (editorLines) editorLines.textContent = String(editorText.value.split('\n').length);
+    };
+    count();
+    editorText.addEventListener('input', count);
+    editorText.focus();
+  };
+
+  const closeEditor = () => {
+    if (!editor) return;
+    editor.hidden = true;
+    delete editor.dataset.path;
+    input.focus();
+  };
+
+  const help = () => {
+    const rows: Array<[string, string]> = [
+      ['login [token]', '토큰을 넣고 로그인합니다. 토큰을 생략하면 입력란으로 물어봅니다.'],
+      ['logout', '이 브라우저에 저장한 토큰을 지웁니다.'],
+      ['whoami', '로그인한 계정과 저장소를 보여줍니다.'],
+      ['posts', '글 목록(title · 날짜 · 파일)을 번호와 함께 봅니다.'],
+      ['grep <단어>', '글 전체에서 단어가 나온 줄을 찾습니다.'],
+      ['ls [path]', '폴더 목록을 봅니다.'],
+      ['cd [path]', '작업 폴더를 옮깁니다. cd / 로 처음으로.'],
+      ['cat <path|번호>', '파일 내용을 봅니다.'],
+      ['edit <path|번호>', '편집기를 엽니다. 저장은 save.'],
+      ['new <path>', '새 파일을 만듭니다.'],
+      ['save -m "메시지"', '고친 파일을 작업 브랜치에 커밋합니다.'],
+      ['status', '커밋하지 않은 파일과 작업 브랜치를 봅니다.'],
+      ['rm <path>', '파일을 지웁니다(커밋).'],
+      ['pr', '작업 브랜치로 PR을 만듭니다.'],
+      ['clear', '화면을 지웁니다.'],
+    ];
+    for (const [cmd, desc] of rows) print(`${cmd.padEnd(20, ' ')} ${desc}`);
+  };
+
+  const BLOG_DIR = 'src/content/blog';
+
+  type PostRow = { path: string; title: string; date: string; body: string };
+
+  const bakedPosts: PostRow[] = (() => {
+    const node = document.getElementById('term-posts');
+    try {
+      return JSON.parse(node?.textContent || '[]') as PostRow[];
+    } catch {
+      return [];
+    }
+  })();
+
+  const loadPosts = async () => bakedPosts;
+
+  const fromIndex = async (value: string) => {
+    const rows = await loadPosts();
+    const n = Number(value);
+    if (!Number.isInteger(n) || n < 1 || n > rows.length) {
+      throw new Error(`번호는 1부터 ${rows.length}까지입니다. posts 로 목록을 봅니다.`);
+    }
+    return rows[n - 1].path;
+  };
+
+  const pathArg = async (value: string | undefined) => {
+    if (!value) throw new Error('경로나 글 번호를 적어주세요. posts 로 목록을 봅니다.');
+    if (/^\d+$/.test(value)) return fromIndex(value);
+    return resolvePath(value);
+  };
+
+
+  const run = async (raw: string) => {
+    const line = raw.trim();
+    if (!line) return;
+    printEcho(line);
+    const parts = line.match(/"[^"]*"|\S+/g) ?? [];
+    const cmd = parts[0];
+    const args = parts.slice(1).map((a) => a.replace(/^"|"$/g, ''));
+
+    try {
+      switch (cmd) {
+        case 'help':
+          help();
+          break;
+        case 'clear':
+          log.replaceChildren();
+          break;
+        case 'login': {
+          const value = args[0] ?? window.prompt('GitHub 토큰을 붙여 넣으세요. 이 브라우저에만 저장됩니다.');
+          if (!value) {
+            print('취소했습니다.', 'warn');
+            break;
+          }
+          token = value.trim();
+          localStorage.setItem(TOKEN_KEY, token);
+          const me = (await api('/user')) as { login: string };
+          login = me.login;
+          localStorage.setItem(USER_KEY, login);
+          const ok = login === REPO.split('/')[0];
+          print(
+            ok ? `로그인했습니다: ${login}` : `로그인은 됐지만 계정이 ${login} 입니다. 저장소 주인은 ${REPO.split('/')[0]} 입니다.`,
+            ok ? 'ok' : 'warn',
+          );
+          break;
+        }
+        case 'logout':
+          token = '';
+          login = '';
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+          print('토큰을 지웠습니다.');
+          break;
+        case 'whoami':
+          print(`account: ${login || '(없음)'}  repo: ${REPO}  branch: ${refOf()}`);
+          break;
+        case 'posts': {
+          const rows = await loadPosts();
+          for (const [i, row] of rows.entries()) {
+            print(
+              `${String(i + 1).padStart(2, ' ')}. ${row.date}  ${row.title}`,
+              'dir',
+            );
+            print(`     ${row.path.replace(`${BLOG_DIR}/`, '')}`, 'dim');
+          }
+          print(`${rows.length}개. edit <번호> 로 엽니다.`, 'dim');
+          break;
+        }
+        case 'grep': {
+          if (!args[0]) throw new Error('찾을 단어를 적어주세요. 예: grep Cilium');
+          const needle = args[0].toLowerCase();
+          const rows = await loadPosts();
+          let hits = 0;
+          for (const row of rows) {
+            const lines = `${row.title}\n${row.body}`.split('\n');
+            const matched = lines
+              .map((text, i) => ({ text, i }))
+              .filter((entry) => entry.text.toLowerCase().includes(needle));
+            if (!matched.length) continue;
+            hits += matched.length;
+            print(`${row.path.replace(`${BLOG_DIR}/`, '')}  (${matched.length})`, 'dir');
+            for (const entry of matched.slice(0, 3)) {
+              print(`  ${String(entry.i + 1).padStart(4, ' ')}: ${entry.text.trim().slice(0, 110)}`);
+            }
+          }
+          print(hits ? `합계 ${hits}줄` : '일치하는 줄이 없습니다.', hits ? 'ok' : 'warn');
+          break;
+        }
+        case 'ls': {
+          const path = args[0] ? resolvePath(args[0]) : cwd;
+          const entries = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as Array<{
+            name: string;
+            type: string;
+            size: number;
+          }>;
+          const rows = entries
+            .slice()
+            .sort((a, b) => (a.type === b.type ? a.name.localeCompare(b.name) : a.type === 'dir' ? -1 : 1));
+          if (!rows.length) print('(비어 있음)');
+          for (const entry of rows) {
+            print(
+              entry.type === 'dir'
+                ? `${entry.name}/`
+                : `${entry.name.padEnd(38, ' ')} ${String(entry.size).padStart(7, ' ')} B`,
+              entry.type === 'dir' ? 'dir' : '',
+            );
+          }
+          break;
+        }
+        case 'cd': {
+          const next = args[0] === '/' ? '' : resolvePath(args[0] ?? '');
+          if (next) {
+            const entries = (await api(`/repos/${REPO}/contents/${next}?ref=${encodeURIComponent(refOf())}`)) as unknown;
+            if (!Array.isArray(entries)) throw new Error(`폴더가 아닙니다: ${next}`);
+          }
+          setCwd(next);
+          break;
+        }
+        case 'cat': {
+          const path = await pathArg(args[0]);
+          const file = await readFile(path);
+          print(`--- ${path} (${file.content.split('\n').length}줄) ---`, 'dim');
+          print(file.content.replace(/^\n/, '').replace(/\n$/, ''));
+          break;
+        }
+        case 'edit': {
+          const path = await pathArg(args[0]);
+          const file = await readFile(path);
+          openEditor(path, file.content);
+          print(`${path} 를 열었습니다. 고치고 save -m "메시지" 로 커밋합니다.`, 'ok');
+          break;
+        }
+        case 'new': {
+          if (!args[0]) throw new Error('경로를 적어주세요. 예: new src/content/blog/new-post.md');
+          openEditor(resolvePath(args[0]), '');
+          break;
+        }
+        case 'status': {
+          print(`branch: ${branch || `${BASE} (작업 브랜치 없음)`}`);
+          if (!dirty.size) {
+            print('편집기에서 열어 고친 파일이 없습니다.');
+            break;
+          }
+          for (const [path, body] of dirty) print(`  modified: ${path} (${body.split('\n').length}줄)`);
+          break;
+        }
+        case 'save': {
+          const messageFlag = args.indexOf('-m');
+          const message = messageFlag >= 0 ? args[messageFlag + 1] : 'Edit from web terminal';
+          if (!dirty.size) {
+            print('커밋할 변경이 없습니다. edit 로 파일을 연 뒤 저장하세요.', 'warn');
+            break;
+          }
+          for (const [path, body] of [...dirty]) {
+            await writeFile(path, body, message ?? 'Edit from web terminal');
+            print(`커밋: ${path}`, 'ok');
+          }
+          print(`브랜치 ${branch} 에 반영했습니다. pr 로 PR을 만들 수 있습니다.`, 'ok');
+          break;
+        }
+        case 'rm': {
+          if (!args[0]) throw new Error('경로를 적어주세요.');
+          const path = resolvePath(args[0]);
+          const messageFlag = args.indexOf('-m');
+          const message = messageFlag >= 0 ? args[messageFlag + 1] : `Delete ${path}`;
+          await deleteFile(path, message ?? `Delete ${path}`);
+          print(`삭제 커밋: ${path}`, 'ok');
+          break;
+        }
+        case 'pr': {
+          if (!branch) {
+            print('작업 브랜치가 없습니다. save 로 먼저 커밋하세요.', 'warn');
+            break;
+          }
+          const pr = (await api(`/repos/${REPO}/pulls`, {
+            method: 'POST',
+            body: JSON.stringify({
+              title: `웹 터미널 편집 · ${branch.replace('webedit/', '')}`,
+              head: branch,
+              base: BASE,
+              body: '브라우저 터미널에서 고친 내용입니다.',
+            }),
+          })) as { html_url: string; number: number };
+          printHint(`PR #${pr.number}:`, pr.html_url);
+          break;
+        }
+        case 'find': {
+          if (!args[0]) throw new Error('찾을 단어를 적어주세요.');
+          if (!tree) await loadTree();
+          const needle = args[0].toLowerCase();
+          const hits = (tree ?? []).filter((e) => e.type === 'blob' && e.path.toLowerCase().includes(needle));
+          if (!hits.length) print('일치하는 경로가 없습니다.');
+          for (const hit of hits.slice(0, 60)) print(hit.path);
+          break;
+        }
+        default:
+          print(`${cmd}: 없는 명령입니다. help 를 입력해 보세요.`, 'warn');
+      }
+    } catch (error) {
+      print(error instanceof Error ? error.message : String(error), 'err');
+    }
+  };
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const value = input.value;
+    input.value = '';
+    void run(value);
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp') {
+      const last = [...log.querySelectorAll('.term-echo')].pop();
+      if (last?.textContent) {
+        input.value = last.textContent.replace(/^sunjae@github:.*?\$ /, '');
+        event.preventDefault();
+      }
+    }
+  });
+
+  editorText?.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+      event.preventDefault();
+      editorSave?.click();
+    }
+  });
+
+  editorSave?.addEventListener('click', () => {
+    if (!editor || !editorText || !editorState) return;
+    const path = editor.dataset.path;
+    if (!path) return;
+    dirty.set(path, editorText.value);
+    editorState.textContent = `저장 대기 · save -m "메시지" 로 커밋`;
+    print(`${path} 편집 내용을 담았습니다. save -m "메시지" 로 커밋하세요.`, 'ok');
+    closeEditor();
+  });
+
+  editorCancel?.addEventListener('click', closeEditor);
+
+  setBranch(branch);
+  setCwd('');
+
+  if (login) {
+    print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
+  }
+  print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
+  print('posts 로 목록, grep <단어> 로 검색, edit <번호> 로 편집, save -m "메시지" 로 커밋.', 'dim');
+  if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login 으로 토큰을 넣어주세요.', 'dim');
+  input.focus();
+
+</script>
