@@ -51,11 +51,10 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
       }
     } catch (e) {}
     try {
-      var stored = localStorage.getItem('theme');
-      var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
-      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.removeItem('theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', theme === 'light' ? '#eef4ff' : '#050b1f');
+      if (meta) meta.setAttribute('content', '#050b1f');
     } catch (e) {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
