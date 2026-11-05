@@ -1,0 +1,86 @@
+---
+import { site } from '../config';
+
+interface Props {
+  locked?: boolean;
+}
+const { locked = false } = Astro.props;
+const hash = site.postUnlockPasswordHash;
+---
+
+{locked && (
+  <div class="post-lock" data-post-lock data-hash={hash} hidden>
+    <div class="post-lock-panel" role="dialog" aria-modal="true" aria-labelledby="post-lock-title">
+      <div class="post-lock-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="5" y="11" width="14" height="10" rx="2" />
+          <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+        </svg>
+      </div>
+      <h2 id="post-lock-title">잠긴 글입니다</h2>
+      <p>사이트 공통 비밀번호를 입력하면 잠긴 글을 읽을 수 있습니다.</p>
+      <form class="post-lock-form" data-post-lock-form>
+        <label class="sr-only" for="post-lock-input">비밀번호</label>
+        <input id="post-lock-input" class="post-lock-input" type="password" name="password" autocomplete="current-password" required />
+        <button type="submit" class="post-lock-btn">잠금 해제</button>
+      </form>
+      <p class="post-lock-error" data-post-lock-error hidden>비밀번호가 맞지 않습니다.</p>
+    </div>
+  </div>
+)}
+
+{locked && (
+  <script>
+    const root = document.querySelector('[data-post-lock]');
+    const body = document.querySelector('[data-post-lock-body]');
+    if (root instanceof HTMLElement && body instanceof HTMLElement) {
+      const STORAGE = 'blog-posts-unlocked';
+      const expected = root.dataset.hash || '';
+      const form = root.querySelector('[data-post-lock-form]');
+      const err = root.querySelector('[data-post-lock-error]');
+      const input = root.querySelector('#post-lock-input');
+
+      async function sha256Hex(text) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+        return Array.from(new Uint8Array(buf))
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('');
+      }
+
+      function unlock() {
+        root.hidden = true;
+        body.hidden = false;
+        body.removeAttribute('aria-hidden');
+      }
+
+      function showLock() {
+        root.hidden = false;
+        body.hidden = true;
+        body.setAttribute('aria-hidden', 'true');
+      }
+
+      if (localStorage.getItem(STORAGE) === '1') {
+        unlock();
+      } else {
+        showLock();
+      }
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const value = input instanceof HTMLInputElement ? input.value : '';
+        const digest = await sha256Hex(value);
+        if (digest === expected) {
+          localStorage.setItem(STORAGE, '1');
+          if (err instanceof HTMLElement) err.hidden = true;
+          unlock();
+        } else if (err instanceof HTMLElement) {
+          err.hidden = false;
+          if (input instanceof HTMLInputElement) {
+            input.value = '';
+            input.focus();
+          }
+        }
+      });
+    }
+  </script>
+)}
