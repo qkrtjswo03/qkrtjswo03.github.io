@@ -3,9 +3,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
 import { careerProjects, personalProjects, type Project } from '../data/projects';
 
-const groups: Array<{ title: string; projects: Project[] }> = [
-  { title: '경력 프로젝트', projects: careerProjects },
-  { title: '개인·학부 프로젝트', projects: personalProjects },
+const groups: Array<{ title: string; note: string; projects: Project[] }> = [
+  {
+    title: '경력 프로젝트',
+    note: '재직 중 맡은 일입니다. 기간과 숫자는 실제 자료에서 옮겼습니다.',
+    projects: careerProjects,
+  },
+  {
+    title: '개인·학부 프로젝트',
+    note: '직접 세우고 돌려 본 것들입니다. 저장소가 있는 것은 링크를 달았습니다.',
+    projects: personalProjects,
+  },
 ];
 ---
 
@@ -13,46 +21,53 @@ const groups: Array<{ title: string; projects: Project[] }> = [
   <header class="page-intro">
     <Cmd command="kubectl get projects" />
     <h1>프로젝트</h1>
-    <p>경력은 최근 일이 위입니다. 숫자는 포트폴리오에 적힌 것만 옮겼습니다.</p>
+    <p>경력은 최근 일이 위입니다. 카드마다 무슨 일을 했는지, 어떤 수치가 나왔는지를 적었습니다.</p>
   </header>
   {
     groups.map((group) => (
       <section class="project-group">
         <h2 class="post-group-title">{group.title}</h2>
-        <div class="project-grid">
+        <p class="project-group-note">{group.note}</p>
+        <div class="project-cards">
           {group.projects.map((project) => (
-            <article class="project-card">
-              <h3>{project.title}</h3>
-              <dl>
-                <div>
-                  <dt>기간</dt>
-                  <dd>{project.period}</dd>
-                </div>
-                <div>
-                  <dt>역할</dt>
-                  <dd>{project.role}</dd>
-                </div>
-              </dl>
-              <ul class="chip-row project-stack">
-                {project.stack.map((item) => (
-                  <li class="label-chip">{item}</li>
-                ))}
-              </ul>
-              <ul class="project-results">
-                {project.results.map((result) => (
-                  <li>{result}</li>
-                ))}
-              </ul>
-              {project.posts && project.posts.length > 0 && (
-                <p class="project-posts">
-                  {project.posts.map((post, index) => (
-                    <>
-                      {index > 0 && ' · '}
-                      <a href={post.href}>{post.label}</a>
-                    </>
+            <article class="project-card" style={`--h: ${project.hue}`}>
+              <div class="project-cover">
+                <span class="project-logo">
+                  <img src={`/logos/${project.logo}`} alt="" loading="lazy" decoding="async" />
+                </span>
+                <span class="project-kind">{project.kind}</span>
+              </div>
+              <div class="project-body">
+                <h3>{project.title}</h3>
+                <p class="project-role">{project.role}</p>
+                <p class="project-period">{project.period}</p>
+                <ul class="chip-row project-stack">
+                  {project.stack.map((item) => (
+                    <li class="label-chip">{item}</li>
                   ))}
-                </p>
-              )}
+                </ul>
+                <ul class="project-results">
+                  {project.results.map((result) => (
+                    <li>{result}</li>
+                  ))}
+                </ul>
+                {(project.repo || (project.posts && project.posts.length > 0)) && (
+                  <p class="project-links">
+                    {project.repo && (
+                      <a href={project.repo} target="_blank" rel="noopener noreferrer">
+                        저장소
+                      </a>
+                    )}
+                    {project.repo && project.posts && project.posts.length > 0 && ' · '}
+                    {project.posts?.map((post, index) => (
+                      <>
+                        {index > 0 && ' · '}
+                        <a href={post.href}>{post.label}</a>
+                      </>
+                    ))}
+                  </p>
+                )}
+              </div>
             </article>
           ))}
         </div>
