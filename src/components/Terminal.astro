@@ -655,7 +655,9 @@ draft: true
     }
     if (hash.startsWith('#term-delete-')) {
       const path = decodeURIComponent(hash.slice('#term-delete-'.length));
-      const ok = window.confirm(`${path}\n이 글을 삭제 커밋할까요?`);
+      const ok = window.confirm(
+        `${path}\n\n삭제 커밋을 만들고 main 반영용 PR을 엽니다.\n(PR을 머지해야 사이트에서 글이 사라집니다.)`,
+      );
       if (!ok) return true;
       void (async () => {
         if (!token) {
@@ -664,8 +666,8 @@ draft: true
           if (!token) return;
         }
         await run(`rm ${path}`);
-        const doPr = window.confirm('삭제 브랜치로 PR도 만들까요?');
-        if (doPr) await run('pr');
+        print('삭제 커밋까지 끝났습니다. PR을 만들어 main에 합치면 사이트에 반영됩니다.', 'ok');
+        await run('pr');
       })();
       return true;
     }
