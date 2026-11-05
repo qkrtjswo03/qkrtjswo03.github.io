@@ -15,6 +15,7 @@ tags:
 series: grafana-unified-auth
 seriesOrder: 3
 draft: false
+locked: true
 ---
 
 [앞 글](/blog/grafana-unified-dashboard-routing/)에서 Grafana 대시보드를 도메인 하나로 모으고, 인증은 OAuth2 Proxy와 Keycloak에 맡긴다고 했다. 이번에는 그 인증 구조를 열어 본다. Grafana 자체 로그인을 쓰지 않고, 앞단에서 인증을 끝낸 뒤 헤더로 사용자를 넘기는 방식이다.
