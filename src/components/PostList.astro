@@ -273,8 +273,14 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     const toggleLock = (row: HTMLTableRowElement | undefined) => {
       const href = row?.dataset.lock;
       if (!href) return;
-      if (localStorage.getItem('owner-mode') !== '1') {
+      if (localStorage.getItem('owner-mode') !== '1' || !localStorage.getItem('blog-terminal-token')) {
         if (statusEl) statusEl.textContent = 'lock: 저장소 주인으로 login 하세요';
+        const a = document.createElement('a');
+        a.href = '#term-login';
+        a.hidden = true;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
         return;
       }
       const a = document.createElement('a');
