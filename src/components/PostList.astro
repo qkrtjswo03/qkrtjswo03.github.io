@@ -226,7 +226,8 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     input.addEventListener('input', applyFilter);
     filter.addEventListener('submit', (event) => {
       event.preventDefault();
-      openActive();
+      applyFilter();
+      closeFilter(false);
     });
 
     frame.addEventListener('keydown', (event) => {
@@ -241,7 +242,8 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
           closeFilter(true);
         } else if (event.key === 'Enter') {
           event.preventDefault();
-          openActive();
+          applyFilter();
+          closeFilter(false);
         } else if (event.key === 'ArrowDown') {
           event.preventDefault();
           move(1);
