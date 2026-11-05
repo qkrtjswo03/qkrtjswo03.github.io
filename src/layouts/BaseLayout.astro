@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
+import GcViews from '../components/GcViews.astro';
 import { site } from '../config';
 import { adsensePublisherId } from '../lib/ads';
 
@@ -48,5 +49,6 @@ const showAds = Boolean(adsensePublisherId());
         </script>
       )
     }
+    <GcViews />
   </body>
 </html>

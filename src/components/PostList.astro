@@ -7,6 +7,8 @@ import {
   type BlogPost,
 } from '../lib/posts';
 import { editPostUrl } from '../lib/github';
+import { goatcounterCode } from '../lib/ads';
+const gc = goatcounterCode();
 
 interface Props {
   posts: BlogPost[];
@@ -103,6 +105,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     <td class="k9s-ns">{ns}</td>
                     <td class="k9s-name">
                       <a href={postUrl(post)}>{post.data.title}</a>
+                      {gc && <span class="k9s-views" data-gc-path={postUrl(post)} hidden title="조회수"> · <span data-gc-count>—</span></span>}
                     </td>
                     <td class="k9s-ready">1/1</td>
                     <td class="k9s-status">Published</td>
@@ -127,6 +130,10 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     </div>
   )
 }
+
+<style>
+  .k9s-views { font-size: 0.75em; opacity: 0.6; font-variant-numeric: tabular-nums; }
+</style>
 
 <script>
   const roots = document.querySelectorAll<HTMLElement>('[data-k9s]');
