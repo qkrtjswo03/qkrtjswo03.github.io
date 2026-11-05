@@ -6,7 +6,7 @@ import {
   searchText,
   type BlogPost,
 } from '../lib/posts';
-import { editPostUrl } from '../lib/github';
+import { editPostUrl, lockPostUrl } from '../lib/github';
 import { goatcounterCode } from '../lib/ads';
 const gc = goatcounterCode();
 
@@ -73,7 +73,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
           <button type="button" data-k9s-filter-close class="k9s-filter-close">esc</button>
         </form>
 
-        <p class="sr-only">글 목록. 주제, 이름, 상태, 날짜. / 로 필터, Enter 로 열기, j/k 또는 화살표로 이동, e 로 편집.</p>
+        <p class="sr-only">글 목록. 주제, 이름, 상태, 날짜. / 로 필터, Enter 로 열기, j/k 또는 화살표로 이동, e 로 편집, 자물쇠로 잠금.</p>
         <div class="k9s-table-wrap">
           <table class="k9s-table">
             <thead>
@@ -101,18 +101,25 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     data-ns={ns}
                     data-age={formatDate(post.data.pubDate)}
                     data-edit={editPostUrl(post)}
+                    data-lock={lockPostUrl(post)}
+                    data-locked={post.data.locked ? '1' : '0'}
                   >
                     <td class="k9s-ns">{ns}</td>
                     <td class="k9s-name">
                       <a href={postUrl(post)}>{post.data.title}</a>
-                      {post.data.locked && (
-                        <span class="k9s-lock" title="잠긴 글" aria-label="잠긴 글">
-                          <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="5" y="11" width="14" height="10" rx="2" />
-                            <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                          </svg>
-                        </span>
-                      )}
+                      <button
+                        type="button"
+                        class:list={['k9s-lock-btn', post.data.locked && 'is-locked']}
+                        data-k9s-lock
+                        title={post.data.locked ? '잠금 해제' : '잠금'}
+                        aria-label={post.data.locked ? '잠금 해제' : '잠금'}
+                        aria-pressed={post.data.locked ? 'true' : 'false'}
+                      >
+                        <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="5" y="11" width="14" height="10" rx="2" />
+                          <path d={post.data.locked ? 'M8 11V8a4 4 0 0 1 8 0v3' : 'M8 11V8a4 4 0 0 1 8 0'} />
+                        </svg>
+                      </button>
                       {gc && <span class="k9s-views" data-gc-path={postUrl(post)} hidden title="조회수"> · <span data-gc-count>—</span></span>}
                     </td>
                     <td class="k9s-ready">1/1</td>
@@ -141,6 +148,21 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
 
 <style>
   .k9s-views { font-size: 0.75em; opacity: 0.6; font-variant-numeric: tabular-nums; }
+  .k9s-lock-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.35rem;
+    padding: 0.1rem;
+    border: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--cyan, #22d3ee) 55%, #888);
+    opacity: 0.55;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  .k9s-lock-btn:hover { opacity: 1; }
+  .k9s-lock-btn.is-locked { color: var(--cyan, #22d3ee); opacity: 0.95; }
+  html:not([data-owner='1']) .k9s-lock-btn:not(.is-locked) { display: none; }
 </style>
 
 <script>
@@ -247,6 +269,32 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
       a.click();
       a.remove();
     };
+
+    const toggleLock = (row: HTMLTableRowElement | undefined) => {
+      const href = row?.dataset.lock;
+      if (!href) return;
+      if (localStorage.getItem('owner-mode') !== '1') {
+        if (statusEl) statusEl.textContent = 'lock: 저장소 주인으로 login 하세요';
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = href;
+      a.hidden = true;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
+
+    body.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest('[data-k9s-lock]');
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const row = btn.closest('tr.k9s-row');
+      if (row instanceof HTMLTableRowElement) toggleLock(row);
+    });
 
     const move = (delta: number) => {
       const list = visibleRows();
