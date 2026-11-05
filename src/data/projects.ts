@@ -81,6 +81,11 @@ export const careerProjects: Project[] = [
       '세션은 Redis에 두어 파드가 늘어도 로그인이 유지되게 했다.',
       '인증에 실패하면 원래 가려던 주소로 다시 로그인을 태운다.',
     ],
+    posts: [
+      { href: '/blog/grafana-unified-dashboard-routing/', label: 'Grafana 링크 일원화와 접근 흐름' },
+      { href: '/blog/grafana-dashboard-route-rules/', label: '특정 대시보드 라우팅 규칙' },
+      { href: '/blog/grafana-oauth2-keycloak-auth/', label: 'OAuth2 Proxy·Keycloak 인증 구조' },
+    ],
   },
   {
     title: 'Istio 컨트롤 플레인 중단 영향 분석',
