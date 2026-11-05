@@ -6,7 +6,6 @@ interface PostIndexItem {
   body: string;
 }
 
-import { site } from '../config';
 
 interface Props {
   posts: PostIndexItem[];
@@ -25,7 +24,7 @@ const {
 ---
 
 <script type="application/json" id="term-posts" set:html={JSON.stringify(posts)} />
-<section class:list={['term-shell', variant === 'panel' && 'term-shell--panel']} data-repo={repo} data-base={base} data-variant={variant} data-unlock-hash={site.postUnlockPasswordHash}>
+<section class:list={['term-shell', variant === 'panel' && 'term-shell--panel']} data-repo={repo} data-base={base} data-variant={variant}>
   <div class="term-titlebar" aria-hidden="true">
     <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
     <span class="term-title">sunjae@github — {repo}</span>
@@ -114,35 +113,6 @@ const {
       }
     } catch (e) {}
   };
-  const UNLOCK_KEY = 'blog-posts-unlocked';
-  const unlockHash = shell.dataset.unlockHash ?? '';
-  const sha256Hex = async (text: string) => {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-    return Array.from(new Uint8Array(buf))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
-  };
-  const requireSitePassword = async (action: string) => {
-    if (!unlockHash) {
-      print('사이트 비밀번호 해시가 설정되지 않았습니다.', 'warn');
-      return false;
-    }
-    if (localStorage.getItem(UNLOCK_KEY) === '1') return true;
-    const value = window.prompt(`${action} 하려면 사이트 비밀번호를 입력하세요.`);
-    if (value == null) {
-      print('취소했습니다.', 'warn');
-      return false;
-    }
-    const digest = await sha256Hex(value.trim());
-    if (digest !== unlockHash) {
-      print('비밀번호가 맞지 않습니다.', 'warn');
-      return false;
-    }
-    localStorage.setItem(UNLOCK_KEY, '1');
-    print('사이트 비밀번호 확인됨.', 'ok');
-    return true;
-  };
-
   const requireOwner = async (action: string) => {
     if (isOwner()) return true;
     print(`${action}은 저장소 주인(${repoOwner()}) 로그인 후에만 됩니다.`, 'warn');
@@ -874,7 +844,7 @@ draft: true
     focusTerminal();
     if (hash === '#term-new-post') {
       void (async () => {
-        if (!(await requireSitePassword('new'))) return;
+        if (!(await requireOwner('new'))) return;
         await run('new post');
       })();
       return true;
@@ -882,7 +852,7 @@ draft: true
     if (hash.startsWith('#term-edit-')) {
       const path = decodeURIComponent(hash.slice('#term-edit-'.length));
       void (async () => {
-        if (!(await requireSitePassword('edit'))) return;
+        if (!(await requireOwner('edit'))) return;
         await run(`edit ${path}`);
       })();
       return true;
@@ -890,7 +860,7 @@ draft: true
     if (hash.startsWith('#term-lock-')) {
       const path = decodeURIComponent(hash.slice('#term-lock-'.length));
       void (async () => {
-        if (!(await requireSitePassword('lock'))) return;
+        if (!(await requireOwner('lock'))) return;
         await run(`lock ${path}`);
       })();
       return true;
@@ -898,16 +868,11 @@ draft: true
     if (hash.startsWith('#term-delete-')) {
       const path = decodeURIComponent(hash.slice('#term-delete-'.length));
       void (async () => {
-        if (!(await requireSitePassword('delete'))) return;
+        if (!(await requireOwner('delete'))) return;
         const ok = window.confirm(
           `${path}\n\n삭제 커밋을 만들고 main 반영용 PR을 엽니다.\n(PR을 머지해야 사이트에서 글이 사라집니다.)`,
         );
         if (!ok) return;
-        if (!token) {
-          print('먼저 login 으로 토큰을 넣어주세요.', 'warn');
-          await run('login');
-          if (!token) return;
-        }
         await run(`rm ${path}`);
         print('삭제 커밋까지 끝났습니다. PR을 만들어 main에 합치면 사이트에 반영됩니다.', 'ok');
         await run('pr');
