@@ -15,7 +15,7 @@ draft: false
 
 Jake가 시애틀의 Olivia에게 셀카 한 장을 보낸다. 탭 한 번, 약 1초. 그 사이 사진은 **OSI 7계층**을 내려갔다가 선을 건너 다시 올라간다.
 
-> 아래 그림은 Study 폴더의 [OSI_7계층.pptx](/files/OSI_7계층.pptx) 슬라이드다. 원본 덱도 같은 링크로 받을 수 있다. 이어지는 실전편은 [OSI 관점 KubeEdge AI 데이터 전송: PDU와 MTU/MSS](/blog/osi-ip-packet-mtu/) 에 있다.
+> 아래 그림은 Study 폴더의 슬라이드를 이미지로 옮긴 것이다. 이어지는 실전편은 [OSI 관점 KubeEdge AI 데이터 전송: PDU와 MTU/MSS](/blog/osi-ip-packet-mtu/) 에 있다.
 
 ## 개요
 
@@ -95,4 +95,4 @@ Olivia 쪽에서는 1→7로 올라가며 풀어 사진이 화면에 뜬다. 안
 
 ![정리](/images/osi/slide-14.png)
 
-원본 슬라이드: [OSI_7계층.pptx](/files/OSI_7계층.pptx) · 출처: osi model explained (영상, @rickcodelab)
+출처: osi model explained (영상, @rickcodelab)

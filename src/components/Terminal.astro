@@ -123,12 +123,15 @@ const {
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
   };
+  /** UI 버튼에서 방금 확인한 비밀번호를 바로 이어지는 명령 1회에만 재사용 (이중 프롬프트 방지) */
+  let sitePwOneShot = false;
   /** force=true 이면 세션 기억 없이 매번 묻음 (자물쇠 걸기/풀기) */
   const requireSitePassword = async (action: string, force = false) => {
     if (!unlockHash) {
       print('사이트 비밀번호 해시가 설정되지 않았습니다.', 'warn');
       return false;
     }
+    if (sitePwOneShot) { sitePwOneShot = false; return true; }
     if (!force && localStorage.getItem(UNLOCK_KEY) === '1') return true;
     const value = window.prompt(`${action} 하려면 사이트 비밀번호를 입력하세요.`);
     if (value == null) {
@@ -1099,6 +1102,7 @@ draft: true
       void (async () => {
         if (!(await requireSitePassword('new', true))) return;
         if (!(await requireOwner('new'))) return;
+        sitePwOneShot = true;
         await run('new post');
       })();
       return true;
@@ -1108,6 +1112,7 @@ draft: true
       void (async () => {
         if (!(await requireSitePassword('edit', true))) return;
         if (!(await requireOwner('edit'))) return;
+        sitePwOneShot = true;
         await run(`edit ${path}`);
       })();
       return true;
@@ -1126,6 +1131,7 @@ draft: true
           `${path}\n\n삭제 커밋을 만들고 main에 머지합니다.`,
         );
         if (!ok) return;
+        sitePwOneShot = true;
         await run(`rm ${path}`);
         try { await run('pr'); } catch (e) {}
         await run('merge');
