@@ -47,7 +47,7 @@ export function searchText(post: BlogPost): string {
   // k9s `/` 필터: 제목·설명·카테고리·태그만 (본문은 노이즈가 커서 제외)
   return [
     post.data.title,
-    post.data.description,
+    post.data.locked ? '' : post.data.description,
     ...(post.data.categories ?? []),
     ...(post.data.tags ?? []),
   ]

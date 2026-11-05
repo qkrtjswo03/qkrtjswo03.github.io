@@ -97,7 +97,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     id={firstOfNs ? `ns-${groupIndex}` : undefined}
                     data-search={searchText(post)}
                     data-title={post.data.title}
-                    data-desc={post.data.description}
+                    data-desc={post.data.locked ? '잠긴 글입니다. 본문은 공개하지 않습니다.' : post.data.description}
                     data-ns={ns}
                     data-age={formatDate(post.data.pubDate)}
                     data-edit={editPostUrl(post)}
