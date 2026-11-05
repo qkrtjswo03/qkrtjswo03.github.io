@@ -111,6 +111,9 @@ export const careerProjects: Project[] = [
       'SeaweedFS와 Velero로 백업·복구 절차를 세우고 실제 복원까지 돌렸다.',
       'GPU Operator로 MIG를 쪼개 노드 한 대를 여러 워크로드가 나눠 쓰게 했다.',
     ],
+    posts: [
+      { href: '/blog/harbor-ha-cnpg-redis/', label: 'Harbor HA (CNPG·Redis)' },
+    ],
   },
   {
     title: 'KT Cloud 멀티 클러스터 운영',
