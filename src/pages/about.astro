@@ -34,9 +34,9 @@ const certifications = [
 ];
 
 const education = [
-  { school: '울산대학교', major: 'IT융합학과', period: '2020.03 – 2022.02', status: '졸업' },
-  { school: '동의과학대학교', major: '컴퓨터정보학과', period: '2015.03 – 2020.02', status: '졸업' },
-  { school: '울산고등학교', major: '', period: '2012.03 – 2015.02', status: '졸업' },
+  { school: '울산대학교', major: 'IT융합학과', kind: '학사', from: '2020.03', to: '2022.02', status: '졸업' },
+  { school: '동의과학대학교', major: '컴퓨터정보학과', kind: '전문학사', from: '2015.03', to: '2020.02', status: '졸업' },
+  { school: '울산고등학교', major: '', kind: '고등학교', from: '2012.03', to: '2015.02', status: '졸업' },
 ];
 ---
 
@@ -127,20 +127,24 @@ const education = [
       }
     </ul>
     <h2>학력사항</h2>
-    <ul class="record-cards">
+    <ol class="timeline">
       {
         education.map((item) => (
-          <li class="record-card">
-            <span class="record-name">{item.school}</span>
-            {item.major && <span class="record-sub">{item.major}</span>}
-            <span class="record-meta">
-              <span class="record-period">{item.period}</span>
-              <span class="record-status">{item.status}</span>
+          <li class="timeline-item">
+            <span class="timeline-year">{item.to.slice(0, 4)}</span>
+            <span class="timeline-rail" aria-hidden="true" />
+            <span class="timeline-body">
+              <span class="timeline-title">{item.school}</span>
+              <span class="timeline-sub">{item.kind}{item.major ? ` · ${item.major}` : ''}</span>
+              <span class="timeline-meta">
+                {item.from} – {item.to}
+                <span class="timeline-status">{item.status}</span>
+              </span>
             </span>
           </li>
         ))
       }
-    </ul>
+    </ol>
     <p>
       자격과 학력 전체는 <a href={notionUrl} rel="me noopener" target="_blank">Notion 이력서</a>에서도 볼 수 있습니다.
     </p>
