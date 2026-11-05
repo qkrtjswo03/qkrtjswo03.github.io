@@ -506,6 +506,48 @@ h4 {
   filter: none;
 }
 
+
+.hero-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.hero-shine::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -40%;
+  width: 38%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(186, 230, 253, 0.02) 35%,
+    rgba(224, 242, 254, 0.22) 48%,
+    rgba(125, 211, 252, 0.14) 52%,
+    rgba(186, 230, 253, 0.02) 65%,
+    transparent 100%
+  );
+  transform: translateX(-30%) skewX(-18deg);
+  animation: hero-shine-sweep 7.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes hero-shine-sweep {
+  0%, 12% { transform: translateX(-40%) skewX(-18deg); opacity: 0; }
+  18% { opacity: 1; }
+  42% { transform: translateX(320%) skewX(-18deg); opacity: 1; }
+  48%, 100% { transform: translateX(320%) skewX(-18deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-shine::before { animation: none; opacity: 0; }
+}
+
 .kube-shadow {
   position: absolute;
   left: 62.5%;
