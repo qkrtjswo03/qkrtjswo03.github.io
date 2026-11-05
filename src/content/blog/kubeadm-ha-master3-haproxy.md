@@ -3,7 +3,7 @@ title: "kubeadm으로 Master 3대 HA 클러스터 구성하기 (HAProxy)"
 description: "kubeadm과 HAProxy로 컨트롤 플레인 3대, 워커 3대를 붙이고 Calico로 파드 네트워크를 연 구성이다."
 pubDate: 2024-09-11
 categories:
-  - Kubernetes 구축
+  - 쿠버네티스
 tags:
   - 쿠버네티스
   - kubernetes

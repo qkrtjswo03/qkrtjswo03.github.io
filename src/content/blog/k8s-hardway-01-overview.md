@@ -3,7 +3,7 @@ title: "[K8s Hard Way 1/12] 개요: 환경, VM 구성, 인증서·포트"
 description: "kubeadm 없이 바이너리와 systemd로 master 3, worker 3, Bastion을 두는 Hard Way 랩의 환경, VM, 인증서·포트를 정리한다."
 pubDate: 2025-01-08
 categories:
-  - Kubernetes 구축
+  - 쿠버네티스
 tags:
   - 쿠버네티스
   - kubernetes

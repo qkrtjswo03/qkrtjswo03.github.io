@@ -3,7 +3,7 @@ title: "[K8s Hard Way 6/12] 인증서·kubeconfig 배포"
 description: "ca, kube-apiserver, service-account, etcd-server 인증서를 Bastion에서 마스터 172.31.1.2~4로 보낸다."
 pubDate: 2025-01-13
 categories:
-  - Kubernetes 구축
+  - 쿠버네티스
 tags:
   - 쿠버네티스
   - kubernetes
