@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import AdSlot from '../components/AdSlot.astro';
 import Cmd from '../components/Cmd.astro';
 import Comments from '../components/Comments.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import { deletePostUrl, editPostUrl } from '../lib/github';
 import { site } from '../config';
@@ -89,6 +90,7 @@ const jsonLd = [
   tags={tags}
   jsonLd={jsonLd}
 >
+  <ReadingProgress />
   <article class="post-layout">
     {
       inSeries && (
