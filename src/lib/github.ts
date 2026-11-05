@@ -26,6 +26,11 @@ export function deletePostUrl(post: BlogPost): string {
   return `#term-delete-${encodeURIComponent(blogFilePath(post))}`;
 }
 
+/** 하단 터미널에서 이 글 locked 토글 */
+export function lockPostUrl(post: BlogPost): string {
+  return `#term-lock-${encodeURIComponent(blogFilePath(post))}`;
+}
+
 export function githubRepoUrl(): string {
   return repo;
 }
