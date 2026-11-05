@@ -4,6 +4,7 @@ import AdSlot from '../components/AdSlot.astro';
 import Cmd from '../components/Cmd.astro';
 import Comments from '../components/Comments.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
+import CopyGuard from '../components/CopyGuard.astro';
 import ImageZoom from '../components/ImageZoom.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import { blogFilePath, deletePostUrl, editPostUrl } from '../lib/github';
@@ -95,7 +96,7 @@ const jsonLd = [
   source={`src/content/blog/${postSlug(post.id)}.md`}
 >
   <ReadingProgress />
-  <article class="post-layout">
+  <article class="post-layout" data-copy-guard>
     {
       inSeries && (
         <nav class="series-box" id="series" aria-label={`${seriesTitle(post.data.series ?? '')} 목차`}>
@@ -306,6 +307,7 @@ const jsonLd = [
       <AdSlot />
     </aside>
   </article>
+  <CopyGuard />
   <ImageZoom />
   <script>
     document.addEventListener('keydown', (event) => {
