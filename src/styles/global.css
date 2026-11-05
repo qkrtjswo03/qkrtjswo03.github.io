@@ -21,7 +21,7 @@
   --sans: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", "D2Coding", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --display: "JetBrains Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-  --prose-size: 0.97rem;
+  --prose-size: 0.875rem;
   --prose-measure: 42rem;
   --content-max: 54rem;
   color-scheme: dark;
@@ -1124,7 +1124,7 @@ html[data-owner='1'] .owner-actions {
 .page-intro h1,
 .post-header h1 {
   margin: 0.15rem 0 0.55rem;
-  font-size: clamp(1.55rem, 3.2vw, 2.05rem);
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
 }
 
 .error-code {
@@ -1347,7 +1347,7 @@ pre.astro-code {
   -webkit-line-clamp: 2;
   overflow: hidden;
   font-family: var(--display);
-  font-size: 0.95rem;
+  font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.35;
@@ -1360,7 +1360,7 @@ pre.astro-code {
   overflow: hidden;
   margin: 0;
   color: var(--ink-soft);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   line-height: 1.5;
 }
 
@@ -1748,7 +1748,7 @@ pre.astro-code {
 
 .prose {
   font-size: var(--prose-size);
-  line-height: 1.85;
+  line-height: 1.75;
 }
 
 .prose h2,
@@ -1759,13 +1759,13 @@ pre.astro-code {
 }
 
 .prose h2 {
-  margin: 2.2rem 0 0.7rem;
-  font-size: 1.38rem;
+  margin: 1.9rem 0 0.6rem;
+  font-size: 1.2rem;
 }
 
 .prose h3 {
-  margin: 1.65rem 0 0.45rem;
-  font-size: 1.14rem;
+  margin: 1.45rem 0 0.4rem;
+  font-size: 1.02rem;
 }
 
 .prose .cmd {
@@ -1838,13 +1838,13 @@ pre.astro-code {
 .prose figcaption {
   margin-top: 0.45rem;
   color: var(--ink-soft);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
 }
 
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.84rem;
   display: block;
   overflow-x: auto;
 }
@@ -2680,7 +2680,7 @@ pre.astro-code code {
 .k9s-preview-title {
   margin: 0.35rem 0 0;
   color: #eef5ff;
-  font-size: 0.92rem;
+  font-size: 0.84rem;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -2688,7 +2688,7 @@ pre.astro-code code {
 .k9s-preview-desc {
   margin: 0.45rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   line-height: 1.55;
 }
 
@@ -2763,7 +2763,7 @@ pre.astro-code code {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   line-height: 1.45;
 }
 
