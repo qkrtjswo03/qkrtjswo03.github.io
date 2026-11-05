@@ -2590,6 +2590,60 @@ pre.astro-code code {
 
 
 /* —— k9s post table —— */
+.k9s-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  background: rgba(8, 18, 40, 0.92);
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.k9s-filter[hidden] {
+  display: none !important;
+}
+
+.k9s-filter input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.k9s-filter-close {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.68rem;
+  padding: 0.12rem 0.5rem;
+  cursor: pointer;
+}
+
+.k9s-filter-close:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.k9s-frame:focus {
+  outline: none;
+}
+
+.k9s-frame:focus-visible {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cyan) 55%, transparent);
+}
+
+.k9s-row[hidden] {
+  display: none;
+}
+
 .k9s {
   display: flex;
   flex-direction: column;
