@@ -149,10 +149,11 @@ const base = 'main';
   };
 
   const api = async (path: string, init: RequestInit = {}) => {
-    if (!token) throw new Error('로그인이 필요합니다. login 을 실행하세요.');
+    const method = (init.method ?? 'GET').toUpperCase();
+    if (!token && method !== 'GET') throw new Error('저장하려면 login 으로 토큰을 넣어야 합니다.');
     const headers = new Headers(init.headers);
     headers.set('Accept', 'application/vnd.github+json');
-    headers.set('Authorization', `Bearer ${token}`);
+    if (token) headers.set('Authorization', `Bearer ${token}`);
     headers.set('X-GitHub-Api-Version', '2022-11-28');
     if (init.body) headers.set('Content-Type', 'application/json');
     const res = await fetch(`${API}${path}`, { ...init, headers });
@@ -583,7 +584,7 @@ const base = 'main';
   }
   print('블로그 저장소를 브라우저에서 고치는 터미널입니다.', 'dim');
   print('posts 로 글 목록, grep <단어> 로 본문 검색, edit <번호> 로 편집, save -m "메시지" 로 커밋.', 'dim');
-  if (!token) print('먼저 login 을 실행해 GitHub 토큰을 넣어주세요.', 'warn');
+  if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login 으로 토큰을 넣어주세요.', 'dim');
   input.focus();
 </script>
 
