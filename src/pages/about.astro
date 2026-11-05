@@ -2,6 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
 import { site } from '../config';
+
+const notionUrl =
+  'https://app.notion.com/p/sun-jae/b1d8cb1197ef40e2b4363133661d930b?v=31ba1d54a53e8093bec7000c315ecccf';
+
+const certifications = [
+  { name: 'CKAD', full: 'Certified Kubernetes Application Developer', org: 'CNCF', issued: '2023.04.30' },
+  { name: 'CKA', full: 'Certified Kubernetes Administrator', org: 'CNCF', issued: '2023.02.26' },
+  { name: 'NCP', full: 'Naver Cloud Platform Certified Professional', org: 'NAVER CLOUD PLATFORM', issued: '2022.08.04' },
+  { name: 'NCA', full: 'Naver Cloud Platform Certified Associate', org: 'NAVER CLOUD PLATFORM', issued: '2022.07.20' },
+  { name: '컴퓨터활용능력 2급', full: '', org: '대한상공회의소', issued: '2021.05.24' },
+  { name: '운전면허증 1종 보통', full: '', org: '울산경찰청', issued: '2014.12.17' },
+];
+
+const education = [
+  { school: '울산대학교', major: 'IT융합학과', period: '2020.03 – 2022.02', status: '졸업' },
+  { school: '동의과학대학교', major: '컴퓨터정보학과', period: '2015.03 – 2020.02', status: '졸업' },
+  { school: '울산고등학교', major: '', period: '2012.03 – 2015.02', status: '졸업' },
+];
 ---
 
 <BaseLayout title="소개" description="SunJae.Log를 쓰는 사람과 이 블로그가 다루는 범위입니다.">
@@ -30,6 +48,12 @@ import { site } from '../config';
             <span class="label-chip">kubernetes</span>
             <span class="label-chip">observability</span>
             <span class="label-chip">istio</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Notion</dt>
+          <dd>
+            <a href={notionUrl} rel="me noopener" target="_blank">이력서 · 포트폴리오</a>
           </dd>
         </div>
         <div>
@@ -62,6 +86,39 @@ import { site } from '../config';
       <li>장애 원인 분석</li>
       <li>LLM을 곁들인 운영</li>
     </ul>
+    <h2>자격사항</h2>
+    <ul class="record-cards">
+      {
+        certifications.map((item) => (
+          <li class="record-card">
+            <span class="record-name">{item.name}</span>
+            {item.full && <span class="record-sub">{item.full}</span>}
+            <span class="record-meta">
+              <span class="record-org">{item.org}</span>
+              <time class="record-date">{item.issued}</time>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <h2>학력사항</h2>
+    <ul class="record-cards">
+      {
+        education.map((item) => (
+          <li class="record-card">
+            <span class="record-name">{item.school}</span>
+            {item.major && <span class="record-sub">{item.major}</span>}
+            <span class="record-meta">
+              <span class="record-period">{item.period}</span>
+              <span class="record-status">{item.status}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <p>
+      자격과 학력 전체는 <a href={notionUrl} rel="me noopener" target="_blank">Notion 이력서</a>에서도 볼 수 있습니다.
+    </p>
     <h2>이 사이트</h2>
     <p>
       GitHub Pages에 올라가는 정적 사이트입니다. 새 글은 Markdown 파일 하나를 추가하면 생깁니다. 광고와 접속
