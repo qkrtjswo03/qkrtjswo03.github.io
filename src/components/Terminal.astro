@@ -195,8 +195,9 @@ const {
     headers.set('Accept', 'application/vnd.github+json');
     if (token) headers.set('Authorization', `Bearer ${token}`);
     headers.set('X-GitHub-Api-Version', '2022-11-28');
+    headers.set('Cache-Control', 'no-cache');
     if (init.body) headers.set('Content-Type', 'application/json');
-    const res = await fetch(`${API}${path}`, { ...init, headers });
+    const res = await fetch(`${API}${path}`, { ...init, headers, cache: 'no-store' });
     if (!res.ok) {
       let message = `${res.status}`;
       try {
@@ -272,6 +273,35 @@ const {
     return name;
   };
 
+  const parseConflictSha = (message: string) => {
+    const match = message.match(/does not match ([a-f0-9]{40})/i);
+    return match?.[1];
+  };
+
+  /** 항상 최신 main tip에서 새 작업 브랜치를 만듭니다 (낡은 webedit SHA 충돌 방지). */
+  const freshBranchFromMain = async () => {
+    const mainRef = (await api(`/repos/${REPO}/git/ref/heads/${BASE}`)) as { object: { sha: string } };
+    const now = new Date();
+    const stamp = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0'),
+      '-',
+      String(now.getHours()).padStart(2, '0'),
+      String(now.getMinutes()).padStart(2, '0'),
+      String(now.getSeconds()).padStart(2, '0'),
+    ].join('');
+    const name = `webedit/${stamp}`;
+    await api(`/repos/${REPO}/git/refs`, {
+      method: 'POST',
+      body: JSON.stringify({ ref: `refs/heads/${name}`, sha: mainRef.object.sha }),
+    });
+    setBranch(name);
+    tree = null;
+    print(`main 기준으로 작업 브랜치를 만들었습니다: ${name}`, 'ok');
+    return name;
+  };
+
   const readFile = async (path: string) => {
     await ensureLiveRef();
     if (token) {
@@ -324,8 +354,9 @@ const {
       const messageText = error instanceof Error ? error.message : String(error);
       if (!/^409\b/.test(messageText)) throw error;
       print('파일이 이미 바뀌어 최신 SHA로 다시 저장합니다…', 'warn');
+      const expected = parseConflictSha(messageText);
       const latest = await readFileOn(path, target);
-      await put(latest.sha);
+      await put(expected || latest.sha);
     }
     dirty.delete(path);
     tree = null;
@@ -552,51 +583,66 @@ const {
             print('blog 마크다운만 lock 할 수 있습니다.', 'warn');
             break;
           }
-          const target = await ensureBranch();
-          const applyLock = async () => {
-            const file = await readFileOn(path, target);
-            let content = file.content;
+
+          const toggleLocked = (content: string) => {
+            let next = content;
             let nextLocked = true;
-            if (/^locked:\s*true\b/m.test(content)) {
-              content = content.replace(/^locked:\s*true\b/m, 'locked: false');
+            if (/^locked:\s*true\b/m.test(next)) {
+              next = next.replace(/^locked:\s*true\b/m, 'locked: false');
               nextLocked = false;
-            } else if (/^locked:\s*false\b/m.test(content)) {
-              content = content.replace(/^locked:\s*false\b/m, 'locked: true');
+            } else if (/^locked:\s*false\b/m.test(next)) {
+              next = next.replace(/^locked:\s*false\b/m, 'locked: true');
               nextLocked = true;
-            } else if (/^---\n[\s\S]*?\n---/.test(content)) {
-              content = content.replace(/^(---\n[\s\S]*?)(\n---)/, `$1\nlocked: true$2`);
+            } else if (/^---\n[\s\S]*?\n---/.test(next)) {
+              next = next.replace(/^(---\n[\s\S]*?)(\n---)/, `$1\nlocked: true$2`);
               nextLocked = true;
             } else {
               throw new Error('frontmatter를 찾지 못했습니다.');
             }
-            return { content, nextLocked, sha: file.sha };
+            return { content: next, nextLocked };
           };
 
-          let attempt = await applyLock();
-          const putLock = async (content: string, sha: string, message: string) =>
+          const putWithSha = async (branchName: string, content: string, sha: string, message: string) =>
             api(`/repos/${REPO}/contents/${path}`, {
               method: 'PUT',
               body: JSON.stringify({
                 message,
                 content: b64encode(content),
-                branch: target,
+                branch: branchName,
                 sha,
               }),
             });
+
+          let target = await freshBranchFromMain();
+          let file = await readFileOn(path, target);
+          let attempt = { ...toggleLocked(file.content), sha: file.sha };
           const msg = attempt.nextLocked
             ? `Lock post ${path.split('/').pop()}`
             : `Unlock post ${path.split('/').pop()}`;
+
           try {
-            await putLock(attempt.content, attempt.sha, msg);
+            await putWithSha(target, attempt.content, attempt.sha, msg);
           } catch (error) {
             const messageText = error instanceof Error ? error.message : String(error);
             if (!/^409\b/.test(messageText)) throw error;
-            print('충돌(409) — 최신 파일로 다시 lock 합니다…', 'warn');
-            attempt = await applyLock();
+            print('충돌(409) — main에서 브랜치를 다시 만들어 재시도합니다…', 'warn');
+            target = await freshBranchFromMain();
+            file = await readFileOn(path, target);
+            const expected = parseConflictSha(messageText);
+            attempt = { ...toggleLocked(file.content), sha: expected || file.sha };
             const retryMsg = attempt.nextLocked
               ? `Lock post ${path.split('/').pop()}`
               : `Unlock post ${path.split('/').pop()}`;
-            await putLock(attempt.content, attempt.sha, retryMsg);
+            try {
+              await putWithSha(target, attempt.content, attempt.sha, retryMsg);
+            } catch (error2) {
+              const messageText2 = error2 instanceof Error ? error2.message : String(error2);
+              if (!/^409\b/.test(messageText2)) throw error2;
+              const expected2 = parseConflictSha(messageText2) || file.sha;
+              file = await readFileOn(path, target);
+              attempt = { ...toggleLocked(file.content), sha: expected2 };
+              await putWithSha(target, attempt.content, attempt.sha, retryMsg);
+            }
           }
           dirty.delete(path);
           tree = null;

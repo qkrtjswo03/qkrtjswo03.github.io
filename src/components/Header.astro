@@ -131,6 +131,14 @@ const commands: Record<string, string> = {
 {
   showTermDock && (
     <aside class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true">
+      <div
+        class="term-dock-resize"
+        id="term-dock-resize"
+        role="separator"
+        aria-orientation="horizontal"
+        aria-label="터미널 높이 조절"
+        title="드래그해서 높이 조절"
+      ></div>
       <div class="term-dock-head">
         <span class="term-dock-title">$ vim</span>
         <div class="term-dock-actions">
@@ -198,7 +206,25 @@ const commands: Record<string, string> = {
 
   const dock = document.getElementById('term-dock');
   const lockBtn = document.getElementById('term-dock-lock');
+  const resizeHandle = document.getElementById('term-dock-resize');
   const LOCK_KEY = 'blog-term-dock-locked';
+  const HEIGHT_KEY = 'blog-term-dock-h';
+  const shell = document.querySelector<HTMLElement>('.app-shell.has-term-dock');
+  const MIN_H = 160;
+  const maxH = () => Math.max(MIN_H + 40, Math.floor(window.innerHeight * 0.72));
+
+  const applyDockHeight = (px: number) => {
+    if (!shell) return;
+    const next = Math.min(maxH(), Math.max(MIN_H, Math.round(px)));
+    shell.style.setProperty('--term-dock-expanded-h', `${next}px`);
+    return next;
+  };
+
+  if (shell) {
+    const saved = Number(localStorage.getItem(HEIGHT_KEY));
+    if (Number.isFinite(saved) && saved >= MIN_H) applyDockHeight(saved);
+  }
+
   if (dock && lockBtn) {
     let locked = localStorage.getItem(LOCK_KEY) === '1';
 
@@ -208,7 +234,7 @@ const commands: Record<string, string> = {
     };
 
     const syncDock = () => {
-      const open = locked || dock.matches(':hover') || dockFocused();
+      const open = locked || dock.matches(':hover') || dockFocused() || dock.classList.contains('is-resizing');
       dock.classList.toggle('is-open', open);
       dock.classList.toggle('is-locked', locked);
       dock.dataset.collapsed = open ? 'false' : 'true';
@@ -234,6 +260,39 @@ const commands: Record<string, string> = {
     dock.addEventListener('focusout', () => {
       window.setTimeout(syncDock, 0);
     });
+
+    if (resizeHandle && shell) {
+      resizeHandle.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        const pointerId = event.pointerId;
+        resizeHandle.setPointerCapture(pointerId);
+        dock.classList.add('is-resizing');
+        document.body.classList.add('is-term-resizing');
+        locked = true;
+        localStorage.setItem(LOCK_KEY, '1');
+        syncDock();
+
+        const onMove = (moveEvent: PointerEvent) => {
+          const next = window.innerHeight - moveEvent.clientY;
+          applyDockHeight(next);
+        };
+        const onUp = () => {
+          resizeHandle.releasePointerCapture(pointerId);
+          resizeHandle.removeEventListener('pointermove', onMove);
+          resizeHandle.removeEventListener('pointerup', onUp);
+          resizeHandle.removeEventListener('pointercancel', onUp);
+          dock.classList.remove('is-resizing');
+          document.body.classList.remove('is-term-resizing');
+          const computed = getComputedStyle(shell).getPropertyValue('--term-dock-expanded-h').trim();
+          const px = Number.parseFloat(computed);
+          if (Number.isFinite(px)) localStorage.setItem(HEIGHT_KEY, String(Math.round(px)));
+          syncDock();
+        };
+        resizeHandle.addEventListener('pointermove', onMove);
+        resizeHandle.addEventListener('pointerup', onUp);
+        resizeHandle.addEventListener('pointercancel', onUp);
+      });
+    }
 
     syncDock();
   }

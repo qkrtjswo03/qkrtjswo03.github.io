@@ -123,7 +123,9 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                       {gc && <span class="k9s-views" data-gc-path={postUrl(post)} hidden title="조회수"> · <span data-gc-count>—</span></span>}
                     </td>
                     <td class="k9s-ready">1/1</td>
-                    <td class="k9s-status">Published</td>
+                    <td class:list={['k9s-status', post.data.locked && 'is-pending']}>
+                      {post.data.locked ? 'Pending' : 'Published'}
+                    </td>
                     <td class="k9s-age">
                       <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
                     </td>
@@ -155,13 +157,24 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     padding: 0.1rem;
     border: 0;
     background: transparent;
-    color: color-mix(in srgb, var(--cyan, #22d3ee) 55%, #888);
-    opacity: 0.55;
+    color: color-mix(in srgb, var(--ink-soft, #8b9bb4) 70%, #667);
+    opacity: 0.28;
+    filter: brightness(0.75);
     cursor: pointer;
     vertical-align: middle;
   }
-  .k9s-lock-btn:hover { opacity: 1; }
-  .k9s-lock-btn.is-locked { color: var(--cyan, #22d3ee); opacity: 0.95; }
+  .k9s-lock-btn:hover { opacity: 0.7; filter: brightness(1); }
+  .k9s-lock-btn.is-locked {
+    color: var(--cyan, #22d3ee);
+    opacity: 1;
+    filter: brightness(1.35) drop-shadow(0 0 6px color-mix(in srgb, var(--cyan, #22d3ee) 55%, transparent));
+  }
+  .k9s-lock-btn.is-locked:hover { filter: brightness(1.5) drop-shadow(0 0 8px color-mix(in srgb, var(--cyan, #22d3ee) 65%, transparent)); }
+  .k9s-status.is-pending {
+    color: var(--warn, #f59e0b);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
   html:not([data-owner='1']) .k9s-lock-btn:not(.is-locked) { display: none; }
 </style>
 
