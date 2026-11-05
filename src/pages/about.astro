@@ -149,19 +149,44 @@ const activities = [
         </div>
       </dl>
     </section>
+
+    <h2 id="career">경력사항</h2>
+    <p class="section-lead">Today's me is just my own successful past in the future.</p>
+    <ol class="timeline">
+      {
+        career.map((item) => (
+          <li class={`timeline-item${item.status === '재직 중' ? ' timeline-item--current' : ''}`}>
+            <span class="timeline-year">{item.from.slice(0, 4)}</span>
+            <span class="timeline-rail" aria-hidden="true" />
+            <span class="timeline-body">
+              <span class="timeline-title">
+                {item.company}
+                <span class={`timeline-status${item.status === '재직 중' ? ' timeline-status--current' : ''}`}>
+                  {item.status}
+                </span>
+              </span>
+              <span class="timeline-sub">{item.role}</span>
+              {item.detail && <span class="timeline-sub muted">{item.detail}</span>}
+              <span class="timeline-meta">
+                {item.from} – {item.to}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
     <p>
-      클라우드와 인프라를 운영하며 남는 기록입니다. Kubernetes 위에서 서비스를 올리고, 메트릭과 로그로 상태를
-      보고, 장애가 나면 원인을 좁히는 일을 합니다. 최근에는 그 과정에 LLM을 어디까지 끼워 넣을 수 있는지도 같이
-      봅니다.
+      클라우드와 인프라를 운영합니다. Kubernetes 위에서 서비스를 올리고, 메트릭·로그로 상태를 보고, 장애가 나면
+      원인을 좁히는 일을 합니다. 최근에는 그 과정에 LLM을 어디까지 끼워 넣을 수 있는지도 같이 봅니다.
     </p>
     <p>
-      이 블로그는 그 작업 메모를 다음에 그대로 쓸 수 있게 정리하는 곳입니다. 주제는 글마다 붙이고, 나중에 늘어나도
+      SunJae.Log는 그 작업 메모를 다음에 그대로 쓸 수 있게 정리하는 곳입니다. 주제는 글마다 붙이고, 글이 늘어나도
       주소 체계는 그대로 둡니다. 해본 프로젝트는 <a href="/projects/">프로젝트</a>에 모아 두었습니다.
     </p>
     <h2>주로 다루는 것</h2>
     <ul>
       <li>Kubernetes와 배포</li>
-      <li>관측 가능성. 메트릭, 로그, 트레이스</li>
+      <li>관측 가능성 — 메트릭, 로그, 트레이스</li>
       <li>장애 원인 분석</li>
       <li>LLM을 곁들인 운영</li>
     </ul>
@@ -200,31 +225,6 @@ const activities = [
               <span class="timeline-meta">
                 {item.from} – {item.to}
                 <span class="timeline-status">{item.status}</span>
-              </span>
-            </span>
-          </li>
-        ))
-      }
-    </ol>
-    <h2 id="career">경력사항</h2>
-    <p class="section-lead">Today's me is just my own successful past in the future.</p>
-    <ol class="timeline">
-      {
-        career.map((item) => (
-          <li class={`timeline-item${item.status === '재직 중' ? ' timeline-item--current' : ''}`}>
-            <span class="timeline-year">{item.from.slice(0, 4)}</span>
-            <span class="timeline-rail" aria-hidden="true" />
-            <span class="timeline-body">
-              <span class="timeline-title">
-                {item.company}
-                <span class={`timeline-status${item.status === '재직 중' ? ' timeline-status--current' : ''}`}>
-                  {item.status}
-                </span>
-              </span>
-              <span class="timeline-sub">{item.role}</span>
-              {item.detail && <span class="timeline-sub muted">{item.detail}</span>}
-              <span class="timeline-meta">
-                {item.from} – {item.to}
               </span>
             </span>
           </li>
