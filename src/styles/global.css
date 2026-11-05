@@ -3062,6 +3062,47 @@ pre.astro-code code {
   padding: 0.45rem 0.85rem 0.55rem;
 }
 
+.term-dock-resize {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  margin-top: -4px;
+  cursor: ns-resize;
+  touch-action: none;
+  z-index: 2;
+}
+
+.term-dock-resize::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  width: 42px;
+  height: 3px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cyan) 55%, transparent);
+  opacity: 0.45;
+}
+
+.term-dock-resize:hover::after,
+.term-dock.is-resizing .term-dock-resize::after {
+  opacity: 1;
+  background: var(--cyan);
+}
+
+.term-dock.is-resizing,
+.term-dock.is-resizing .term-shell--panel {
+  transition: none;
+}
+
+body.is-term-resizing {
+  cursor: ns-resize;
+  user-select: none;
+}
+
 .term-dock-head {
   display: flex;
   align-items: center;
