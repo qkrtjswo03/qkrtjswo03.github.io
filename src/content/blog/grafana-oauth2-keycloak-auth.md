@@ -19,6 +19,12 @@ draft: false
 
 [앞 글](/blog/grafana-unified-dashboard-routing/)에서 Grafana 대시보드를 도메인 하나로 모으고, 인증은 OAuth2 Proxy와 Keycloak에 맡긴다고 했다. 이번에는 그 인증 구조를 열어 본다. Grafana 자체 로그인을 쓰지 않고, 앞단에서 인증을 끝낸 뒤 헤더로 사용자를 넘기는 방식이다.
 
+<figure>
+  <a href="/images/blog/grafana-oauth2-keycloak-auth/auth-sequence.png">
+    <img src="/images/blog/grafana-oauth2-keycloak-auth/auth-sequence.png" alt="Browser, OAuth2 Proxy, Keycloak, Redis, Grafana 사이에서 최초 접근 시 Keycloak 로그인, 콜백, code 교환, 토큰 수신, 세션 저장, 쿠키 발급이 일어나고 이후 요청은 쿠키로 Redis 세션을 확인해 Grafana로 헤더를 넘기는 인증 시퀀스" />
+  </a>
+</figure>
+
 ## Keycloak
 
 Keycloak은 인증(Authentication)과 인가(Authorization)를 대신 처리하고 SSO를 가능하게 해 주는 오픈소스다.

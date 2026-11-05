@@ -20,6 +20,12 @@ draft: false
 
 그래서 **메인 도메인 하나 아래에서 경로만 바꿔** 모든 대시보드로 들어가게 만들었다. 이 글은 그 구성의 큰 그림이고, 경로별 라우팅 규칙은 [다음 글](/blog/grafana-dashboard-route-rules/), 인증 구조는 [세 번째 글](/blog/grafana-oauth2-keycloak-auth/)에서 다룬다.
 
+<figure>
+  <a href="/images/blog/grafana-unified-dashboard-routing/access-flow.png">
+    <img src="/images/blog/grafana-unified-dashboard-routing/access-flow.png" alt="브라우저에서 Istio Gateway와 VirtualService를 거쳐 OAuth2 Proxy로 들어오고, 세션이 없으면 Keycloak(MariaDB)으로 인증한 뒤 Redis에 세션을 저장하고, X-Auth-Request 헤더를 붙여 Grafana로 전달하는 7단계 접근 흐름" />
+  </a>
+</figure>
+
 ## 왜 일원화했나
 
 | 목표 | 내용 |
