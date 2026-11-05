@@ -47,7 +47,7 @@ function categoryLabel(post: BlogPost) {
             <h2 class="post-group-title" id={`group-${index}-title`}>
               {group.category} <span class="count">{group.posts.length}</span>
             </h2>
-            <div class="term-panel">
+            <div class="post-body">
               {seriesIds.map((id) => {
                 const parts = postsInSeries(group.posts, id);
                 return (
@@ -69,18 +69,13 @@ function categoryLabel(post: BlogPost) {
                 );
               })}
               {loose.length > 0 && (
-                <div class="term-scroll">
-                  <div class="post-row post-row-head" aria-hidden="true">
-                    <span>NAME</span>
-                    <span>CATEGORY</span>
-                    <span>DATE</span>
-                  </div>
-                  <ul class="post-list">
-                    {loose.map((post) => (
-                      <li>
-                        <a class="post-row" href={postUrl(post)}>
-                          <span class="post-title">{post.data.title}</span>
-                          <span class="post-desc">{post.data.description}</span>
+                <ul class="post-list post-cards">
+                  {loose.map((post) => (
+                    <li>
+                      <a class="post-card" href={postUrl(post)}>
+                        <span class="post-title">{post.data.title}</span>
+                        <span class="post-desc">{post.data.description}</span>
+                        <span class="post-meta">
                           <span class="post-cat">
                             <span class="sr-only">주제 </span>
                             {categoryLabel(post)}
@@ -89,11 +84,11 @@ function categoryLabel(post: BlogPost) {
                             <span class="sr-only">날짜 </span>
                             {formatDate(post.data.pubDate)}
                           </time>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           </section>
@@ -101,20 +96,15 @@ function categoryLabel(post: BlogPost) {
       })}
     </>
   ) : (
-    <div class="term-panel">
+    <>
       <p class="sr-only">글 목록. 이름, 주제, 날짜.</p>
-      <div class="term-scroll">
-        <div class="post-row post-row-head" aria-hidden="true">
-          <span>NAME</span>
-          <span>CATEGORY</span>
-          <span>DATE</span>
-        </div>
-        <ul class="post-list" id={searchable ? 'results' : undefined}>
-          {posts.map((post) => (
-            <li data-search={searchable ? searchText(post) : undefined}>
-              <a class="post-row" href={postUrl(post)}>
-                <span class="post-title">{post.data.title}</span>
-                <span class="post-desc">{post.data.description}</span>
+      <ul class="post-list post-cards" id={searchable ? 'results' : undefined}>
+        {posts.map((post) => (
+          <li data-search={searchable ? searchText(post) : undefined}>
+            <a class="post-card" href={postUrl(post)}>
+              <span class="post-title">{post.data.title}</span>
+              <span class="post-desc">{post.data.description}</span>
+              <span class="post-meta">
                 <span class="post-cat">
                   <span class="sr-only">주제 </span>
                   {categoryLabel(post)}
@@ -123,11 +113,11 @@ function categoryLabel(post: BlogPost) {
                   <span class="sr-only">날짜 </span>
                   {formatDate(post.data.pubDate)}
                 </time>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
