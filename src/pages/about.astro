@@ -46,7 +46,16 @@ const career = [
     from: '2024.12',
     to: '현재',
     role: 'PaaS Expert 파트 / Cloud-Native Platform Engineer',
-    detail: 'VIOLA PaaS 서비스 고도화',
+    org: 'R&D센터 클라우드기술실',
+    summary: 'VIOLA PaaS 고도화 · SCORE RCA 설계 · KubeEdge DIL 검증',
+    highlights: [
+      'VIOLA PaaS(v3.0.3~v4.0) 플랫폼 고도화 및 신규 기술 검증',
+      '멀티 클러스터 관측성 스택 설계·Helm Chart 패키징 (Prometheus·Thanos·Loki·Tempo·OTel)',
+      'Istio·OAuth2 Proxy·Keycloak 기반 Grafana 통합 대시보드 중앙 인증',
+      'SCORE Agentic AI·Knowledge Graph RCA 플랫폼 아키텍처 설계 리드',
+      'KubeEdge DIL 엣지 검증 환경 구축 · 복구 후 누락 0·중복 0',
+      'VIOLA v4.0: SeaweedFS·CNPG·Harbor HA·GPU Operator·Velero 검증',
+    ],
   },
   {
     company: '교보문고',
@@ -54,7 +63,15 @@ const career = [
     from: '2024.05',
     to: '2024.09',
     role: 'AWS ROSA(OpenShift) 하이브리드 클라우드 운영',
-    detail: '온프레미스·클라우드',
+    org: 'IT 인프라팀',
+    summary: '온프레미스·클라우드 하이브리드 인프라 운영',
+    highlights: [
+      'AWS ROSA(OpenShift) 기반 하이브리드 클라우드 운영',
+      'HIWARE 서버 접근 권한 관리·보안 설정 및 ISMS 증적 대응',
+      'Nutanix HCI VM 생성·OS 설치 및 접근 제어 방화벽 설정',
+      'AWS VPC·EC2·NAT Gateway·SSM 세션 관리 구성',
+      'BIND DNS·Route 53 도메인 설정, Apache·Tomcat 웹 서버 구축',
+    ],
   },
   {
     company: 'OSC KOREA',
@@ -62,7 +79,15 @@ const career = [
     from: '2022.07',
     to: '2024.04',
     role: 'KT Cloud & FlyingCube PaaS 플랫폼 운영',
-    detail: '',
+    org: 'Container TF 팀 · KT Cloud 파견 상주',
+    summary: 'OKD·Kubernetes 멀티 클러스터 약 30개 운영',
+    highlights: [
+      'OKD 3.11·4.x / Kubernetes v1.23 클러스터 약 30개 운영·장애 대응',
+      'Container 운영 SLA 80점대 → 90점대, 2023년 3분기 가용률 100%',
+      'SMP 보안 취약점 조치 · Redmine·OpenProject 이슈 표준화',
+      'Grafana·Prometheus·Zabbix·Thanos 관제 및 용량 관리 프로세스 정의',
+      'OKD·Kubernetes 클러스터 구축 지원 (SI)',
+    ],
   },
 ];
 
@@ -152,29 +177,49 @@ const activities = [
 
     <h2 id="career">경력사항</h2>
     <p class="section-lead">Today's me is just my own successful past in the future.</p>
-    <ol class="timeline timeline--reveal" data-timeline-reveal>
-      {
-        career.map((item) => (
-          <li class={`timeline-item${item.status === '재직 중' ? ' timeline-item--current' : ''}`}>
-            <span class="timeline-year">{item.from.slice(0, 4)}</span>
-            <span class="timeline-rail" aria-hidden="true" />
-            <span class="timeline-body">
-              <span class="timeline-title">
-                {item.company}
-                <span class={`timeline-status${item.status === '재직 중' ? ' timeline-status--current' : ''}`}>
-                  {item.status}
+    <div class="career-stage" data-career-stage>
+      <ol class="timeline timeline--reveal" data-timeline-reveal>
+        {
+          career.map((item) => (
+            <li
+              class={`timeline-item${item.status === '재직 중' ? ' timeline-item--current' : ''}`}
+              data-career-item
+              data-company={item.company}
+              data-role={item.role}
+              data-org={item.org}
+              data-period={`${item.from} – ${item.to}`}
+              data-status={item.status}
+              data-summary={item.summary}
+              data-highlights={JSON.stringify(item.highlights)}
+              tabindex="0"
+            >
+              <span class="timeline-year">{item.from.slice(0, 4)}</span>
+              <span class="timeline-rail" aria-hidden="true" />
+              <span class="timeline-body">
+                <span class="timeline-title">
+                  {item.company}
+                  <span class={`timeline-status${item.status === '재직 중' ? ' timeline-status--current' : ''}`}>
+                    {item.status}
+                  </span>
+                </span>
+                <span class="timeline-sub">{item.role}</span>
+                <span class="timeline-meta">
+                  {item.from} – {item.to}
                 </span>
               </span>
-              <span class="timeline-sub">{item.role}</span>
-              {item.detail && <span class="timeline-sub muted">{item.detail}</span>}
-              <span class="timeline-meta">
-                {item.from} – {item.to}
-              </span>
-            </span>
-          </li>
-        ))
-      }
-    </ol>
+            </li>
+          ))
+        }
+      </ol>
+      <aside class="career-preview" data-career-preview hidden>
+        <p class="career-preview-kicker" data-career-preview-org></p>
+        <p class="career-preview-title" data-career-preview-company></p>
+        <p class="career-preview-role" data-career-preview-role></p>
+        <p class="career-preview-period" data-career-preview-period></p>
+        <p class="career-preview-summary" data-career-preview-summary></p>
+        <ul class="career-preview-points" data-career-preview-points></ul>
+      </aside>
+    </div>
     <p>
       클라우드와 인프라를 운영합니다. Kubernetes 위에서 서비스를 올리고, 메트릭·로그로 상태를 보고, 장애가 나면
       원인을 좁히는 일을 합니다. 최근에는 그 과정에 LLM을 어디까지 끼워 넣을 수 있는지도 같이 봅니다.
@@ -307,6 +352,65 @@ const activities = [
         { rootMargin: '0px 0px -8% 0px', threshold: 0.2 },
       );
       items.forEach((el) => io.observe(el));
+    }
+
+    const stage = document.querySelector<HTMLElement>('[data-career-stage]');
+    const preview = document.querySelector<HTMLElement>('[data-career-preview]');
+    if (stage && preview) {
+      const elOrg = preview.querySelector<HTMLElement>('[data-career-preview-org]');
+      const elCompany = preview.querySelector<HTMLElement>('[data-career-preview-company]');
+      const elRole = preview.querySelector<HTMLElement>('[data-career-preview-role]');
+      const elPeriod = preview.querySelector<HTMLElement>('[data-career-preview-period]');
+      const elSummary = preview.querySelector<HTMLElement>('[data-career-preview-summary]');
+      const elPoints = preview.querySelector<HTMLElement>('[data-career-preview-points]');
+      const rows = () => [...stage.querySelectorAll<HTMLElement>('[data-career-item]')];
+
+      const hide = () => {
+        preview.hidden = true;
+        rows().forEach((row) => row.classList.remove('is-active'));
+      };
+
+      const show = (row: HTMLElement) => {
+        rows().forEach((r) => r.classList.toggle('is-active', r === row));
+        if (elOrg) elOrg.textContent = row.dataset.org ?? '';
+        if (elCompany) elCompany.textContent = row.dataset.company ?? '';
+        if (elRole) elRole.textContent = row.dataset.role ?? '';
+        if (elPeriod) {
+          const status = row.dataset.status ? ` · ${row.dataset.status}` : '';
+          elPeriod.textContent = `${row.dataset.period ?? ''}${status}`;
+        }
+        if (elSummary) elSummary.textContent = row.dataset.summary ?? '';
+        if (elPoints) {
+          elPoints.replaceChildren();
+          let points: string[] = [];
+          try {
+            points = JSON.parse(row.dataset.highlights ?? '[]');
+          } catch {
+            points = [];
+          }
+          for (const point of points) {
+            const li = document.createElement('li');
+            li.textContent = point;
+            elPoints.append(li);
+          }
+        }
+        preview.hidden = false;
+      };
+
+      for (const row of rows()) {
+        row.addEventListener('mouseenter', () => show(row));
+        row.addEventListener('focus', () => show(row));
+      }
+      stage.addEventListener('mouseleave', (event) => {
+        const to = event.relatedTarget as Node | null;
+        if (to && stage.contains(to)) return;
+        hide();
+      });
+      stage.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          if (!stage.contains(document.activeElement)) hide();
+        });
+      });
     }
   </script>
 </BaseLayout>
