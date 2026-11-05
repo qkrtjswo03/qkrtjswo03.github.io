@@ -506,172 +506,46 @@ h4 {
   filter: none;
 }
 
-.hero-hotspots {
+
+.hero-shine {
   position: absolute;
   inset: 0;
-  z-index: 4;
-  pointer-events: none;
-}
-
-.hero-hotspot {
-  position: absolute;
-  pointer-events: auto;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  cursor: default;
-  overflow: visible;
-  transform-style: preserve-3d;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: stretch;
-}
-
-.hero-ico-anchor {
-  --cube: 100%;
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
-  height: auto;
-  margin-top: auto;
-  perspective: 420px;
-  transform-style: preserve-3d;
-  container-type: size;
-}
-
-.hero-ico-float,
-.hero-ico-tilt,
-.hero-ico-cube {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-}
-
-/* rest: same isometric tilt language as kube cube, no spin */
-.hero-ico-tilt {
-  transform: rotateX(-22deg) rotateY(28deg);
-  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.hero-ico-float {
-  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), filter 220ms ease;
-  filter: drop-shadow(0 8px 12px rgba(5, 11, 31, 0.35));
-}
-
-.hero-ico-cube {
-  position: relative;
-}
-
-.hero-ico-face {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgba(37, 99, 235, 0.2);
-  border: 1px solid rgba(125, 211, 252, 0.85);
-  box-shadow:
-    inset 0 0 14px rgba(56, 189, 248, 0.45),
-    0 0 8px rgba(34, 211, 238, 0.25);
-  backdrop-filter: blur(6px) saturate(150%);
-  -webkit-backdrop-filter: blur(6px) saturate(150%);
-  backface-visibility: hidden;
-  border-radius: 4px;
-}
-
-.hero-ico-face svg {
-  width: 58%;
-  height: 58%;
-  color: #a5f3fc;
-  filter: drop-shadow(0 0 3px rgba(34, 211, 238, 0.9));
-}
-
-/* face depth uses button size via container */
-
-.hero-ico-face-front { transform: translateZ(50cqw); }
-.hero-ico-face-back { transform: rotateY(180deg) translateZ(50cqw); }
-.hero-ico-face-right { transform: rotateY(90deg) translateZ(50cqw); }
-.hero-ico-face-left { transform: rotateY(-90deg) translateZ(50cqw); }
-.hero-ico-face-top { transform: rotateX(90deg) translateZ(50cqw); }
-.hero-ico-face-bottom { transform: rotateX(-90deg) translateZ(50cqw); }
-
-.hero-hotspot::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 10px);
-  transform: translateX(-50%) translateY(4px);
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  font-family: var(--sans);
-  font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  color: #e0f2fe;
-  background: rgba(7, 18, 46, 0.72);
-  border: 1px solid rgba(125, 211, 252, 0.45);
-  opacity: 0;
-  transition: opacity 180ms ease, transform 180ms ease;
-  white-space: nowrap;
-  pointer-events: none;
   z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
 }
 
-/* hover: float up only — same motion as kube-float, no spin */
-.hero-hotspot:hover {
-  z-index: 5;
-}
-.hero-hotspot:hover .hero-ico-float {
-  animation: hero-ico-float 1.8s ease-in-out infinite;
-  filter:
-    drop-shadow(0 18px 22px rgba(5, 11, 31, 0.55))
-    drop-shadow(0 0 14px rgba(34, 211, 238, 0.4));
-}
-.hero-hotspot:hover .hero-ico-tilt {
-  transform: rotateX(-18deg) rotateY(22deg) scale(1.08);
-}
-.hero-hotspot:hover::after {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-@keyframes hero-ico-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-18%); }
+.hero-shine::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -40%;
+  width: 38%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(186, 230, 253, 0.02) 35%,
+    rgba(224, 242, 254, 0.22) 48%,
+    rgba(125, 211, 252, 0.14) 52%,
+    rgba(186, 230, 253, 0.02) 65%,
+    transparent 100%
+  );
+  transform: translateX(-30%) skewX(-18deg);
+  animation: hero-shine-sweep 7.5s ease-in-out infinite;
+  will-change: transform;
 }
 
-/* positions over cleaned pedestals (banner %) */
-.hero-hotspot-db {
-  left: 28.8%;
-  top: 42%;
-  width: 7.2%;
-  height: 18%;
-}
-.hero-hotspot-obj {
-  left: 34.8%;
-  top: 38%;
-  width: 7.4%;
-  height: 19%;
-}
-.hero-hotspot-compute {
-  left: 40.8%;
-  top: 34%;
-  width: 7.6%;
-  height: 20%;
+@keyframes hero-shine-sweep {
+  0%, 12% { transform: translateX(-40%) skewX(-18deg); opacity: 0; }
+  18% { opacity: 1; }
+  42% { transform: translateX(320%) skewX(-18deg); opacity: 1; }
+  48%, 100% { transform: translateX(320%) skewX(-18deg); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-hotspot,
-  .hero-hotspot::after,
-  .hero-ico-float,
-  .hero-ico-tilt {
-    transition: none;
-  }
-
-  .hero-hotspot:hover .hero-ico-float {
-    animation: none;
-    transform: translateY(-10%);
-  }
+  .hero-shine::before { animation: none; opacity: 0; }
 }
 
 .kube-shadow {
@@ -872,9 +746,6 @@ h4 {
     right: 0;
   }
 
-  .hero-hotspots {
-    display: none;
-  }
 
   .kube-anchor {
     --cube: 11.5cqi;
@@ -1661,6 +1532,7 @@ pre.astro-code {
   display: flex;
   flex-direction: column;
   gap: 0.18rem;
+  height: 100%;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
