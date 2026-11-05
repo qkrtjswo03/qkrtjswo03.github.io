@@ -518,7 +518,7 @@ h4 {
   pointer-events: auto;
   border: 0;
   padding: 0;
-  border-radius: 14px;
+  border-radius: 12px;
   background: transparent;
   box-shadow: inset 0 0 0 1px transparent;
   cursor: default;
@@ -530,58 +530,57 @@ h4 {
   content: attr(data-label);
   position: absolute;
   left: 50%;
-  bottom: 8%;
-  transform: translateX(-50%) translateY(6px);
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%) translateY(4px);
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
   font-family: var(--sans);
   font-size: 0.68rem;
   letter-spacing: 0.04em;
   color: #e0f2fe;
-  background: rgba(7, 18, 46, 0.55);
-  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: rgba(7, 18, 46, 0.72);
+  border: 1px solid rgba(125, 211, 252, 0.45);
   opacity: 0;
   transition: opacity 180ms ease, transform 180ms ease;
   white-space: nowrap;
   pointer-events: none;
 }
 
-.hero-hotspot:hover,
-.hero-hotspot.is-active {
-  transform: translateY(-7px) scale(1.035);
-  filter: brightness(1.28) saturate(1.15);
-  background: linear-gradient(180deg, rgba(56, 189, 248, 0.16), rgba(37, 99, 235, 0.05));
+.hero-hotspot:hover {
+  transform: translateY(-8px) scale(1.06);
+  filter: brightness(1.35) saturate(1.2);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.06));
   box-shadow:
-    inset 0 0 0 1px rgba(125, 211, 252, 0.7),
-    0 0 28px rgba(34, 211, 238, 0.35),
+    inset 0 0 0 1px rgba(125, 211, 252, 0.75),
+    0 0 28px rgba(34, 211, 238, 0.4),
     0 14px 28px rgba(5, 11, 31, 0.35);
 }
 
-.hero-hotspot:hover::after,
-.hero-hotspot.is-active::after {
+.hero-hotspot:hover::after {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
 
+/* 배너 그림 속 DB · Object Storage · Compute 유리 패널 (보이는 영역 % 기준) */
 .hero-hotspot-db {
-  left: 41.5%;
-  top: 18%;
-  width: 13.5%;
-  height: 58%;
+  left: 29.5%;
+  top: 30%;
+  width: 7.2%;
+  height: 34%;
 }
 
 .hero-hotspot-obj {
-  left: 53.2%;
-  top: 14%;
-  width: 14%;
-  height: 62%;
+  left: 35.2%;
+  top: 26%;
+  width: 7.6%;
+  height: 36%;
 }
 
 .hero-hotspot-compute {
-  left: 65.2%;
-  top: 18%;
-  width: 13.8%;
-  height: 58%;
+  left: 41.2%;
+  top: 22%;
+  width: 7.8%;
+  height: 38%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -590,8 +589,7 @@ h4 {
     transition: none;
   }
 
-  .hero-hotspot:hover,
-  .hero-hotspot.is-active {
+  .hero-hotspot:hover {
     transform: none;
   }
 }
@@ -720,7 +718,7 @@ h4 {
 
 .hero-copy {
   position: absolute;
-  z-index: 3;
+  z-index: 5;
   inset: 0 auto 0 0;
   display: flex;
   flex-direction: column;
@@ -728,6 +726,11 @@ h4 {
   width: min(24rem, 58%);
   padding: 0.85rem 1.2rem 1rem;
   background: linear-gradient(90deg, rgba(5, 11, 31, 0.72) 0%, rgba(5, 11, 31, 0.28) 72%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-copy a {
+  pointer-events: auto;
 }
 
 .hero-title {
