@@ -2644,6 +2644,72 @@ pre.astro-code code {
   display: none;
 }
 
+.k9s-frame {
+  position: relative;
+}
+
+.k9s-preview {
+  position: absolute;
+  right: 0.85rem;
+  top: 3.1rem;
+  z-index: 4;
+  width: min(22rem, calc(100% - 1.7rem));
+  max-height: min(14rem, 42%);
+  overflow: auto;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(120, 170, 255, 0.45);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--glass-solid) 94%, transparent);
+  box-shadow: 0 12px 36px rgba(5, 11, 31, 0.45), inset 0 1px 0 rgba(190, 215, 255, 0.22);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  pointer-events: none;
+}
+
+.k9s-preview[hidden] {
+  display: none !important;
+}
+
+.k9s-preview-ns {
+  margin: 0;
+  color: #a5b4fc;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+
+.k9s-preview-title {
+  margin: 0.35rem 0 0;
+  color: #eef5ff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.k9s-preview-desc {
+  margin: 0.45rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.k9s-preview-age {
+  margin: 0.55rem 0 0;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+}
+
+@media (max-width: 860px) {
+  .k9s-preview {
+    position: static;
+    width: auto;
+    max-height: none;
+    margin: 0.55rem 0.7rem 0.7rem;
+    pointer-events: auto;
+  }
+}
+
+
 .k9s {
   display: flex;
   flex-direction: column;

@@ -86,6 +86,10 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     class:list={['k9s-row', index === 0 && 'is-active']}
                     id={firstOfNs ? `ns-${groupIndex}` : undefined}
                     data-search={searchText(post)}
+                    data-title={post.data.title}
+                    data-desc={post.data.description}
+                    data-ns={ns}
+                    data-age={formatDate(post.data.pubDate)}
                   >
                     <td class="k9s-ns">{ns}</td>
                     <td class="k9s-name">
@@ -102,6 +106,13 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
             </tbody>
           </table>
         </div>
+
+        <aside class="k9s-preview" data-k9s-preview hidden>
+          <p class="k9s-preview-ns" data-k9s-preview-ns></p>
+          <p class="k9s-preview-title" data-k9s-preview-title></p>
+          <p class="k9s-preview-desc" data-k9s-preview-desc></p>
+          <p class="k9s-preview-age" data-k9s-preview-age></p>
+        </aside>
 
         <div class="k9s-foot">
           <span><b>&lt;enter&gt;</b> open</span>
@@ -131,11 +142,34 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     const rows = () => [...body.querySelectorAll<HTMLTableRowElement>('tr.k9s-row')];
     const visibleRows = () => rows().filter((row) => !row.hidden);
 
+    const preview = root.querySelector<HTMLElement>('[data-k9s-preview]');
+    const previewNs = root.querySelector<HTMLElement>('[data-k9s-preview-ns]');
+    const previewTitle = root.querySelector<HTMLElement>('[data-k9s-preview-title]');
+    const previewDesc = root.querySelector<HTMLElement>('[data-k9s-preview-desc]');
+    const previewAge = root.querySelector<HTMLElement>('[data-k9s-preview-age]');
+
+    const showPreview = (row: HTMLTableRowElement | undefined) => {
+      if (!preview || !previewTitle || !previewDesc || !previewNs || !previewAge) return;
+      if (!row || row.hidden) {
+        preview.hidden = true;
+        return;
+      }
+      previewNs.textContent = row.dataset.ns ?? '';
+      previewTitle.textContent = row.dataset.title ?? '';
+      previewDesc.textContent = row.dataset.desc ?? '';
+      previewAge.textContent = row.dataset.age ? `AGE ${row.dataset.age}` : '';
+      preview.hidden = false;
+    };
+
     const setActive = (row: HTMLTableRowElement | undefined) => {
       rows().forEach((r) => r.classList.remove('is-active'));
-      if (!row) return;
+      if (!row) {
+        showPreview(undefined);
+        return;
+      }
       row.classList.add('is-active');
       row.scrollIntoView({ block: 'nearest' });
+      showPreview(row);
     };
 
     const activeRow = () => visibleRows().find((row) => row.classList.contains('is-active')) ?? visibleRows()[0];
@@ -270,5 +304,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     rows().forEach((row) => {
       row.addEventListener('mouseenter', () => setActive(row));
     });
+
+    setActive(activeRow());
   });
 </script>
