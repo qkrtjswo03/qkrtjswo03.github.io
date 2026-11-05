@@ -5,6 +5,7 @@ pubDate: 2025-01-10
 categories:
   - Kubernetes 구축
 tags:
+  - 쿠버네티스
   - kubernetes
   - hard-way
   - certificates
