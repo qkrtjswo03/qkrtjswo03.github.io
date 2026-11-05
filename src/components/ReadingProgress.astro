@@ -1,6 +1,10 @@
 <div class="reading-progress" aria-hidden="true"><span class="reading-progress-fill"></span></div>
 <script>
+  let progressAbort = new AbortController();
   const init = () => {
+    progressAbort.abort();
+    progressAbort = new AbortController();
+    const { signal } = progressAbort;
     const bar = document.querySelector<HTMLElement>('.reading-progress-fill');
     const target = document.querySelector<HTMLElement>('.post-main .prose');
     if (!bar || !target) return;
@@ -16,21 +20,22 @@
     const onScroll = () => {
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true, signal });
+    window.addEventListener('resize', onScroll, { signal });
     update();
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { e.target.classList.add('is-scanning'); io.unobserve(e.target); }
+        }
+      }, { threshold: 0.5 });
+      document.querySelectorAll('.prose figure').forEach((f) => {
+        if (f.querySelector('img[src*="/images/blog/"][src$=".png"]')) { f.classList.add('diagram-scan'); io.observe(f); }
+      });
+    }
   };
   init();
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) { e.target.classList.add('is-scanning'); io.unobserve(e.target); }
-      }
-    }, { threshold: 0.5 });
-    document.querySelectorAll('.prose figure').forEach((f) => {
-      if (f.querySelector('img[src*="/images/blog/"][src$=".png"]')) { f.classList.add('diagram-scan'); io.observe(f); }
-    });
-  }
+  document.addEventListener('astro:page-load', init);
 </script>
 <style>
   .reading-progress {

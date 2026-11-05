@@ -50,6 +50,10 @@ const certifications = [
         <dd data-kst-clock>--:--:--</dd>
       </div>
     </dl>
+    <p class="status-live" aria-hidden="true">
+      <span>CPU <b data-live-cpu>12%</b></span>
+      <span>PODS <b data-live-pods>{posts.length}</b></span>
+    </p>
     <ul class="status-ns">
       {
         topics.map(([topic, count]) => (
@@ -103,10 +107,21 @@ const certifications = [
 
 <script>
   const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cpu = 12;
+  const basePods = Number(document.querySelector('[data-live-pods]')?.textContent) || 36;
   const tick = () => {
     const now = fmt.format(new Date());
     document.querySelectorAll<HTMLElement>('[data-kst-clock]').forEach((el) => { el.textContent = now; });
+    if (reduce || document.hidden) return;
+    cpu = Math.min(22, Math.max(6, cpu + (Math.random() > 0.5 ? 1 : -1)));
+    const pods = basePods + (Math.random() > 0.7 ? 1 : Math.random() > 0.45 ? 0 : -1);
+    document.querySelectorAll<HTMLElement>('[data-live-cpu]').forEach((el) => { el.textContent = `${cpu}%`; });
+    document.querySelectorAll<HTMLElement>('[data-live-pods]').forEach((el) => { el.textContent = String(pods); });
   };
-  tick();
-  setInterval(tick, 1000);
+  if (!window.__sunjaeStatus) {
+    window.__sunjaeStatus = true;
+    tick();
+    setInterval(tick, 1600);
+  }
 </script>

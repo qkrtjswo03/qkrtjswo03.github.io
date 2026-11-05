@@ -8,4 +8,9 @@ interface SunjaeLockGate {
 
 interface Window {
   SunjaeLock?: SunjaeLockGate;
+  __sunjaeChrome?: boolean;
+  __sunjaeTermClick?: boolean;
+  __sunjaeCopy?: boolean;
+  __sunjaeZoom?: boolean;
+  __sunjaeStatus?: boolean;
 }
