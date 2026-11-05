@@ -7,7 +7,7 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
 
 <script type="application/json" id="locked-post-hrefs" data-repo={repo} set:html={JSON.stringify(lockedHrefs)} />
 
-<dialog class="post-lock-dialog" id="owner-lock-dialog" aria-labelledby="owner-lock-title">
+<dialog class="post-lock-dialog" id="owner-lock-dialog" aria-labelledby="owner-lock-title" transition:persist="lock-dialog">
   <div class="post-lock-panel">
     <div class="post-lock-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -101,11 +101,20 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
     }
   }
 
+  const shake = (el: Element | null | undefined) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    el.classList.remove('is-lock-shake');
+    void el.offsetWidth;
+    el.classList.add('is-lock-shake');
+  };
+
   function openDialog(href: string, mode: 'navigate' | 'here') {
     pendingHref = href;
     pendingMode = mode;
     clearError();
     if (input) input.value = '';
+    shake(dialog?.querySelector('.post-lock-icon'));
     if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
     input?.focus();
   }
@@ -142,6 +151,7 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
     if (!locked.has(normalizeSitePath(link.href))) return;
     event.preventDefault();
     event.stopPropagation();
+    shake(link.closest('tr')?.querySelector('[data-lock-status], [data-k9s-lock]'));
     intercept(link.href, 'navigate');
   };
 
@@ -182,6 +192,12 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
       applyOwnerFlag(true);
       markVerified(true);
       clearError();
+      const icon = dialog?.querySelector('.post-lock-icon');
+      if (icon instanceof HTMLElement && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        icon.classList.add('is-lock-unlock');
+        await new Promise((resolve) => window.setTimeout(resolve, 460));
+        icon.classList.remove('is-lock-unlock');
+      }
       if (dialog instanceof HTMLDialogElement) dialog.close();
       if (submit) submit.disabled = false;
       if (pendingMode === 'here' || normalizeSitePath(location.href) === normalizeSitePath(pendingHref)) {
@@ -192,17 +208,24 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
     })();
   });
 
-  const article = document.querySelector('[data-locked-article]');
-  if (article) {
-    void (async () => {
-      const check = await ensureOwner(owner);
-      if (check.ok && check.token) await revealArticle(check.token);
-      else openDialog(location.href, 'here');
-    })();
-  } else if (readSession().token) {
-    void ensureOwner(owner);
-  } else {
-    applyOwnerFlag(false);
-    markVerified(false);
-  }
+  const watchLockedPage = () => {
+    const article = document.querySelector('[data-locked-article]');
+    if (article instanceof HTMLElement) {
+      if (article.dataset.lockWatch === '1') return;
+      article.dataset.lockWatch = '1';
+      void (async () => {
+        const check = await ensureOwner(owner);
+        if (check.ok && check.token) await revealArticle(check.token);
+        else openDialog(location.href, 'here');
+      })();
+      return;
+    }
+    if (readSession().token) void ensureOwner(owner);
+    else {
+      applyOwnerFlag(false);
+      markVerified(false);
+    }
+  };
+  watchLockedPage();
+  document.addEventListener('astro:page-load', watchLockedPage);
 </script>

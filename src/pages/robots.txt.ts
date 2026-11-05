@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { site } from '../config';
+import { OWNER_ONLY_PATHS, lockedBlogPathnames } from '../lib/post-files';
 
 /** Search engines stay allowed; common AI/training crawlers are asked not to fetch. */
 const AI_BOTS = [
@@ -30,6 +31,8 @@ export const GET: APIRoute = () => {
     '# Site content is copyrighted. See /license/',
     '',
     'User-agent: *',
+    ...OWNER_ONLY_PATHS.map((path) => `Disallow: ${path}`),
+    ...lockedBlogPathnames().map((path) => `Disallow: ${path}`),
     'Allow: /',
     '',
   ];

@@ -124,7 +124,7 @@ const commands: Record<string, string> = {
 </div>
 {
   showTermDock && (
-    <aside class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true">
+    <aside class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true" transition:persist="vim-dock">
       <div
         class="term-dock-resize"
         id="term-dock-resize"
@@ -168,34 +168,43 @@ const commands: Record<string, string> = {
 </div>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
-  const rail = document.querySelector('.rail');
-  const navEl = document.getElementById('site-nav');
   const closeNav = (focusToggle = false) => {
+    const rail = document.querySelector('.rail');
+    const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
     rail?.classList.remove('is-open');
     toggle?.setAttribute('aria-expanded', 'false');
     if (focusToggle) toggle?.focus();
   };
 
-  toggle?.addEventListener('click', () => {
-    const open = rail?.classList.toggle('is-open') ?? false;
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
+  if (!window.__sunjaeChrome) {
+    window.__sunjaeChrome = true;
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && document.querySelector('.rail')?.classList.contains('is-open')) closeNav(true);
+    });
+    document.addEventListener('click', (event) => {
+      const rail = document.querySelector('.rail');
+      if (!rail?.classList.contains('is-open')) return;
+      const target = event.target;
+      if (!(target instanceof Node) || rail.contains(target)) return;
+      closeNav();
+    });
+  }
 
+  const bindChrome = () => {
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const rail = document.querySelector('.rail');
+  const navEl = document.getElementById('site-nav');
+  if (toggle && toggle.dataset.navBound !== '1') {
+    toggle.dataset.navBound = '1';
+    toggle.addEventListener('click', () => {
+      const open = rail?.classList.toggle('is-open') ?? false;
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
   navEl?.querySelectorAll('a').forEach((link) => {
+    if (link.dataset.navBound === '1') return;
+    link.dataset.navBound = '1';
     link.addEventListener('click', () => closeNav());
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && rail?.classList.contains('is-open')) closeNav(true);
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!rail?.classList.contains('is-open')) return;
-    const target = event.target;
-    if (!(target instanceof Node)) return;
-    if (rail.contains(target)) return;
-    closeNav();
   });
 
   const dock = document.getElementById('term-dock');
@@ -219,7 +228,8 @@ const commands: Record<string, string> = {
     if (Number.isFinite(saved) && saved >= MIN_H) applyDockHeight(saved);
   }
 
-  if (dock && lockBtn) {
+  if (dock && lockBtn && dock.dataset.dockBound !== '1') {
+    dock.dataset.dockBound = '1';
     let locked = localStorage.getItem(LOCK_KEY) === '1';
 
     const dockFocused = () => {
@@ -290,4 +300,8 @@ const commands: Record<string, string> = {
 
     syncDock();
   }
+  };
+
+  bindChrome();
+  document.addEventListener('astro:page-load', bindChrome);
 </script>

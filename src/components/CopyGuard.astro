@@ -74,23 +74,24 @@
 <script>
   import { ensureOwner } from '../lib/owner-session';
 
-    const guard = document.querySelector('[data-copy-guard]');
-  if (guard) {
-    const toast = document.querySelector<HTMLElement>('[data-copy-toast]');
-    if (toast) document.body.appendChild(toast);
+  const ownerOf = () => {
     const repoNode = document.getElementById('locked-post-hrefs');
-    const owner = (repoNode?.dataset.repo || 'qkrtjswo03/qkrtjswo03.github.io').split('/')[0]?.toLowerCase() || '';
-    let allowCopy = false;
-    let toastTimer = 0;
+    return (repoNode?.dataset.repo || 'qkrtjswo03/qkrtjswo03.github.io').split('/')[0]?.toLowerCase() || '';
+  };
+  const currentGuard = () => document.querySelector<HTMLElement>('[data-copy-guard]');
+  let allowCopy = false;
+  let toastTimer = 0;
 
-    const showToast = () => {
-      if (!(toast instanceof HTMLElement)) return;
-      toast.hidden = false;
-      window.clearTimeout(toastTimer);
-      toastTimer = window.setTimeout(() => {
-        toast.hidden = true;
-      }, 3200);
-    };
+  const showToast = () => {
+    const toast = document.querySelector<HTMLElement>('[data-copy-toast]');
+    if (!(toast instanceof HTMLElement)) return;
+    if (toast.parentElement !== document.body) document.body.appendChild(toast);
+    toast.hidden = false;
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => {
+      toast.hidden = true;
+    }, 3200);
+  };
 
     const setAllowed = (on: boolean) => {
       allowCopy = on;
@@ -102,6 +103,8 @@
       `${el.getAttribute('aria-label') || ''} ${el.getAttribute('title') || ''} ${(el.textContent || '').trim()}`.toLowerCase();
 
     const syncCopyButtons = () => {
+      const guard = currentGuard();
+      if (!guard) return;
       guard.querySelectorAll('button, [role="button"]').forEach((el) => {
         if (!(el instanceof HTMLElement)) return;
         const label = labelOf(el);
@@ -150,20 +153,22 @@
       showToast();
     };
 
-    guard.addEventListener('selectstart', (event) => {
-      if (allowCopy || isEditable(event.target)) return;
+    const inCurrentGuard = (event: Event) => insideGuard(event.target instanceof Node ? event.target : null);
+
+    document.addEventListener('selectstart', (event) => {
+      if (allowCopy || isEditable(event.target) || !inCurrentGuard(event)) return;
       event.preventDefault();
-    });
+    }, true);
 
-    guard.addEventListener('contextmenu', (event) => {
-      if (allowCopy || isEditable(event.target)) return;
+    document.addEventListener('contextmenu', (event) => {
+      if (allowCopy || isEditable(event.target) || !inCurrentGuard(event)) return;
       block(event);
-    });
+    }, true);
 
-    guard.addEventListener('dragstart', (event) => {
-      if (allowCopy || isEditable(event.target)) return;
+    document.addEventListener('dragstart', (event) => {
+      if (allowCopy || isEditable(event.target) || !inCurrentGuard(event)) return;
       block(event);
-    });
+    }, true);
 
     document.addEventListener(
       'copy',
@@ -196,7 +201,7 @@
           block(event);
           return;
         }
-        if (code === 'KeyA' || code === 'KeyS' || code === 'KeyU' || code === 'KeyP') {
+        if ((code === 'KeyA' || code === 'KeyS' || code === 'KeyU' || code === 'KeyP') && currentGuard()) {
           block(event);
         }
       },
@@ -207,9 +212,13 @@
       setAllowed(Boolean(event.detail?.ok));
     }) as EventListener);
 
-    setAllowed(false);
-    void ensureOwner(owner).then((check) => {
-      setAllowed(check.ok);
-    });
-  }
+    const refreshCopy = () => {
+      if (!currentGuard()) {
+        document.documentElement.classList.remove('copy-allowed');
+        return;
+      }
+      void ensureOwner(ownerOf()).then((check) => setAllowed(check.ok));
+    };
+    refreshCopy();
+    document.addEventListener('astro:page-load', refreshCopy);
 </script>

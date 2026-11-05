@@ -1,13 +1,14 @@
 ---
 import { site } from '../config';
 import { adsensePublisherId, gaMeasurementId, goatcounterCode, siteVerification } from '../lib/ads';
-import { absoluteUrl } from '../lib/seo';
+import { absoluteUrl, DEFAULT_OG_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from '../lib/seo';
 
 interface Props {
   title: string;
   description: string;
   ogType?: 'website' | 'article';
   image?: string;
+  imageAlt?: string;
   publishedTime?: Date;
   modifiedTime?: Date;
   tags?: string[];
@@ -19,7 +20,8 @@ const {
   title,
   description,
   ogType = 'website',
-  image = '/og-sunjae.png?v=20261105',
+  image = DEFAULT_OG_IMAGE,
+  imageAlt = title,
   publishedTime,
   modifiedTime,
   tags = [],
@@ -53,6 +55,9 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
     try {
       localStorage.removeItem('theme');
       document.documentElement.setAttribute('data-theme', 'dark');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute('content', '#050b1f');
     } catch (e) {
@@ -67,6 +72,20 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <meta name="license" content="All Rights Reserved" />
 <link rel="canonical" href={canonical} />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-title" content="SunJae.Log" />
+<script is:inline>
+  function registerSunjaeSw() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+  }
+  registerSunjaeSw();
+  document.addEventListener('astro:page-load', registerSunjaeSw);
+</script>
 <link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.90.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.91.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
@@ -82,10 +101,14 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+<meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
 {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
 {publishedTime && <meta property="article:modified_time" content={(modifiedTime ?? publishedTime).toISOString()} />}
 {publishedTime && <meta property="article:author" content={site.author} />}

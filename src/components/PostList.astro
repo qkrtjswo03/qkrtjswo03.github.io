@@ -97,7 +97,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     id={firstOfNs ? `ns-${groupIndex}` : undefined}
                     data-search={searchText(post)}
                     data-title={post.data.title}
-                    data-desc={post.data.description}
+                    data-desc={post.data.locked ? '잠긴 글입니다. 본문은 공개하지 않습니다.' : post.data.description}
                     data-ns={ns}
                     data-age={formatDate(post.data.pubDate)}
                     data-edit={editPostUrl(post)}
@@ -212,9 +212,12 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
 </style>
 
 <script>
+  const mountK9s = () => {
   const roots = document.querySelectorAll<HTMLElement>('[data-k9s]');
 
   roots.forEach((root) => {
+    if (root.dataset.k9sBound === '1') return;
+    root.dataset.k9sBound = '1';
     const frame = root.querySelector<HTMLElement>('.k9s-frame');
     const body = root.querySelector<HTMLElement>('[data-k9s-body]');
     const filter = root.querySelector<HTMLElement>('[data-k9s-filter]');
@@ -473,7 +476,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
 
     // Global / when focus is on body near the list (not in terminal/input)
     document.addEventListener('keydown', (event) => {
-      if (event.defaultPrevented) return;
+      if (!root.isConnected || event.defaultPrevented) return;
       const target = event.target;
       if (
         target instanceof HTMLElement &&
@@ -524,4 +527,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
 
     setActive(activeRow(), false);
   });
+  };
+  mountK9s();
+  document.addEventListener('astro:page-load', mountK9s);
 </script>

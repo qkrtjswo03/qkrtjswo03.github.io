@@ -36,9 +36,15 @@ export interface SiteConfig {
   ga4MeasurementId: string;
   /** GoatCounter 사이트 코드(서브도메인만, 예: "sunjae"). 비우면 꺼집니다. */
   goatcounterCode: string;
-  /** Google Search Console에서 받은 content 값 */
+  /**
+   * Google Search Console HTML 태그 방식의 content 값만.
+   * 비우면 확인 태그를 넣지 않는다. 임의의 코드를 만들지 않는다.
+   */
   googleSiteVerification: string;
-  /** 네이버 서치어드바이저에서 받은 content 값 */
+  /**
+   * 네이버 서치어드바이저 HTML 태그 방식의 content 값만.
+   * 비우면 확인 태그를 넣지 않는다. 임의의 코드를 만들지 않는다.
+   */
   naverSiteVerification: string;
   giscus: GiscusConfig;
 }
@@ -59,6 +65,9 @@ export const site: SiteConfig = {
   adsenseSidebarSlot: '',
   ga4MeasurementId: '',
   goatcounterCode: 'sunjae',
+  // 소유 확인 코드 자리. 받은 content 값만 넣고, 비어 있으면 태그를 만들지 않는다.
+  // googleSiteVerification: '여기에_Google_Search_Console_content',
+  // naverSiteVerification: '여기에_네이버_서치어드바이저_content',
   googleSiteVerification: '',
   naverSiteVerification: '',
   giscus: {

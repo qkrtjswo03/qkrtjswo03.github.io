@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import BaseHead from '../components/BaseHead.astro';
+import Motion from '../components/Motion.astro';
 import Header from '../components/Header.astro';
 import LockGate from '../components/LockGate.astro';
 import GcViews from '../components/GcViews.astro';
@@ -12,6 +14,7 @@ interface Props {
   description?: string;
   ogType?: 'website' | 'article';
   image?: string;
+  imageAlt?: string;
   publishedTime?: Date;
   modifiedTime?: Date;
   tags?: string[];
@@ -28,9 +31,11 @@ const showAds = Boolean(adsensePublisherId());
 <!doctype html>
 <html lang={site.lang} data-theme="dark">
   <head>
+    <ClientRouter />
     <BaseHead title={documentTitle} description={description} {...rest} />
   </head>
   <body>
+    <Motion />
     <LockGate />
     <Header source={source}>
       <slot />

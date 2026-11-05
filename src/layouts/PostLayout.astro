@@ -10,7 +10,7 @@ import OwnerActions from '../components/OwnerActions.astro';
 import { blogFilePath, deletePostUrl, editPostUrl } from '../lib/github';
 import { site } from '../config';
 import { goatcounterCode } from '../lib/ads';
-import { absoluteUrl } from '../lib/seo';
+import { absoluteUrl, DEFAULT_OG_IMAGE, metaDescription, postOgPath } from '../lib/seo';
 import {
   formatDate,
   postSlug,
@@ -50,11 +50,17 @@ const nextLabel = inSeries ? '다음' : '다음 글';
 const gc = goatcounterCode();
 const categories = post.data.categories ?? [];
 const tags = post.data.tags ?? [];
-const minutes = readingMinutes(post.body ?? post.data.description);
+const locked = post.data.locked === true;
+const minutes = readingMinutes(locked ? post.data.description : (post.body ?? post.data.description));
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 const canonical = absoluteUrl(postUrl(post));
-const heroIsRaster = Boolean(post.data.heroImage?.match(/\.(png|jpe?g|webp|gif)$/i));
-const image = heroIsRaster && post.data.heroImage ? post.data.heroImage : '/og-default.png';
+const description = metaDescription({
+  locked,
+  description: post.data.description,
+  body: locked ? '' : post.body,
+});
+const image = locked ? DEFAULT_OG_IMAGE : postOgPath(postSlug(post.id));
+const metaTags = locked ? [] : tags;
 const modified = post.data.updatedDate ?? post.data.pubDate;
 
 const jsonLd = [
@@ -62,15 +68,17 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.data.title,
-    description: post.data.description,
+    description,
     datePublished: post.data.pubDate.toISOString(),
     dateModified: modified.toISOString(),
     inLanguage: 'ko-KR',
-    author: { '@type': 'Person', name: site.author, url: site.url },
-    publisher: { '@type': 'Person', name: site.author },
+    author: { '@type': 'Person', name: site.author, url: absoluteUrl('/about/') },
+    publisher: { '@type': 'Person', name: site.author, url: site.url },
     mainEntityOfPage: canonical,
+    url: canonical,
     image: absoluteUrl(image),
-    keywords: tags.join(', '),
+    isAccessibleForFree: !locked,
+    ...(locked ? {} : { keywords: tags.join(', ') }),
   },
   {
     '@context': 'https://schema.org',
@@ -86,12 +94,14 @@ const jsonLd = [
 
 <BaseLayout
   title={post.data.title}
-  description={post.data.description}
+  description={description}
   ogType="article"
   image={image}
+  imageAlt={locked ? site.title : post.data.title}
   publishedTime={post.data.pubDate}
   modifiedTime={modified}
-  tags={tags}
+  tags={metaTags}
+  noindex={locked}
   jsonLd={jsonLd}
   source={`src/content/blog/${postSlug(post.id)}.md`}
 >
@@ -213,7 +223,7 @@ const jsonLd = [
           </div>
         )}
       </dl>
-      <p class="lede">{post.data.description}</p>
+      <p class="lede">{description}</p>
     </header>
     <div class="post-main">
       {post.data.locked && (
@@ -243,7 +253,7 @@ const jsonLd = [
           <figure class="hero">
             <img
               src={post.data.heroImage}
-              alt={post.data.heroAlt ?? ''}
+              alt={post.data.heroAlt || post.data.title}
               width="1200"
               height="675"
             />

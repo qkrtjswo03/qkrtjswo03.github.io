@@ -9,22 +9,36 @@ import { absoluteUrl } from '../lib/seo';
 import { getPosts } from '../lib/posts';
 
 const posts = await getPosts();
+const personId = absoluteUrl('/about/#person');
+const websiteId = absoluteUrl('/#website');
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: site.title,
-  url: site.url,
-  description: site.description,
-  inLanguage: 'ko-KR',
-  author: { '@type': 'Person', name: site.author },
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: `${absoluteUrl('/search/')}?q={search_term_string}`,
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      name: site.title,
+      url: site.url,
+      description: site.description,
+      inLanguage: 'ko-KR',
+      publisher: { '@id': personId },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${absoluteUrl('/search/')}?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
     },
-    'query-input': 'required name=search_term_string',
-  },
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: site.author,
+      url: absoluteUrl('/about/'),
+      sameAs: ['https://github.com/qkrtjswo03'],
+    },
+  ],
 };
 ---
 
@@ -37,7 +51,7 @@ const jsonLd = {
         sizes="(max-width: 860px) calc(100vw - 2rem), calc(100vw - 272px - 3.2rem)"
         width="2560"
         height="1440"
-        alt=""
+        alt="클라우드와 서버, 차트가 이어진 배너 일러스트"
         loading="eager"
         fetchpriority="high"
         decoding="async"
@@ -46,8 +60,8 @@ const jsonLd = {
     </div>
     <div class="hero-shine" aria-hidden="true"></div>
     <div class="hero-copy">
-      <h1 class="hero-title">{site.title}</h1>
-      <p class="hero-sub">{site.tagline}</p>
+      <h1 class="hero-title"><span data-typewrite>{site.title}</span></h1>
+      <p class="hero-sub"><span data-typewrite>{site.tagline}</span></p>
       <div class="hero-actions">
         <a href="#posts">글 보기</a>
         <a href="/projects/">프로젝트</a>
