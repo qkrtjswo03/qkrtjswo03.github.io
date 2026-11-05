@@ -197,11 +197,8 @@
         if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
         const code = event.code;
         const inPost = insideGuard(event.target instanceof Node ? event.target : null) || selectionHitsGuard();
-        if ((code === 'KeyC' || code === 'KeyX') && inPost) {
-          block(event);
-          return;
-        }
-        if ((code === 'KeyA' || code === 'KeyS' || code === 'KeyU' || code === 'KeyP') && currentGuard()) {
+        if (code === 'KeyP') return;
+        if ((code === 'KeyC' || code === 'KeyX' || code === 'KeyA' || code === 'KeyS' || code === 'KeyU') && inPost) {
           block(event);
         }
       },

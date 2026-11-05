@@ -1,12 +1,27 @@
 # SunJae.Log
 
-클라우드, 인프라, AI 운영을 적는 한국어 기술 블로그입니다. 주소는 [https://qkrtjswo03.github.io](https://qkrtjswo03.github.io) 이고, GitHub Pages 사용자 사이트라 저장소 루트에서 제공됩니다.
+클라우드, 인프라, AI 운영을 적는 한국어 기술 블로그입니다. 주소는 [https://qkrtjswo03.github.io](https://qkrtjswo03.github.io) 이고, GitHub Pages 사용자 사이트라 저장소 루트에서 제공됩니다. 화면은 k9s·vim을 떠올리게 한 어두운 터미널 테마입니다.
 
 ## 왜 Astro인가
 
-글은 `src/content/blog`에 Markdown 파일 하나만 추가하면 됩니다. 화면, 광고, 사이트맵은 Astro가 빌드할 때 만들고, GitHub Actions가 `main`에 푸시될 때마다 Pages로 올립니다. 로컬에 Node를 설치하지 않아도 됩니다. GitHub 웹에서 파일을 추가하고 커밋하면 배포됩니다.
+글은 `src/content/blog`에 Markdown 파일 하나만 추가하면 됩니다. 화면, 광고 자리, 사이트맵, OG 이미지, 검색 색인은 Astro가 빌드할 때 만들고, GitHub Actions가 `main`에 푸시될 때마다 Pages로 올립니다. 로컬에 Node를 설치하지 않아도 됩니다. GitHub 웹에서 파일을 추가하고 커밋하면 배포됩니다.
 
-Jekyll 기본 빌드 대신 Actions를 쓰는 이유는 광고 스크립트와 제휴 문구, 검색, 다크 모드를 설정값 하나로 켜고 끌 수 있기 때문입니다. 설정이 비어 있으면 해당 스크립트는 HTML에 들어가지 않습니다.
+설정이 비어 있으면 해당 스크립트는 HTML에 들어가지 않습니다. AdSense 게시자 ID는 `src/config.ts`에 자리만 있고, 값을 넣기 전에는 광고를 넣지 않습니다.
+
+## 지금 있는 기능
+
+- **글 목록**은 k9s 표처럼 보입니다. `/`로 필터하고, 포커스된 목록에서 `j`/`k` 또는 화살표로 이동합니다. 아카이브처럼 연도가 여러 개이면 포커스된 연도만 움직입니다.
+- **검색**(`/search/`)은 제목·주제·태그뿐 아니라 본문도 찾습니다. 본문 색인(`/search-index.json`)은 검색을 시작할 때만 불러오므로 다른 페이지를 키우지 않습니다. 잠긴 글의 본문은 색인에 넣지 않습니다.
+- **잠긴 글**은 페이지 HTML에 본문을 넣지 않고, 저장소 주인의 GitHub 토큰으로만 엽니다. 잠긴 글은 사이트맵·robots에서 빠지고 `noindex`입니다.
+- **복사 방지**는 글 본문 영역에서만 동작합니다. 방문자는 본문을 복사할 수 없고, 사이트 전체에서 인쇄(`Ctrl+P`)는 허용합니다. 주인으로 로그인하면 해제가 됩니다.
+- **웹 터미널**(하단 vim 독, `/terminal/`)에서 `login`, `ls`, `cat`, `cd`, `edit`, `:w`/`:q`/`:wq`, `posts`, `lock` 등을 쓸 수 있습니다. 모바일에서는 독이 자동으로 열리지 않습니다.
+- **주인 로그인**은 브라우저 `prompt`가 아니라 테마에 맞춘 페이지 안 창입니다. 토큰은 이 탭의 `sessionStorage`에만 두고 저장소에는 넣지 않습니다.
+- **PWA** 서비스 워커는 문서를 네트워크 우선으로 가져옵니다. `api.github.com`, raw GitHub URL, 광고 호스트는 캐시하지 않습니다.
+- **보기 전환**과 k9s 스타일 움직임이 있습니다. `prefers-reduced-motion`이면 움직임을 줄입니다.
+- **SEO**: 사이트맵, `robots.txt`, RSS, Open Graph(1200×630) 이미지가 빌드됩니다.
+- **날짜**는 화면에 Asia/Seoul(KST)로 표시합니다.
+- **인쇄** 시 왼쪽 레일, 오른쪽 상태 패널, 하단 vim 독 같은 장식은 숨깁니다.
+- **조회수**는 GoatCounter가 켜져 있으면 글 페이지와 전체(TOTAL)에 표시합니다. 목록마다 카운터를 치지 않아, 조회가 없는 글의 404가 홈 콘솔에 나지 않습니다.
 
 ## 배포하기 전에 한 번만
 
@@ -34,6 +49,7 @@ heroImage: "/images/example.svg"
 heroAlt: "그림이 없어도 이해되는 설명"
 draft: false
 sample: false
+locked: false
 ---
 
 첫 문단입니다. 글의 제목은 위의 title이므로, 본문은 ## 부터 시작합니다.
@@ -44,9 +60,11 @@ sample: false
 ```
 
 - `draft: true`이면 목록, RSS, 사이트맵에 나오지 않습니다.
+- `locked: true`이면 본문을 페이지에 넣지 않습니다. 저장소 주인만 터미널 로그인 뒤에 볼 수 있습니다.
 - `categories`와 `tags`는 새 이름을 적어도 주제·태그 페이지가 생깁니다.
 - 그림 파일은 `public/images/`에 둡니다. 본문에서는 `/images/파일명.svg`로 부릅니다.
 - `updatedDate`는 생략해도 됩니다.
+- 시리즈 글은 `series`와 `seriesOrder`를 쓸 수 있습니다.
 
 쿠팡 파트너스처럼 제휴 링크를 넣을 때는 원하는 위치에 아래 한 줄을 **혼자** 둡니다. 위아래는 빈 줄입니다.
 
@@ -57,6 +75,8 @@ sample: false
 빌드하면 다음 문장으로 바뀝니다.
 
 > 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+
+브라우저 터미널에서도 `new post`, `edit`, `save`, `pr`, `lock`으로 글을 다루고, `login`으로 주인 토큰을 넣을 수 있습니다.
 
 ## 설정
 
@@ -69,6 +89,7 @@ sample: false
 | `adsenseInArticleSlot` | 광고 단위 숫자 ID | 없어도 게시자 ID만으로 인아티클 영역은 켜집니다 |
 | `adsenseSidebarSlot` | 광고 단위 숫자 ID | 없어도 사이드바 영역은 켜집니다 |
 | `ga4MeasurementId` | `G-`로 시작 | Analytics 스크립트를 넣지 않습니다 |
+| `goatcounterCode` | GoatCounter 서브도메인 | 통계 스크립트와 조회수를 넣지 않습니다 |
 | `googleSiteVerification` | Search Console content 값 | 확인 메타 태그를 넣지 않습니다 |
 | `naverSiteVerification` | 서치어드바이저 content 값 | 확인 메타 태그를 넣지 않습니다 |
 | `giscus.enabled` | `true`와 repo, repoId, category, categoryId | 기본 `false`. 댓글 스크립트를 넣지 않습니다 |
@@ -92,21 +113,22 @@ Node.js 22가 필요합니다.
 
 ```bash
 npm install
+npm test
 npm run dev
 ```
 
-브라우저에서 `http://localhost:4321`을 엽니다. 배포와 같은 결과를 확인하려면 `npm run build` 다음 `npm run preview`입니다.
+브라우저에서 `http://localhost:4321`을 엽니다. 배포와 같은 결과를 확인하려면 `npm run build` 다음 `npm run preview`입니다. `npm test`는 터미널 명령 파서(ls/cat/cd/:q/:w/:wq/history)와 서울 시간 날짜 표시를 검사합니다.
 
 ## 검색과 피드
 
 - 사이트맵: `/sitemap-index.xml`
 - robots: `/robots.txt`
 - RSS: `/rss.xml`
-- 글 검색은 `/search/`에서 페이지 안의 목록을 거릅니다. 별도 검색 서버는 없습니다.
-- 기본 화면은 어두운 터미널입니다. 오른쪽 위 버튼으로 밝은 화면을 켤 수 있고, 고른 값은 이 브라우저에만 저장됩니다.
+- 글 검색은 `/search/`에서 제목·본문·주제·태그를 거릅니다. 본문 색인은 `/search-index.json`이며 검색할 때 한 번 불러옵니다.
+- 기본 화면은 어두운 터미널입니다.
 
-## 글 쓰기 버튼 (소유자)
+## 글 쓰기와 주인 기능
 
-홈, 글 목록, 글 페이지의 `new post`, `edit`, `delete`는 GitHub에서 파일을 만들거나 고치거나 지우는 링크입니다. 저장소에 쓸 권한이 있는 사람만 실제로 커밋할 수 있고, 그 판단은 GitHub가 합니다. 이 사이트는 비밀번호나 토큰을 넣지 않습니다.
+홈, 글 목록, 글 페이지의 `new post`, `edit`, `delete`, 잠금 전환은 웹 터미널을 통해 저장소를 고칩니다. 저장소 주인 GitHub 계정으로 `login`한 뒤에만 실제로 커밋할 수 있습니다. 토큰은 이 탭의 세션에만 남고, 저장소나 페이지 소스에 넣지 않습니다.
 
-버튼은 기본적으로 숨겨 있습니다. 주소 끝에 `?owner=1`을 붙이면 이 브라우저에만 켜지고, `?owner=0`이면 꺼집니다. 선택한 값은 `owner-mode`라는 이름으로 이 브라우저의 localStorage에만 남습니다.
+자물쇠 아이콘은 공개 글(열린 자물쇠)과 잠긴 글(닫힌 자물쇠)을 구별합니다. 잠금 전환 버튼은 주인 인증이 끝난 뒤에만 보입니다.

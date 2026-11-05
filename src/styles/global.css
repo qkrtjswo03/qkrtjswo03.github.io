@@ -2427,6 +2427,9 @@ pre.astro-code code {
 
 @media print {
   .rail,
+  .status-rail,
+  .term-dock,
+  .term-modal,
   .ad-slot,
   .toc,
   .pager,
@@ -2435,8 +2438,17 @@ pre.astro-code code {
   .nav-toggle,
   .icon-button,
   .caret,
-  .owner-actions {
+  .owner-actions,
+  .page-source,
+  .skip,
+  .k9s-preview,
+  .k9s-filter,
+  .k9s-keys {
     display: none !important;
+  }
+
+  .app-shell.has-term-dock {
+    padding-bottom: 0 !important;
   }
 
   body {
@@ -2447,6 +2459,83 @@ pre.astro-code code {
   a {
     color: black;
   }
+}
+
+.term-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.term-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: color-mix(in srgb, #020617 72%, transparent);
+  cursor: pointer;
+}
+
+.term-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(28rem, 100%);
+  padding: 1.15rem 1.2rem 1.05rem;
+  border: 1px solid color-mix(in srgb, var(--cyan) 35%, var(--line));
+  border-radius: 10px;
+  background: #0d1b3d;
+  box-shadow: 0 18px 40px rgba(5, 11, 31, 0.55), inset 0 1px 0 rgba(190, 215, 255, 0.2);
+}
+
+.term-modal-kicker {
+  margin: 0 0 0.55rem;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.term-modal-title {
+  margin: 0 0 0.4rem;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.term-modal-desc {
+  margin: 0 0 0.85rem;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.term-modal-input {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.9rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(5, 11, 31, 0.85);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.term-modal-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--cyan) 70%, transparent);
+  outline-offset: 1px;
+}
+
+.term-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
 }
 
 

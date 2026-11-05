@@ -1,4 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { formatDateISO, yearInZone } from './dates';
+
+export { formatDate, formatDateISO } from './dates';
 
 export type BlogPost = CollectionEntry<'blog'>;
 
@@ -14,13 +17,6 @@ export function termUrl(kind: 'categories' | 'tags', value: string): string {
   const segment =
     kind === 'tags' ? value.split('/').map((part) => encodeURIComponent(part)).join('/') : encodeURIComponent(value);
   return `/${kind}/${segment}/`;
-}
-
-export function formatDate(date: Date): string {
-  const y = date.getUTCFullYear();
-  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const d = String(date.getUTCDate()).padStart(2, '0');
-  return `${y}.${m}.${d}`;
 }
 
 export function plainText(markdown: string): string {
@@ -72,7 +68,7 @@ export function neighbors(posts: BlogPost[], slug: string): { newer: BlogPost | 
 export function groupByYear(posts: BlogPost[]): Array<[number, BlogPost[]]> {
   const map = new Map<number, BlogPost[]>();
   for (const post of posts) {
-    const year = post.data.pubDate.getUTCFullYear();
+    const year = yearInZone(post.data.pubDate);
     const list = map.get(year);
     if (list) list.push(post);
     else map.set(year, [post]);
@@ -118,7 +114,7 @@ export function terminalPostIndex(posts: BlogPost[]) {
   return posts.map((post) => ({
     path: `src/content/blog/${postSlug(post.id)}.md`,
     title: post.data.title,
-    date: post.data.pubDate.toISOString().slice(0, 10),
+    date: formatDateISO(post.data.pubDate),
     locked: post.data.locked === true,
     body: post.data.locked ? '' : (post.body ?? ''),
   }));

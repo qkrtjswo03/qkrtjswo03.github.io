@@ -1,6 +1,6 @@
 ---
 import { careerProjects } from '../data/projects';
-import { countTerms, type BlogPost } from '../lib/posts';
+import { countTerms, formatDateISO, type BlogPost } from '../lib/posts';
 import { goatcounterCode } from '../lib/ads';
 const gc = goatcounterCode();
 
@@ -37,7 +37,7 @@ const certifications = [
       </div>
       <div>
         <dt>LATEST</dt>
-        <dd>{latest ? latest.data.pubDate.toISOString().slice(0, 10) : '—'}</dd>
+        <dd>{latest ? formatDateISO(latest.data.pubDate) : '—'}</dd>
       </div>
       {gc && (
         <div data-gc-path="TOTAL" hidden title="사이트 전체 방문(GoatCounter)">
