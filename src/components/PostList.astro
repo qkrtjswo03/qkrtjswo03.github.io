@@ -182,7 +182,6 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     font-weight: 600;
     letter-spacing: 0.02em;
   }
-  html:not([data-owner='1']) .k9s-lock-btn:not(.is-locked) { display: none; }
 </style>
 
 <script>
@@ -314,22 +313,13 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     const toggleLock = (row: HTMLTableRowElement | undefined) => {
       const href = row?.dataset.lock;
       if (!href || !row) return;
-      if (localStorage.getItem('owner-mode') !== '1' || !localStorage.getItem('blog-terminal-token')) {
-        if (statusEl) statusEl.textContent = 'lock: 저장소 주인으로 login 하세요';
-        const a = document.createElement('a');
-        a.href = '#term-login';
-        a.hidden = true;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        return;
-      }
+      // 사이트 비밀번호·owner login 은 터미널 lock 이 물음. 여기선 낙관적 UI만.
       const nextLocked = row.dataset.locked !== '1';
       applyLockUi(row, nextLocked);
       if (statusEl) {
         statusEl.textContent = nextLocked
-          ? 'lock: Pending으로 표시 · 터미널에서 커밋 중…'
-          : 'lock: 잠금 해제 · 터미널에서 커밋 중…';
+          ? 'lock: 비밀번호 확인 후 main 반영 중…'
+          : 'lock: 잠금 해제 · 비밀번호 확인 후 main 반영 중…';
       }
       const a = document.createElement('a');
       a.href = href;
@@ -356,7 +346,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
         return;
       }
       if (typeof detail.locked === 'boolean') applyLockUi(row, detail.locked);
-      if (statusEl) statusEl.textContent = detail.locked ? 'lock: Pending · PR 생성됨' : 'lock: Published · PR 생성됨';
+      if (statusEl) statusEl.textContent = detail.locked ? 'lock: Pending · main 반영됨' : 'lock: Published · main 반영됨';
     }) as EventListener);
 
     body.addEventListener('click', (event) => {
