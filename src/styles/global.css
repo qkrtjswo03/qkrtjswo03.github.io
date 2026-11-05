@@ -2751,6 +2751,19 @@ pre.astro-code code {
   white-space: nowrap;
 }
 
+.k9s-keys {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
+  margin-left: 0.35rem;
+}
+
+.k9s-keys b,
+.k9s-top b {
+  color: var(--cyan);
+  font-weight: 650;
+}
+
 .k9s-crumbs {
   margin-left: auto;
 }

@@ -46,7 +46,13 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
           <span class="k9s-pill">ctx sunjae-blog</span>
           <span>&lt;posts&gt;</span>
           <span data-k9s-count>{posts.length} items</span>
-          <span class="k9s-crumbs">sorted by AGE</span>
+          <span class="k9s-keys" aria-label="단축키">
+            <span><b>&lt;enter&gt;</b> open</span>
+            <span><b>/</b> filter</span>
+            <span><b>j/k</b> move</span>
+            <span><b>esc</b> clear</span>
+          </span>
+          <span class="k9s-crumbs" data-k9s-status>Ready</span>
         </div>
 
         <form class="k9s-filter" data-k9s-filter hidden>
@@ -114,13 +120,6 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
           <p class="k9s-preview-age" data-k9s-preview-age></p>
         </aside>
 
-        <div class="k9s-foot">
-          <span><b>&lt;enter&gt;</b> open</span>
-          <span><b>/</b> filter</span>
-          <span><b>j/k</b> move</span>
-          <span><b>esc</b> clear</span>
-          <span class="k9s-foot-end" data-k9s-status>Ready</span>
-        </div>
       </div>
     </div>
   )
