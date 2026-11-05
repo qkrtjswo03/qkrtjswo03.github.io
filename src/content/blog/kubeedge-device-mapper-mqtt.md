@@ -10,6 +10,8 @@ tags:
   - Mosquitto
   - IoT
   - Edge Computing
+series: kubeedge
+seriesOrder: 4
 draft: false
 ---
 
@@ -207,3 +209,5 @@ default     demo-temp-edge-b    16h
 한 문장으로 줄이면 이렇다.
 
 > 실제 장치는 Modbus·OPC-UA·BLE 같은 방식으로 Mapper와 통신하고, Mapper는 MQTT Publisher/Subscriber로 Mosquitto Broker와 메시지를 주고받는다. Mosquitto는 토픽을 기준으로 메시지를 중계해서 KubeEdge의 EventBus·DeviceTwin과 장치 데이터를 잇는다.
+
+이 구조에 실제로 값을 흘려 본 결과는 [DeviceTwin·MQTT 시험](/blog/kubeedge-devicetwin-mqtt-test/)에 정리했다.
