@@ -17,7 +17,7 @@ const blog = defineCollection({
     seriesOrder: z.number().int().positive().optional(),
     draft: z.boolean().default(false),
     sample: z.boolean().default(false),
-    /** true면 공통 비밀번호로 본문 잠금 */
+    /** true면 본문은 페이지에 넣지 않고, 저장소 주인 토큰으로만 연다 */
     locked: z.boolean().default(false),
   }),
 });

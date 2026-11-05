@@ -113,6 +113,17 @@ export function groupByCategory(posts: BlogPost[]): Array<{ category: string; po
     .sort((a, b) => b.posts[0].data.pubDate.valueOf() - a.posts[0].data.pubDate.valueOf());
 }
 
+/** 터미널에 심는 글 색인. 잠긴 글 본문은 넣지 않습니다. */
+export function terminalPostIndex(posts: BlogPost[]) {
+  return posts.map((post) => ({
+    path: `src/content/blog/${postSlug(post.id)}.md`,
+    title: post.data.title,
+    date: post.data.pubDate.toISOString().slice(0, 10),
+    locked: post.data.locked === true,
+    body: post.data.locked ? '' : (post.body ?? ''),
+  }));
+}
+
 export function countTerms(posts: BlogPost[], key: 'categories' | 'tags'): Array<[string, number]> {
   const map = new Map<string, number>();
   for (const post of posts) {
