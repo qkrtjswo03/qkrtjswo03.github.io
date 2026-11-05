@@ -434,8 +434,87 @@ const {
     input.focus();
   };
 
+  const SITE_PAGES: Array<{ id: string; path: string; title: string; blurb: string }> = [
+    { id: 'home', path: '/', title: '홈', blurb: '배너 · 최근 글(k9s 목록)' },
+    { id: 'blog', path: '/blog/', title: '글', blurb: '전체 글 목록' },
+    { id: 'projects', path: '/projects/', title: '프로젝트', blurb: '포트폴리오 프로젝트' },
+    { id: 'archive', path: '/archive/', title: '아카이브', blurb: '주제·연도별 묶음' },
+    { id: 'about', path: '/about/', title: '소개', blurb: '프로필 · 경력 · 자격 · 수상 · 활동' },
+    { id: 'search', path: '/search/', title: '검색', blurb: '사이트 내 검색' },
+    { id: 'terminal', path: '/terminal/', title: '터미널', blurb: '이 vim 독의 전체 화면' },
+  ];
+
+  const currentPage = () => {
+    const path = window.location.pathname.replace(/\/index\.html$/, '/');
+    const normalized = path.length > 1 && path.endsWith('/') ? path : path === '/' ? '/' : `${path}/`.replace(/\/\/$/, '/');
+    // prefer longest matching prefix
+    let best = SITE_PAGES[0];
+    for (const page of SITE_PAGES) {
+      if (page.path === '/') {
+        if (normalized === '/' || normalized === '') best = page;
+        continue;
+      }
+      if (normalized === page.path || normalized.startsWith(page.path)) {
+        if (!best || page.path.length >= best.path.length) best = page;
+      }
+    }
+    // blog post detail
+    if (/^\/blog\/.+/.test(normalized) && normalized !== '/blog/') {
+      return { id: 'post', path: window.location.pathname, title: '글 상세', blurb: document.title || '게시글' };
+    }
+    return best;
+  };
+
+  const guide = (topic?: string) => {
+    const key = (topic || '').toLowerCase();
+    if (!key || key === 'site' || key === 'map') {
+      print('SunJae.Log 안내 — go <이름> 으로 이동합니다.', 'ok');
+      print('');
+      for (const page of SITE_PAGES) {
+        print(`${page.id.padEnd(10, ' ')} ${page.path.padEnd(14, ' ')} ${page.title} — ${page.blurb}`);
+      }
+      print('');
+      print('팁: whereami · go about · go blog · posts · help');
+      print('잠긴 글은 비밀번호로 읽고, edit/lock 은 주인 login + 사이트 비밀번호가 필요합니다.');
+      return;
+    }
+    const page = SITE_PAGES.find((p) => p.id === key || p.title === topic);
+    if (!page) {
+      print(`모르는 안내입니다: ${topic}. guide 로 목록을 봅니다.`, 'warn');
+      return;
+    }
+    print(`${page.title} (${page.path})`, 'ok');
+    print(page.blurb);
+    printHint('열기:', page.path);
+  };
+
+  const whereami = () => {
+    const here = currentPage();
+    print(`지금 위치: ${here.title}  ${here.path}`, 'ok');
+    print(here.blurb);
+    print('이동: go <home|blog|projects|archive|about|search|terminal>');
+  };
+
+  const goPage = (name?: string) => {
+    if (!name) {
+      print('사용법: go <home|blog|projects|archive|about|search|terminal>', 'warn');
+      return;
+    }
+    const key = name.toLowerCase();
+    const page = SITE_PAGES.find((p) => p.id === key || p.path.replace(/\//g, '') === key || p.title === name);
+    if (!page) {
+      print(`없는 페이지: ${name}. guide 로 목록을 봅니다.`, 'warn');
+      return;
+    }
+    print(`${page.title} 로 이동합니다…`, 'ok');
+    window.location.assign(page.path);
+  };
+
   const help = () => {
     const rows: Array<[string, string]> = [
+      ['guide [페이지]', '사이트 맵·페이지 안내 (봇처럼).'],
+      ['whereami', '지금 보고 있는 페이지를 알려 줍니다.'],
+      ['go <페이지>', '홈/글/프로젝트/소개 등으로 이동합니다.'],
       ['login [token]', '토큰을 넣고 로그인합니다. 토큰을 생략하면 입력란으로 물어봅니다.'],
       ['logout', '이 브라우저에 저장한 토큰을 지웁니다.'],
       ['reset', '사라진 작업 브랜치를 비우고 main 으로 돌아갑니다.'],
@@ -503,6 +582,19 @@ const {
       switch (cmd) {
         case 'help':
           help();
+          break;
+        case 'guide':
+        case 'map':
+        case 'man':
+          guide(args[0]);
+          break;
+        case 'whereami':
+        case 'pwd':
+          whereami();
+          break;
+        case 'go':
+        case 'open':
+          goPage(args[0]);
           break;
         case 'clear':
           log.replaceChildren();
@@ -866,7 +958,7 @@ draft: true
     void run(value);
   });
 
-  const COMMANDS = ['help', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'lock', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
+  const COMMANDS = ['help', 'guide', 'map', 'man', 'whereami', 'go', 'open', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'lock', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
   const dirCache = new Map<string, Array<{ name: string; type: string }>>();
   const listDir = async (dir: string) => {
     const key = `${refOf()}:${dir}`;
