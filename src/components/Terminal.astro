@@ -97,6 +97,36 @@ const {
 
   let token = localStorage.getItem(TOKEN_KEY) ?? '';
   let login = localStorage.getItem(USER_KEY) ?? '';
+
+  const OWNER_MODE = 'owner-mode';
+  const repoOwner = () => (REPO.split('/')[0] || '').toLowerCase();
+  const isOwner = () => Boolean(token && login && login.toLowerCase() === repoOwner());
+  const setOwnerUi = (on: boolean) => {
+    try {
+      if (on) {
+        localStorage.setItem(OWNER_MODE, '1');
+        document.documentElement.setAttribute('data-owner', '1');
+      } else {
+        localStorage.removeItem(OWNER_MODE);
+        document.documentElement.removeAttribute('data-owner');
+      }
+    } catch (e) {}
+  };
+  const requireOwner = async (action: string) => {
+    if (isOwner()) return true;
+    print(`${action}은 저장소 주인(${repoOwner()}) 로그인 후에만 됩니다.`, 'warn');
+    if (!token) {
+      await run('login');
+    }
+    if (!isOwner()) {
+      print('권한이 없습니다. 본인 GitHub 토큰으로 login 하세요.', 'warn');
+      setOwnerUi(false);
+      return false;
+    }
+    setOwnerUi(true);
+    return true;
+  };
+
   let branch = localStorage.getItem(WORK_KEY) ?? '';
   let cwd = '';
   let tree: TreeEntry[] | null = null;
@@ -393,9 +423,10 @@ const {
           const me = (await api('/user')) as { login: string };
           login = me.login;
           localStorage.setItem(USER_KEY, login);
-          const ok = login === REPO.split('/')[0];
+          const ok = isOwner();
+          setOwnerUi(ok);
           print(
-            ok ? `로그인했습니다: ${login}` : `로그인은 됐지만 계정이 ${login} 입니다. 저장소 주인은 ${REPO.split('/')[0]} 입니다.`,
+            ok ? `로그인했습니다: ${login}` : `로그인은 됐지만 계정이 ${login} 입니다. 저장소 주인은 ${repoOwner()} 입니다.`,
             ok ? 'ok' : 'warn',
           );
           break;
@@ -406,6 +437,7 @@ const {
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(USER_KEY);
           localStorage.removeItem(WORK_KEY);
+          setOwnerUi(false);
           setBranch('');
           print('토큰을 지웠습니다.');
           break;
@@ -489,6 +521,7 @@ const {
           break;
         }
         case 'edit': {
+          if (!(await requireOwner('edit'))) break;
           const path = await pathArg(args[0]);
           const file = await readFile(path);
           openEditor(path, file.content);
@@ -496,6 +529,7 @@ const {
           break;
         }
         case 'new': {
+          if (!(await requireOwner('new'))) break;
           const openNewPost = (slugRaw?: string) => {
             const slug = (slugRaw || 'new-post').replace(/\.md$/i, '').replace(/[^a-zA-Z0-9._-]+/g, '-');
             const path = `src/content/blog/${slug || 'new-post'}.md`;
@@ -541,6 +575,7 @@ draft: true
           break;
         }
         case 'save': {
+          if (!(await requireOwner('save'))) break;
           const messageFlag = args.indexOf('-m');
           const message = messageFlag >= 0 ? args[messageFlag + 1] : 'Edit from web terminal';
           if (!dirty.size) {
@@ -555,6 +590,7 @@ draft: true
           break;
         }
         case 'rm': {
+          if (!(await requireOwner('rm'))) break;
           if (!args[0]) throw new Error('경로를 적어주세요.');
           const path = resolvePath(args[0]);
           const messageFlag = args.indexOf('-m');
@@ -564,6 +600,7 @@ draft: true
           break;
         }
         case 'pr': {
+          if (!(await requireOwner('pr'))) break;
           if (!branch) {
             print('작업 브랜치가 없습니다. save 로 먼저 커밋하세요.', 'warn');
             break;
@@ -581,6 +618,7 @@ draft: true
           break;
         }
         case 'merge': {
+          if (!(await requireOwner('merge'))) break;
           if (!branch) {
             print('작업 브랜치가 없습니다. save 로 먼저 커밋하세요.', 'warn');
             break;
@@ -743,11 +781,7 @@ draft: true
       return;
     }
     closeEditor();
-    if (!token) {
-      print('먼저 login 으로 토큰을 넣어주세요.', 'warn');
-      await run('login');
-      if (!token) return;
-    }
+    if (!(await requireOwner('commit'))) return;
     const defaultMsg = path ? `Update ${path.split('/').pop()}` : 'Edit from web terminal';
     const message = window.prompt('커밋 메시지', defaultMsg);
     if (!message) {
@@ -826,8 +860,10 @@ draft: true
 
   void (async () => {
     await ensureLiveRef();
+    setOwnerUi(isOwner());
     if (login) {
       print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
+      if (!isOwner()) print('이 계정으로는 수정할 수 없습니다. 저장소 주인으로 login 하세요.', 'warn');
     }
     print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
     print('UI: new post / edit / delete / 커밋 버튼 · 또는 posts, edit, save 명령.', 'dim');

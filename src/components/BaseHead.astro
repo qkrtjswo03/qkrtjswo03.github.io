@@ -43,10 +43,7 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <script is:inline>
   (function () {
     try {
-      var params = new URLSearchParams(location.search);
-      var owner = params.get('owner');
-      if (owner === '1') localStorage.setItem('owner-mode', '1');
-      if (owner === '0') localStorage.removeItem('owner-mode');
+      // owner UI only after terminal login as repo owner (set by Terminal)
       if (localStorage.getItem('owner-mode') === '1') {
         document.documentElement.setAttribute('data-owner', '1');
       } else {
