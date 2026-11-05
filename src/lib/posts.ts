@@ -83,6 +83,7 @@ export function groupByYear(posts: BlogPost[]): Array<[number, BlogPost[]]> {
 export function seriesTitle(id: string): string {
   if (id === 'k8s-hardway') return 'Kubernetes Hard Way HA 설치';
   if (id === 'kubeedge') return 'KubeEdge 엣지 클라우드';
+  if (id === 'grafana-unified-auth') return 'Grafana 대시보드 일원화와 중앙 인증';
   return id;
 }
 
