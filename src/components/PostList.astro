@@ -105,6 +105,14 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                     <td class="k9s-ns">{ns}</td>
                     <td class="k9s-name">
                       <a href={postUrl(post)}>{post.data.title}</a>
+                      {post.data.locked && (
+                        <span class="k9s-lock" title="잠긴 글" aria-label="잠긴 글">
+                          <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="11" width="14" height="10" rx="2" />
+                            <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                          </svg>
+                        </span>
+                      )}
                       {gc && <span class="k9s-views" data-gc-path={postUrl(post)} hidden title="조회수"> · <span data-gc-count>—</span></span>}
                     </td>
                     <td class="k9s-ready">1/1</td>

@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import AdSlot from '../components/AdSlot.astro';
 import Cmd from '../components/Cmd.astro';
 import Comments from '../components/Comments.astro';
+import PostLock from '../components/PostLock.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import { deletePostUrl, editPostUrl } from '../lib/github';
@@ -130,7 +131,20 @@ const jsonLd = [
       <dl class="describe-list">
         <div>
           <dt title="이름">Name</dt>
-          <dd><h1>{post.data.title}</h1></dd>
+          <dd>
+            <h1>
+              {post.data.title}
+              {post.data.locked && (
+                <span class="post-lock-badge" title="잠긴 글">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="5" y="11" width="14" height="10" rx="2" />
+                    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  잠김
+                </span>
+              )}
+            </h1>
+          </dd>
         </div>
         <div>
           <dt title="주제">Categories</dt>
@@ -200,6 +214,8 @@ const jsonLd = [
       <p class="lede">{post.data.description}</p>
     </header>
     <div class="post-main">
+      <PostLock locked={post.data.locked} />
+      <div class="post-lock-body" data-post-lock-body hidden={post.data.locked}>
       {
         post.data.sample && (
           <p class="sample-banner">
@@ -258,6 +274,7 @@ const jsonLd = [
         )
       }
       <Comments />
+      </div>
     </div>
     <aside class="post-side">
       {

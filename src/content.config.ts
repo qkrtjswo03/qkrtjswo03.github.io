@@ -17,6 +17,8 @@ const blog = defineCollection({
     seriesOrder: z.number().int().positive().optional(),
     draft: z.boolean().default(false),
     sample: z.boolean().default(false),
+    /** true면 공통 비밀번호로 본문 잠금 */
+    locked: z.boolean().default(false),
   }),
 });
 
