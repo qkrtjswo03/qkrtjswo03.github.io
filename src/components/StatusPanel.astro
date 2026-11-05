@@ -1,6 +1,8 @@
 ---
 import { careerProjects } from '../data/projects';
 import { countTerms, type BlogPost } from '../lib/posts';
+import { goatcounterCode } from '../lib/ads';
+const gc = goatcounterCode();
 
 interface Props {
   posts: BlogPost[];
@@ -37,6 +39,12 @@ const certifications = [
         <dt>LATEST</dt>
         <dd>{latest ? latest.data.pubDate.toISOString().slice(0, 10) : '—'}</dd>
       </div>
+      {gc && (
+        <div data-gc-path="TOTAL" hidden title="사이트 전체 방문(GoatCounter)">
+          <dt>VIEWS</dt>
+          <dd data-gc-count>—</dd>
+        </div>
+      )}
     </dl>
     <ul class="status-ns">
       {

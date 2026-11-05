@@ -7,6 +7,7 @@ import ReadingProgress from '../components/ReadingProgress.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import { deletePostUrl, editPostUrl } from '../lib/github';
 import { site } from '../config';
+import { goatcounterCode } from '../lib/ads';
 import { absoluteUrl } from '../lib/seo';
 import {
   formatDate,
@@ -44,6 +45,7 @@ const nextPost = inSeries
   : newer;
 const prevLabel = inSeries ? '이전' : '이전 글';
 const nextLabel = inSeries ? '다음' : '다음 글';
+const gc = goatcounterCode();
 const categories = post.data.categories ?? [];
 const tags = post.data.tags ?? [];
 const minutes = readingMinutes(post.body ?? post.data.description);
@@ -187,6 +189,12 @@ const jsonLd = [
           <dt title="읽기 시간">Reading</dt>
           <dd><span class="meta-mono">{minutes}분</span></dd>
         </div>
+        {gc && (
+          <div data-gc-path={postUrl(post)} hidden>
+            <dt title="조회수">Views</dt>
+            <dd><span class="meta-mono">조회 <span data-gc-count>—</span></span></dd>
+          </div>
+        )}
       </dl>
       <p class="lede">{post.data.description}</p>
     </header>
