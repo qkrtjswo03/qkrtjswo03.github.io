@@ -288,23 +288,45 @@ const {
     return { content: await res.text(), sha: '' };
   };
 
+  const readFileOn = async (path: string, ref: string) => {
+    const data = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(ref)}`)) as {
+      content?: string;
+      sha: string;
+      encoding?: string;
+    };
+    const content = data.encoding === 'base64' && data.content ? b64decode(data.content) : '';
+    return { content, sha: data.sha };
+  };
+
   const writeFile = async (path: string, content: string, message: string) => {
     const target = await ensureBranch();
+    const put = async (sha?: string) =>
+      api(`/repos/${REPO}/contents/${path}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message,
+          content: b64encode(content),
+          branch: target,
+          ...(sha ? { sha } : {}),
+        }),
+      });
+
     let sha: string | undefined;
     try {
-      sha = (await readFile(path)).sha;
+      sha = (await readFileOn(path, target)).sha;
     } catch {
       sha = undefined;
     }
-    await api(`/repos/${REPO}/contents/${path}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        message,
-        content: b64encode(content),
-        branch: target,
-        ...(sha ? { sha } : {}),
-      }),
-    });
+
+    try {
+      await put(sha);
+    } catch (error) {
+      const messageText = error instanceof Error ? error.message : String(error);
+      if (!/^409\b/.test(messageText)) throw error;
+      print('파일이 이미 바뀌어 최신 SHA로 다시 저장합니다…', 'warn');
+      const latest = await readFileOn(path, target);
+      await put(latest.sha);
+    }
     dirty.delete(path);
     tree = null;
   };
@@ -530,25 +552,55 @@ const {
             print('blog 마크다운만 lock 할 수 있습니다.', 'warn');
             break;
           }
-          const file = await readFile(path);
-          let content = file.content;
-          let nextLocked = true;
-          if (/^locked:\s*true\b/m.test(content)) {
-            content = content.replace(/^locked:\s*true\b/m, 'locked: false');
-            nextLocked = false;
-          } else if (/^locked:\s*false\b/m.test(content)) {
-            content = content.replace(/^locked:\s*false\b/m, 'locked: true');
-            nextLocked = true;
-          } else if (/^---\n[\s\S]*?\n---/.test(content)) {
-            content = content.replace(/^(---\n[\s\S]*?)(\n---)/, `$1\nlocked: true$2`);
-            nextLocked = true;
-          } else {
-            print('frontmatter를 찾지 못했습니다.', 'warn');
-            break;
+          const target = await ensureBranch();
+          const applyLock = async () => {
+            const file = await readFileOn(path, target);
+            let content = file.content;
+            let nextLocked = true;
+            if (/^locked:\s*true\b/m.test(content)) {
+              content = content.replace(/^locked:\s*true\b/m, 'locked: false');
+              nextLocked = false;
+            } else if (/^locked:\s*false\b/m.test(content)) {
+              content = content.replace(/^locked:\s*false\b/m, 'locked: true');
+              nextLocked = true;
+            } else if (/^---\n[\s\S]*?\n---/.test(content)) {
+              content = content.replace(/^(---\n[\s\S]*?)(\n---)/, `$1\nlocked: true$2`);
+              nextLocked = true;
+            } else {
+              throw new Error('frontmatter를 찾지 못했습니다.');
+            }
+            return { content, nextLocked, sha: file.sha };
+          };
+
+          let attempt = await applyLock();
+          const putLock = async (content: string, sha: string, message: string) =>
+            api(`/repos/${REPO}/contents/${path}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                message,
+                content: b64encode(content),
+                branch: target,
+                sha,
+              }),
+            });
+          const msg = attempt.nextLocked
+            ? `Lock post ${path.split('/').pop()}`
+            : `Unlock post ${path.split('/').pop()}`;
+          try {
+            await putLock(attempt.content, attempt.sha, msg);
+          } catch (error) {
+            const messageText = error instanceof Error ? error.message : String(error);
+            if (!/^409\b/.test(messageText)) throw error;
+            print('충돌(409) — 최신 파일로 다시 lock 합니다…', 'warn');
+            attempt = await applyLock();
+            const retryMsg = attempt.nextLocked
+              ? `Lock post ${path.split('/').pop()}`
+              : `Unlock post ${path.split('/').pop()}`;
+            await putLock(attempt.content, attempt.sha, retryMsg);
           }
-          const msg = nextLocked ? `Lock post ${path.split('/').pop()}` : `Unlock post ${path.split('/').pop()}`;
-          await writeFile(path, content, msg);
-          print(`${path} → locked: ${nextLocked}. 커밋했습니다.`, 'ok');
+          dirty.delete(path);
+          tree = null;
+          print(`${path} → locked: ${attempt.nextLocked}. 커밋했습니다.`, 'ok');
           await run('pr');
           break;
         }
