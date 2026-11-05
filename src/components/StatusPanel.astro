@@ -1,0 +1,90 @@
+---
+import { careerProjects } from '../data/projects';
+import { countTerms, type BlogPost } from '../lib/posts';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+const topics = countTerms(posts, 'categories');
+const latest = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())[0];
+const spotlight = careerProjects.slice(0, 3);
+const certifications = [
+  { name: 'CKAD', image: '/certs/ckad.png' },
+  { name: 'CKA', image: '/certs/cka.png' },
+  { name: 'NCP', image: '/certs/ncp.png' },
+  { name: 'NCA', image: '/certs/nca.png' },
+];
+---
+
+<aside class="status-rail" aria-label="클러스터 상태">
+  <div class="status-block">
+    <div class="status-head">
+      <span class="k9s-pill">ctx sunjae-blog</span>
+      <span class="status-ready"><span class="status-dot" aria-hidden="true"></span>Ready</span>
+    </div>
+    <dl class="status-metrics">
+      <div>
+        <dt>POSTS</dt>
+        <dd>{posts.length}</dd>
+      </div>
+      <div>
+        <dt>NS</dt>
+        <dd>{topics.length}</dd>
+      </div>
+      <div>
+        <dt>LATEST</dt>
+        <dd>{latest ? latest.data.pubDate.toISOString().slice(0, 10) : '—'}</dd>
+      </div>
+    </dl>
+    <ul class="status-ns">
+      {
+        topics.map(([topic, count]) => (
+          <li>
+            <span class="ns-name">{topic}</span>
+            <span class="ns-count">{count}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="status-block">
+    <p class="status-label">$ get projects</p>
+    <ul class="mini-projects">
+      {
+        spotlight.map((project) => (
+          <li>
+            <a class="mini-project" href="/projects/">
+              <span class="mini-logo" style={`--h: ${project.hue}`}>
+                <img src={`/logos/${project.logo}`} alt="" loading="lazy" decoding="async" />
+              </span>
+              <span class="mini-body">
+                <span class="mini-title">{project.title}</span>
+                <span class="mini-kind">{project.kind}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a class="status-more" href="/projects/">전체 프로젝트 →</a>
+  </div>
+
+  <div class="status-block">
+    <p class="status-label">$ get certs</p>
+    <ul class="mini-certs">
+      {
+        certifications.map((item) => (
+          <li>
+            <a class="mini-cert" href="/about/#certs" title={item.name}>
+              <img src={item.image} alt={item.name} loading="lazy" decoding="async" />
+              <span>{item.name}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</aside>

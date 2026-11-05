@@ -2,13 +2,15 @@
 import { nav, site } from '../config';
 import { countTerms, getPosts, postSlug, termUrl } from '../lib/posts';
 import Terminal from './Terminal.astro';
+import StatusPanel from './StatusPanel.astro';
 
 const path = Astro.url.pathname;
 const allPosts = await getPosts();
 const topics = countTerms(allPosts, 'categories');
 const year = new Date().getFullYear();
-const showTermRail = !path.startsWith('/terminal');
-const termPosts = showTermRail
+const showTermDock = !path.startsWith('/terminal');
+const showStatusRail = !path.startsWith('/terminal');
+const termPosts = showTermDock
   ? allPosts.map((post) => ({
       path: `src/content/blog/${postSlug(post.id)}.md`,
       title: post.data.title,
@@ -32,7 +34,8 @@ const commands: Record<string, string> = {
 ---
 
 <a class="skip" href="#content">본문으로 건너뛰기</a>
-<div class:list={["console", showTermRail && "has-term-rail"]}>
+<div class:list={["app-shell", showTermDock && "has-term-dock"]}>
+<div class:list={["console", showStatusRail && "has-status-rail"]}>
   <aside class="rail">
     <div class="rail-head">
       <a class="brand" href="/" aria-label={`${site.title} 홈`}>
@@ -120,17 +123,19 @@ const commands: Record<string, string> = {
   <main id="content" class="page">
     <slot />
   </main>
-  {
-    showTermRail && (
-      <aside class="term-rail" aria-label="웹 터미널">
-        <div class="term-rail-head">
-          <span class="sr-only">터미널</span>
-          <a href="/terminal/">전체 화면</a>
-        </div>
-        <Terminal posts={termPosts} variant="panel" />
-      </aside>
-    )
-  }
+  {showStatusRail && <StatusPanel posts={allPosts} />}
+</div>
+{
+  showTermDock && (
+    <aside class="term-dock" aria-label="웹 터미널">
+      <div class="term-dock-head">
+        <span class="term-dock-title">$ vim</span>
+        <a href="/terminal/">전체 화면</a>
+      </div>
+      <Terminal posts={termPosts} variant="panel" />
+    </aside>
+  )
+}
 </div>
 
 <script>

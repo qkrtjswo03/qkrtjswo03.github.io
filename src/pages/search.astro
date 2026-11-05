@@ -29,7 +29,7 @@ const posts = await getPosts();
 <script>
   const form = document.querySelector<HTMLFormElement>('.search-form');
   const input = document.querySelector<HTMLInputElement>('#q');
-  const items = [...document.querySelectorAll<HTMLElement>('#results li')];
+  const items = [...document.querySelectorAll<HTMLElement>('#results tr')];
   const empty = document.querySelector<HTMLElement>('#search-empty');
   const count = document.querySelector<HTMLElement>('#search-count');
 
