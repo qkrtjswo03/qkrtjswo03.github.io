@@ -16,7 +16,7 @@ draft: false
 
 [OSI 7계층 기초편](/blog/osi-7-layers/)을 KubeEdge 현장에 대입한 실전편이다. Edge Pod의 AI·DIL 데이터가 Cloud collector까지 갈 때 계층마다 **PDU 이름**이 바뀌고, **MTU/MSS**에 따라 몇 조각으로 나뉘는지를 본다.
 
-> 아래 그림은 Study 폴더의 [OSI7-IP패킷-MTU.pptx](/files/OSI7-IP패킷-MTU.pptx) 슬라이드다. 원본 덱도 같은 링크로 받을 수 있다.
+> 아래 그림은 Study 폴더의 슬라이드를 이미지로 옮긴 것이다.
 
 ## 개요
 
@@ -110,4 +110,3 @@ DIL·AI forwarder는 Edge → Cloud, TLS·큰 Payload·MTU/MSS가 이슈다. Dev
 
 ![MQTT vs DIL/HTTP](/images/osi-mtu/slide-17.png)
 
-원본 슬라이드: [OSI7-IP패킷-MTU.pptx](/files/OSI7-IP패킷-MTU.pptx)

@@ -16,7 +16,7 @@ draft: false
 
 Chrome 창이 뜨고, 음악이 흐르고, 마우스가 움직이고, 다운로드가 진행된다. 모두 동시에 일어나는 것처럼 보이지만 뒤에서는 **운영체제(OS)** 하나가 CPU 시간·메모리·장치를 나눠 주며 전부를 조율한다.
 
-> 아래 그림은 Study 폴더의 [운영체제_동작원리.pptx](/files/운영체제_동작원리.pptx) 슬라이드다. 원본 덱도 같은 링크로 받을 수 있다.
+> 아래 그림은 Study 폴더의 슬라이드를 이미지로 옮긴 것이다.
 
 ## 한눈에 보는 구조
 
@@ -84,4 +84,4 @@ Chrome 창이 뜨고, 음악이 흐르고, 마우스가 움직이고, 다운로�
 
 ![핵심 개념 6가지](/images/os/slide-11.png)
 
-원본 슬라이드: [운영체제_동작원리.pptx](/files/운영체제_동작원리.pptx) · 출처: How an Operating System Works (영상, rick.theengineer)
+출처: How an Operating System Works (영상, rick.theengineer)

@@ -123,12 +123,15 @@ const {
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
   };
+  /** UI 버튼에서 방금 확인한 비밀번호를 바로 이어지는 명령 1회에만 재사용 (이중 프롬프트 방지) */
+  let sitePwOneShot = false;
   /** force=true 이면 세션 기억 없이 매번 묻음 (자물쇠 걸기/풀기) */
   const requireSitePassword = async (action: string, force = false) => {
     if (!unlockHash) {
       print('사이트 비밀번호 해시가 설정되지 않았습니다.', 'warn');
       return false;
     }
+    if (sitePwOneShot) { sitePwOneShot = false; return true; }
     if (!force && localStorage.getItem(UNLOCK_KEY) === '1') return true;
     const value = window.prompt(`${action} 하려면 사이트 비밀번호를 입력하세요.`);
     if (value == null) {
@@ -796,6 +799,7 @@ const {
         }
 
         case 'edit': {
+          if (!(await requireSitePassword('edit', true))) break;
           if (!(await requireOwner('edit'))) break;
           const path = await pathArg(args[0]);
           const file = await readFile(path);
@@ -804,6 +808,7 @@ const {
           break;
         }
         case 'new': {
+          if (!(await requireSitePassword('new', true))) break;
           if (!(await requireOwner('new'))) break;
           const openNewPost = (slugRaw?: string) => {
             const slug = (slugRaw || 'new-post').replace(/\.md$/i, '').replace(/[^a-zA-Z0-9._-]+/g, '-');
@@ -865,6 +870,7 @@ draft: true
           break;
         }
         case 'rm': {
+          if (!(await requireSitePassword('rm', true))) break;
           if (!(await requireOwner('rm'))) break;
           if (!args[0]) throw new Error('경로를 적어주세요.');
           const path = resolvePath(args[0]);
@@ -1094,8 +1100,9 @@ draft: true
     focusTerminal();
     if (hash === '#term-new-post') {
       void (async () => {
-        if (!(await requireSitePassword('new'))) return;
+        if (!(await requireSitePassword('new', true))) return;
         if (!(await requireOwner('new'))) return;
+        sitePwOneShot = true;
         await run('new post');
       })();
       return true;
@@ -1103,8 +1110,9 @@ draft: true
     if (hash.startsWith('#term-edit-')) {
       const path = decodeURIComponent(hash.slice('#term-edit-'.length));
       void (async () => {
-        if (!(await requireSitePassword('edit'))) return;
+        if (!(await requireSitePassword('edit', true))) return;
         if (!(await requireOwner('edit'))) return;
+        sitePwOneShot = true;
         await run(`edit ${path}`);
       })();
       return true;
@@ -1117,12 +1125,13 @@ draft: true
     if (hash.startsWith('#term-delete-')) {
       const path = decodeURIComponent(hash.slice('#term-delete-'.length));
       void (async () => {
-        if (!(await requireSitePassword('delete'))) return;
+        if (!(await requireSitePassword('delete', true))) return;
         if (!(await requireOwner('delete'))) return;
         const ok = window.confirm(
           `${path}\n\n삭제 커밋을 만들고 main에 머지합니다.`,
         );
         if (!ok) return;
+        sitePwOneShot = true;
         await run(`rm ${path}`);
         try { await run('pr'); } catch (e) {}
         await run('merge');
