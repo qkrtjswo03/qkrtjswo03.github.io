@@ -35,7 +35,17 @@ export const careerProjects: Project[] = [
       '단절 중 쌓인 352건이 복구 17초 뒤 모두 도착했고, 간헐은 생성 2,151건과 수신 2,151건이 같았다.',
       '세 조건 모두 누락 0 · 중복 0이었고, 클라우드는 단절 42초 뒤 연결 끊김으로 판정했다.',
     ],
-    posts: [{ href: '/blog/kubeedge-device-mapper-mqtt/', label: 'KubeEdge Device, Mapper, MQTT' }],
+    posts: [
+      { href: '/blog/kubeedge-overview/', label: 'KubeEdge 개요' },
+      { href: '/blog/kubeedge-architecture/', label: 'KubeEdge 아키텍처' },
+      { href: '/blog/kubeedge-install-guide/', label: 'KubeEdge v1.22 설치' },
+      { href: '/blog/kubeedge-device-mapper-mqtt/', label: 'KubeEdge Device, Mapper, MQTT' },
+      { href: '/blog/kubeedge-devicetwin-mqtt-test/', label: 'DeviceTwin·MQTT 시험' },
+      { href: '/blog/kubeedge-north-south-reliability/', label: 'North-South 데이터 보장' },
+      { href: '/blog/kubeedge-dil-validation/', label: 'DIL 환경 동작 검증' },
+      { href: '/blog/edgemesh-overview/', label: 'EdgeMesh 개요' },
+      { href: '/blog/edgemesh-p2p-east-west/', label: 'EdgeMesh P2P(East-West)' },
+    ],
   },
   {
     title: '멀티 클러스터 관측 스택 통합',
