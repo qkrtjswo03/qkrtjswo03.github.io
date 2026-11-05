@@ -884,59 +884,133 @@ html[data-owner='1'] .owner-actions {
   min-height: 5.4rem;
 }
 
-.project-grid {
+.project-group-note {
+  margin: 0 0 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+}
+
+.project-cards {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
   gap: 0.8rem;
 }
 
 .project-card {
-  border-radius: 6px;
-  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: var(--glass-solid);
+  background-color: var(--bg-elev);
+  box-shadow: inset 0 1px 0 rgba(190, 215, 255, 0.28);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .project-card:hover,
 .jump-nav a:hover,
 .topic-list a:hover,
 .tag-pill:hover {
-  border-color: var(--accent);
-  box-shadow: var(--glow);
+  border-color: hsl(var(--h, 205) 90% 68%);
+  box-shadow: inset 0 1px 0 rgba(190, 215, 255, 0.34), 0 0 24px hsl(var(--h, 205) 90% 60% / 0.28);
 }
 
-.project-card h3 {
-  margin: 0 0 0.7rem;
-  font-family: var(--sans);
-  font-size: 1.08rem;
-  letter-spacing: -0.03em;
+.project-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  background:
+    linear-gradient(135deg, hsl(var(--h, 205) 78% 46% / 0.82), hsl(calc(var(--h, 205) + 26) 82% 32% / 0.9)),
+    var(--bg-elev);
+  border-bottom: 1px solid var(--line);
 }
 
-.project-card dl {
+.project-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M0 12 L12 0 L24 12 L12 24 Z' fill='none' stroke='%23ffffff' stroke-opacity='0.35' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+.project-logo {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 0.35rem;
-  margin: 0 0 0.75rem;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0.35rem;
+  border-radius: 8px;
+  background: rgba(244, 248, 255, 0.94);
+  box-shadow: 0 2px 10px rgba(2, 6, 20, 0.35);
 }
 
-.project-card dl div {
-  display: grid;
-  grid-template-columns: 3.2rem minmax(0, 1fr);
-  gap: 0.5rem;
+.project-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.project-card dt {
-  margin: 0;
-  color: var(--accent);
+.project-kind {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(4, 8, 22, 0.5);
+  color: #f4f8ff;
   font-family: var(--mono);
-  font-size: 0.72rem;
-  padding-top: 0.15rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
 }
 
-.project-card dd {
+.project-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.75rem 0.9rem 0.8rem;
+}
+
+.project-body h3 {
   margin: 0;
+  font-family: var(--sans);
+  font-size: 1.02rem;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+}
+
+.project-role {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.project-period {
+  margin: 0;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .project-stack {
-  margin: 0 0 0.75rem;
+  margin: 0.35rem 0 0.6rem;
   padding: 0;
   list-style: none;
 }
@@ -947,19 +1021,15 @@ html[data-owner='1'] .owner-actions {
 }
 
 .project-results li + li {
-  margin-top: 0.28rem;
+  margin-top: 0.3rem;
 }
 
-.project-posts {
-  margin: 0.8rem 0 0;
+.project-links {
+  margin: 0.75rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
   font-family: var(--mono);
-  font-size: 0.78rem;
-}
-
-@media (min-width: 900px) {
-  .project-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  font-size: 0.74rem;
 }
 
 .rail-topics {
