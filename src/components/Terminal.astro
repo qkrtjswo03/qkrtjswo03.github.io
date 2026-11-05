@@ -655,6 +655,11 @@ const {
           dirty.delete(path);
           tree = null;
           print(`${path} → locked: ${attempt.nextLocked}. 커밋했습니다.`, 'ok');
+          document.dispatchEvent(
+            new CustomEvent('blog:post-lock', {
+              detail: { path, locked: attempt.nextLocked, ok: true },
+            }),
+          );
           await run('pr');
           break;
         }
@@ -804,6 +809,14 @@ draft: true
       }
     } catch (error) {
       print(error instanceof Error ? error.message : String(error), 'err');
+      if (cmd === 'lock') {
+        const path = args[0] ? String(args[0]) : '';
+        document.dispatchEvent(
+          new CustomEvent('blog:post-lock', {
+            detail: { path, ok: false },
+          }),
+        );
+      }
     }
   };
 
