@@ -101,6 +101,10 @@ export const careerProjects: Project[] = [
       '새 Service 엔드포인트는 사이드카가 붙은 워크로드에서 도달하지 못했다.',
       '그래서 컨트롤 플레인을 재시작하는 순서와 점검 항목을 문서로 남겼다.',
     ],
+    posts: [
+      { href: '/blog/istio-paas-architecture/', label: 'Istio 아키텍처와 istiod 역할' },
+      { href: '/blog/istiod-outage-impact/', label: 'istiod 중단 영향 분석' },
+    ],
   },
   {
     title: 'PaaS 구성 요소 검증과 패키징',
