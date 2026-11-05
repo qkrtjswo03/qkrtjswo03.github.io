@@ -328,6 +328,7 @@ const {
       ['status', '커밋하지 않은 파일과 작업 브랜치를 봅니다.'],
       ['rm <path>', '파일을 지웁니다(커밋).'],
       ['pr', '작업 브랜치로 PR을 만듭니다.'],
+      ['merge', '열린 PR을 main에 머지해 배포를 시작합니다.'],
       ['clear', '화면을 지웁니다.'],
     ];
     for (const [cmd, desc] of rows) print(`${cmd.padEnd(20, ' ')} ${desc}`);
@@ -579,6 +580,39 @@ draft: true
           printHint(`PR #${pr.number}:`, pr.html_url);
           break;
         }
+        case 'merge': {
+          if (!branch) {
+            print('작업 브랜치가 없습니다. save 로 먼저 커밋하세요.', 'warn');
+            break;
+          }
+          if (!token) {
+            print('먼저 login 으로 토큰을 넣어주세요.', 'warn');
+            break;
+          }
+          const owner = REPO.split('/')[0] || '';
+          const openPrs = (await api(
+            `/repos/${REPO}/pulls?state=open&head=${encodeURIComponent(`${owner}:${branch}`)}&base=${encodeURIComponent(BASE)}`,
+          )) as Array<{ number: number; html_url: string; title: string; head: { sha: string } }>;
+          if (!openPrs.length) {
+            print('이 브랜치의 열린 PR이 없습니다. 먼저 pr 로 만드세요.', 'warn');
+            break;
+          }
+          const open = openPrs[0];
+          await api(`/repos/${REPO}/pulls/${open.number}/merge`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              merge_method: 'squash',
+              commit_title: `${open.title} (#${open.number})`,
+              sha: open.head.sha,
+            }),
+          });
+          print(`머지했습니다: PR #${open.number}`, 'ok');
+          printHint(`PR #${open.number}:`, open.html_url);
+          print('Pages 배포가 곧 시작됩니다. 작업 브랜치는 main 으로 돌아갑니다.', 'dim');
+          setBranch('');
+          tree = null;
+          break;
+        }
         case 'find': {
           if (!args[0]) throw new Error('찾을 단어를 적어주세요.');
           if (!tree) await loadTree();
@@ -603,7 +637,7 @@ draft: true
     void run(value);
   });
 
-  const COMMANDS = ['help', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'new', 'save', 'status', 'rm', 'pr', 'find'];
+  const COMMANDS = ['help', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
   const dirCache = new Map<string, Array<{ name: string; type: string }>>();
   const listDir = async (dir: string) => {
     const key = `${refOf()}:${dir}`;
