@@ -64,6 +64,8 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <title>{title}</title>
 <meta name="description" content={description} />
 <meta name="author" content={site.author} />
+<meta name="copyright" content={`© ${new Date().getFullYear()} ${site.author}. All Rights Reserved.`} />
+<meta name="license" content="All Rights Reserved" />
 <link rel="canonical" href={canonical} />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.90.woff2" as="font" type="font/woff2" crossorigin />
