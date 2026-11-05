@@ -1430,6 +1430,34 @@ pre.astro-code {
   gap: 1.35rem;
 }
 
+/* —— post cmdline weight —— */
+.post-layout .cmd {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--ink-soft) 88%, transparent);
+}
+
+.post-layout .cmd .ps1,
+.post-layout .cmd .cmd-text {
+  font-weight: 300;
+}
+
+.post-layout .cmd-text {
+  color: color-mix(in srgb, var(--ink) 82%, var(--ink-soft));
+}
+
+.post-layout .describe-list dt,
+.post-layout .meta-mono {
+  font-size: 0.68rem;
+  font-weight: 300;
+}
+
+.post-layout .describe-list dt {
+  letter-spacing: 0.06em;
+}
+
+
 .describe-panel {
   border-radius: 6px;
   padding: 0.95rem 1.05rem 1.05rem;
