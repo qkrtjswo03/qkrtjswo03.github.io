@@ -4,6 +4,11 @@ import { countTerms, getPosts, postSlug, termUrl } from '../lib/posts';
 import Terminal from './Terminal.astro';
 import StatusPanel from './StatusPanel.astro';
 
+interface Props {
+  source?: string;
+}
+
+const { source } = Astro.props;
 const path = Astro.url.pathname;
 const allPosts = await getPosts();
 const topics = countTerms(allPosts, 'categories');
@@ -120,6 +125,14 @@ const commands: Record<string, string> = {
   </aside>
   <main id="content" class="page">
     <slot />
+    {
+      source && (
+        <p class="page-source">
+          {source.includes('src/content/blog/') ? '이 글은' : '이 페이지는'}{' '}
+          <code>{source}</code>에서 고칩니다.
+        </p>
+      )
+    }
   </main>
   {showStatusRail && <StatusPanel posts={allPosts} />}
 </div>

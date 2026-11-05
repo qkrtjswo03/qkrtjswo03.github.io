@@ -9,7 +9,7 @@ import { getPosts } from '../../lib/posts';
 const posts = await getPosts();
 ---
 
-<BaseLayout title="글" description="SunJae.Log에 올린 글을 최신순으로 봅니다.">
+<BaseLayout title="글" description="SunJae.Log에 올린 글을 최신순으로 봅니다." source="src/pages/blog/index.astro">
   <header class="page-intro">
     <div class="list-head">
       <Cmd command="kubectl get posts" />

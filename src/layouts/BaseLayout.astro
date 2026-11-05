@@ -16,9 +16,10 @@ interface Props {
   tags?: string[];
   noindex?: boolean;
   jsonLd?: unknown;
+  source?: string;
 }
 
-const { title = site.title, description = site.description, ...rest } = Astro.props;
+const { title = site.title, description = site.description, source, ...rest } = Astro.props;
 const documentTitle = title === site.title ? site.title : `${title} · ${site.title}`;
 const showAds = Boolean(adsensePublisherId());
 ---
@@ -29,7 +30,7 @@ const showAds = Boolean(adsensePublisherId());
     <BaseHead title={documentTitle} description={description} {...rest} />
   </head>
   <body>
-    <Header>
+    <Header source={source}>
       <slot />
     </Header>
     {

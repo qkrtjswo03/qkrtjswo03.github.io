@@ -6,7 +6,7 @@ import { countTerms, getPosts, termUrl } from '../../lib/posts';
 const terms = countTerms(await getPosts(), 'tags');
 ---
 
-<BaseLayout title="태그" description="글에 붙인 태그 목록입니다.">
+<BaseLayout title="태그" description="글에 붙인 태그 목록입니다." source="src/pages/tags/index.astro">
   <header class="page-intro">
     <Cmd command="kubectl get tags" />
     <h1>태그</h1>

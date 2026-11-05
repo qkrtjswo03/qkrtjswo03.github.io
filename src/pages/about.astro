@@ -38,9 +38,70 @@ const education = [
   { school: '동의과학대학교', major: '컴퓨터정보학과', kind: '전문학사', from: '2015.03', to: '2020.02', status: '졸업' },
   { school: '울산고등학교', major: '', kind: '고등학교', from: '2012.03', to: '2015.02', status: '졸업' },
 ];
+
+const career = [
+  {
+    company: 'Okestro',
+    status: '재직 중',
+    from: '2024.12',
+    to: '현재',
+    role: 'PaaS Expert 파트 / Cloud-Native Platform Engineer',
+    detail: 'VIOLA PaaS 서비스 고도화',
+  },
+  {
+    company: '교보문고',
+    status: '퇴사',
+    from: '2024.05',
+    to: '2024.09',
+    role: 'AWS ROSA(OpenShift) 하이브리드 클라우드 운영',
+    detail: '온프레미스·클라우드',
+  },
+  {
+    company: 'OSC KOREA',
+    status: '퇴사',
+    from: '2022.07',
+    to: '2024.04',
+    role: 'KT Cloud & FlyingCube PaaS 플랫폼 운영',
+    detail: '',
+  },
+];
+
+const awards = [
+  {
+    title: '제 7회 K-Hackathon VR & AR 앱 개발 챌린지',
+    result: '소프트웨어 혁신센터 이사장상 · 전국 공동 3위',
+    from: '2019.07.08',
+    to: '2019.11.01',
+    org: '과학기술정보통신부',
+  },
+  {
+    title: 'DIT 교내 캡스톤디자인대회',
+    result: '우수상 · 2위',
+    from: '2019.06.01',
+    to: '2019.10.08',
+    org: 'DIT 산학협력 링크 사업단',
+  },
+];
+
+const activities = [
+  {
+    title: '클라우드 자동화 기반의 애플리케이션 개발 및 배포',
+    role: '6개월 교육 과정 이수 · 960시간',
+    from: '2021.12.30',
+    to: '2022.06.27',
+    org: '한국정보교육원',
+  },
+  {
+    title: 'KB국민은행 영업점 방문고객 대상 디지털 서비스 활용 안내 및 도움',
+    role: 'KB국민은행 대학생 디지털 서포터즈 인턴',
+    from: '2020.12.28',
+    to: '2021.02.27',
+    org: 'KB국민은행 울산남지점',
+  },
+];
 ---
 
-<BaseLayout title="소개" description="SunJae.Log를 쓰는 사람과 이 블로그가 다루는 범위입니다.">
+<BaseLayout title="소개" description="SunJae.Log를 쓰는 사람과 이 블로그가 다루는 범위입니다." source="src/pages/about.astro">
   <article class="prose prose-page">
     <header class="page-intro">
       <Cmd command="kubectl describe engineer" />
@@ -145,10 +206,75 @@ const education = [
         ))
       }
     </ol>
+    <h2 id="career">경력사항</h2>
+    <p class="section-lead">Today's me is just my own successful past in the future.</p>
+    <ol class="timeline">
+      {
+        career.map((item) => (
+          <li class={`timeline-item${item.status === '재직 중' ? ' timeline-item--current' : ''}`}>
+            <span class="timeline-year">{item.from.slice(0, 4)}</span>
+            <span class="timeline-rail" aria-hidden="true" />
+            <span class="timeline-body">
+              <span class="timeline-title">
+                {item.company}
+                <span class={`timeline-status${item.status === '재직 중' ? ' timeline-status--current' : ''}`}>
+                  {item.status}
+                </span>
+              </span>
+              <span class="timeline-sub">{item.role}</span>
+              {item.detail && <span class="timeline-sub muted">{item.detail}</span>}
+              <span class="timeline-meta">
+                {item.from} – {item.to}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+    <h2 id="awards">수상</h2>
+    <p class="section-lead">대회에서 받은 상입니다.</p>
+    <ul class="record-cards award-cards">
+      {
+        awards.map((item) => (
+          <li class="record-card record-card--award">
+            <span class="record-body">
+              <span class="award-badge" aria-hidden="true">Award</span>
+              <span class="record-name">{item.title}</span>
+              <span class="record-sub award-result">{item.result}</span>
+              <span class="record-meta">
+                <span class="record-org">{item.org}</span>
+                <time class="record-date">
+                  {item.from} – {item.to}
+                </time>
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <h2 id="activities">활동사항</h2>
+    <ul class="record-cards">
+      {
+        activities.map((item) => (
+          <li class="record-card">
+            <span class="record-body">
+              <span class="record-name">{item.title}</span>
+              <span class="record-sub">{item.role}</span>
+              <span class="record-meta">
+                <span class="record-org">{item.org}</span>
+                <time class="record-date">
+                  {item.from} – {item.to}
+                </time>
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
     <p>
-      자격과 학력 전체는 <a href={notionUrl} rel="me noopener" target="_blank">Notion 이력서</a>에서도 볼 수 있습니다.
+      자격·경력·학력·수상·활동 전체는 <a href={notionUrl} rel="me noopener" target="_blank">Notion 이력서</a>에서도 볼 수 있습니다.
     </p>
-      <p>
+    <p>
       운영자: {site.author}<br />
       연락:{' '}
       {
@@ -160,6 +286,5 @@ const education = [
         ))
       }
     </p>
-    <p>소개 문구는 <code>src/pages/about.astro</code>에서 고칩니다.</p>
   </article>
 </BaseLayout>

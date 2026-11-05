@@ -7,7 +7,7 @@ import { getPosts, groupByYear } from '../lib/posts';
 const groups = groupByYear(await getPosts());
 ---
 
-<BaseLayout title="아카이브" description="연도별로 모은 글 목록입니다.">
+<BaseLayout title="아카이브" description="연도별로 모은 글 목록입니다." source="src/pages/archive.astro">
   <header class="page-intro">
     <Cmd command="kubectl get archive" />
     <h1>연도별 글</h1>

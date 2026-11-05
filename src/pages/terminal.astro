@@ -13,7 +13,7 @@ const postIndex = posts.map((post) => ({
 }));
 ---
 
-<BaseLayout title="터미널" description="브라우저에서 저장소 글을 고치는 터미널입니다." noindex>
+<BaseLayout title="터미널" description="브라우저에서 저장소 글을 고치는 터미널입니다." noindex source="src/pages/terminal.astro">
   <header class="page-intro">
     <Cmd command="git clone && vim" />
     <h1>웹 터미널</h1>
