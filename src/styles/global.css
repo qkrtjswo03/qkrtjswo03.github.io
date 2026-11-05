@@ -31,25 +31,6 @@
   --shiki-dark-bg: #1b2420;
 }
 
-:root[data-theme="light"] {
-  --bg: #eef4ff;
-  --bg-elev: rgba(255, 255, 255, 0.5);
-  --bg-muted: rgba(59, 130, 246, 0.1);
-  --ink: #0b1b3a;
-  --ink-soft: #334e7a;
-  --line: rgba(37, 99, 235, 0.28);
-  --accent: #1d4ed8;
-  --accent-ink: #1e3a8a;
-  --cyan: #0e7490;
-  --warn: #b45309;
-  --code-bg: rgba(255, 255, 255, 0.58);
-  --code-fg: #1e3a8a;
-  --bg-rail: rgba(255, 255, 255, 0.4);
-  --glass-blur: 26px;
-  --glass-solid: #f7faff;
-  --glow: 0 0 18px rgba(37, 99, 235, 0.22);
-  color-scheme: light;
-}
 
 *,
 *::before,
@@ -99,11 +80,6 @@ body::before {
   z-index: 1;
 }
 
-:root[data-theme="light"] body {
-  background:
-    radial-gradient(1000px 560px at 0% 0%, rgba(59, 130, 246, 0.16), transparent 60%),
-    linear-gradient(180deg, #f7faff 0%, var(--bg) 48%, #e4edff 100%);
-}
 
 @media (min-width: 720px) {
   html {
@@ -486,23 +462,6 @@ h4 {
   transform: rotate(-45deg);
 }
 
-.icon-sun,
-.icon-moon {
-  display: none;
-}
-
-:root[data-theme="dark"] .icon-sun,
-:root:not([data-theme="light"]) .icon-sun {
-  display: block;
-}
-
-:root[data-theme="light"] .icon-moon {
-  display: block;
-}
-
-:root[data-theme="light"] .icon-sun {
-  display: none;
-}
 
 .page {
   min-width: 0;
@@ -1924,14 +1883,6 @@ pre.astro-code span {
   text-decoration: var(--shiki-dark-text-decoration);
 }
 
-:root[data-theme="light"] pre.astro-code,
-:root[data-theme="light"] pre.astro-code span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
-  font-style: var(--shiki-light-font-style);
-  font-weight: var(--shiki-light-font-weight);
-  text-decoration: var(--shiki-light-text-decoration);
-}
 
 pre.astro-code {
   padding: 1.05rem 1.15rem;

@@ -47,15 +47,6 @@ const commands: Record<string, string> = {
         </span>
         <span class="caret" aria-hidden="true"></span>
       </a>
-      <button class="icon-button" id="theme-toggle" type="button" aria-label="색 테마 전환">
-        <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-          <path fill="currentColor" d="M14.5 2.4a.8.8 0 0 1 .2.9 7.2 7.2 0 0 0 6 9.8.8.8 0 0 1 .2 1.5A8.8 8.8 0 1 1 13.5 2a.8.8 0 0 1 1 .4Z"></path>
-        </svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-          <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
-          <path d="M12 2.8v2.2M12 19v2.2M2.8 12h2.2M19 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
-        </svg>
-      </button>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
         <span class="bars" aria-hidden="true"></span>
         <span class="sr-only">메뉴</span>
@@ -178,33 +169,6 @@ const commands: Record<string, string> = {
   const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
   const rail = document.querySelector('.rail');
   const navEl = document.getElementById('site-nav');
-  const themeButton = document.getElementById('theme-toggle');
-
-  const themeName = () => (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
-
-  const syncThemeChrome = () => {
-    const dark = themeName() === 'dark';
-    themeButton?.setAttribute('aria-label', dark ? '밝은 테마로 전환' : '어두운 테마로 전환');
-    themeButton?.setAttribute('aria-pressed', dark ? 'true' : 'false');
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0e1110' : '#f4f7f5');
-  };
-
-  const syncGiscus = (theme: string) => {
-    document.querySelector('script[src*="giscus.app/client.js"]')?.setAttribute('data-theme', theme);
-    const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-    frame?.contentWindow?.postMessage({ giscus: { setConfig: { theme } } }, 'https://giscus.app');
-  };
-
-  syncThemeChrome();
-
-  themeButton?.addEventListener('click', () => {
-    const next = themeName() === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    syncThemeChrome();
-    syncGiscus(next);
-  });
-
   const closeNav = (focusToggle = false) => {
     rail?.classList.remove('is-open');
     toggle?.setAttribute('aria-expanded', 'false');

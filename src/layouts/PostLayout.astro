@@ -5,6 +5,7 @@ import Cmd from '../components/Cmd.astro';
 import Comments from '../components/Comments.astro';
 import PostLock from '../components/PostLock.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
+import ImageZoom from '../components/ImageZoom.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import { deletePostUrl, editPostUrl } from '../lib/github';
 import { site } from '../config';
@@ -294,6 +295,7 @@ const jsonLd = [
       <AdSlot />
     </aside>
   </article>
+  <ImageZoom />
   <script>
     document.addEventListener('keydown', (event) => {
       if (event.key !== 'Backspace' || event.metaKey || event.ctrlKey || event.altKey) return;
