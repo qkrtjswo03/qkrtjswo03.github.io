@@ -1976,9 +1976,10 @@ pre.astro-code code {
 .ad-slot {
   margin: 1.1rem 0;
   padding: 0.65rem 0.75rem 0.75rem;
-  border: 1px dashed var(--line);
+  border: 1px dashed color-mix(in srgb, var(--cyan) 35%, var(--line));
   border-radius: 4px;
-  background: color-mix(in srgb, var(--bg-muted) 55%, transparent);
+  background: color-mix(in srgb, #050b1f 72%, transparent);
+  color: var(--ink-soft);
 }
 
 .ad-label {

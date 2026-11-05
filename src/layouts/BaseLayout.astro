@@ -46,6 +46,10 @@ const showAds = Boolean(adsensePublisherId());
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
               }
             }
+            if (!window.__sunjaeAds) {
+              window.__sunjaeAds = true;
+              document.addEventListener('astro:page-load', push);
+            }
             if (document.readyState === 'complete') push();
             else window.addEventListener('load', push);
           })();

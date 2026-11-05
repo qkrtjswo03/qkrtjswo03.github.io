@@ -32,26 +32,10 @@ export function siteVerification(value: string): string | null {
   return META_TOKEN.test(token) ? token : null;
 }
 
-export function adsTxtBody(value = site.adsensePublisherId): string {
-  const raw = value.trim();
-  if (!raw) {
-    return [
-      '# Google AdSense publisher id가 아직 없습니다.',
-      '# src/config.ts 의 adsensePublisherId 에 ca-pub- 로 시작하는 값을 넣으면',
-      '# 다음 배포에서 이 파일이 아래 형식으로 바뀝니다.',
-      '#',
-      '# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0',
-      '',
-    ].join('\n');
-  }
-  const id = adsensePublisherId(raw);
-  if (!id) {
-    return [
-      '# adsensePublisherId 형식이 아닙니다. ca-pub- 다음에 숫자만 와야 합니다.',
-      '# 형식이 맞을 때까지 광고 스크립트는 넣지 않습니다.',
-      '',
-    ].join('\n');
-  }
+/** 게시자 ID가 없으면 null. 있으면 ads.txt 한 줄. 설명용 주석 파일은 만들지 않습니다. */
+export function adsTxtBody(value = site.adsensePublisherId): string | null {
+  const id = adsensePublisherId(value);
+  if (!id) return null;
   return `google.com, ${id.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`;
 }
 
@@ -70,11 +54,12 @@ function insTag(publisherId: string, options: { layout?: string; format: string;
 
 export function inArticleAdHtml(publisher = site.adsensePublisherId, slot = site.adsenseInArticleSlot): string | null {
   const id = adsensePublisherId(publisher);
-  if (!id) return null;
+  const slotId = adSlotId(slot);
+  if (!id || !slotId) return null;
   const markup = insTag(id, {
     layout: 'in-article',
     format: 'fluid',
-    slot: adSlotId(slot),
+    slot: slotId,
   });
   return `<aside class="ad-slot ad-slot-in-article" aria-label="광고"><p class="ad-label">광고</p>${markup}</aside>`;
 }

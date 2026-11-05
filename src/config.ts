@@ -20,9 +20,15 @@ export interface SiteConfig {
   email: string[];
   lang: string;
   locale: string;
-  /** 예: "ca-pub-1234567890123456". 비우면 광고 스크립트와 광고 영역을 넣지 않습니다. */
+  /**
+   * AdSense 게시자 ID. 예: "ca-pub-1234567890123456".
+   * 비우면 광고 스크립트, 수동 광고, ads.txt를 넣지 않습니다. 임의의 ID를 만들지 마세요.
+   */
   adsensePublisherId: string;
-  /** 선택. AdSense에서 만든 인피드/인아티클 슬롯 숫자. 비워도 게시자 ID만으로 영역은 켜집니다. */
+  /**
+   * 선택. 글 본문 아래 수동 광고 단위의 슬롯 숫자.
+   * 비우면 수동 슬롯은 없고, 게시자 ID가 있을 때만 자동 광고 스크립트가 head에 들어갑니다.
+   */
   adsenseInArticleSlot: string;
   /** 선택. 사이드바 광고 슬롯 숫자. */
   adsenseSidebarSlot: string;
@@ -47,6 +53,7 @@ export const site: SiteConfig = {
   email: ['xodids0341@gmail.com', 'qkrtjswo03@naver.com'],
   lang: 'ko',
   locale: 'ko_KR',
+  // 여기에 AdSense에서 받은 ca-pub- 로 시작하는 게시자 ID만 넣습니다. 비어 있으면 광고를 넣지 않습니다.
   adsensePublisherId: '',
   adsenseInArticleSlot: '',
   adsenseSidebarSlot: '',
