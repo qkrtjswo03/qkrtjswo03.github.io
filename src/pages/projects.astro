@@ -33,7 +33,7 @@ const groups: Array<{ title: string; note: string; projects: Project[] }> = [
             <article class="project-card" style={`--h: ${project.hue}`}>
               <div class="project-cover">
                 <span class="project-logo">
-                  <img src={`/logos/${project.logo}`} alt="" loading="lazy" decoding="async" />
+                  <img src={`/logos/${project.logo}`} alt={`${project.title} 로고`} loading="lazy" decoding="async" />
                 </span>
                 <span class="project-kind">{project.kind}</span>
               </div>

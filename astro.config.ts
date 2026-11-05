@@ -1,16 +1,34 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { site } from './src/config';
+import { writeOgAssets } from './src/lib/og-build';
+import { OWNER_ONLY_PATHS, lockedBlogPathnames } from './src/lib/post-files';
 import { markdownPlugins } from './src/plugins/markdown';
+
+const hiddenPaths = new Set([...lockedBlogPathnames(), ...OWNER_ONLY_PATHS]);
 
 export default defineConfig({
   site: site.url,
   trailingSlash: 'always',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        if (path.includes('/404')) return false;
+        return !hiddenPaths.has(path);
+      },
     }),
+    {
+      name: 'post-og-images',
+      hooks: {
+        'astro:build:done': async ({ dir }) => {
+          const count = await writeOgAssets(fileURLToPath(dir));
+          console.log(`[og] ${count} post images`);
+        },
+      },
+    },
   ],
   markdown: {
     shikiConfig: {

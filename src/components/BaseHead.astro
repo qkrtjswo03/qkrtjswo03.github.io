@@ -1,13 +1,14 @@
 ---
 import { site } from '../config';
 import { adsensePublisherId, gaMeasurementId, goatcounterCode, siteVerification } from '../lib/ads';
-import { absoluteUrl } from '../lib/seo';
+import { absoluteUrl, DEFAULT_OG_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from '../lib/seo';
 
 interface Props {
   title: string;
   description: string;
   ogType?: 'website' | 'article';
   image?: string;
+  imageAlt?: string;
   publishedTime?: Date;
   modifiedTime?: Date;
   tags?: string[];
@@ -19,7 +20,8 @@ const {
   title,
   description,
   ogType = 'website',
-  image = '/og-sunjae.png?v=20261105',
+  image = DEFAULT_OG_IMAGE,
+  imageAlt = title,
   publishedTime,
   modifiedTime,
   tags = [],
@@ -82,10 +84,14 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+<meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
 {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
 {publishedTime && <meta property="article:modified_time" content={(modifiedTime ?? publishedTime).toISOString()} />}
 {publishedTime && <meta property="article:author" content={site.author} />}
