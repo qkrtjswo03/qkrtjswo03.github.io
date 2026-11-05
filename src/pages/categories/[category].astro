@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 const { category, posts } = Astro.props;
 ---
 
-<BaseLayout title={category} description={`${category} 주제의 글 ${posts.length}편입니다.`}>
+<BaseLayout title={category} description={`${category} 주제의 글 ${posts.length}편입니다.`} source="src/pages/categories/[category].astro">
   <header class="page-intro">
     <Cmd command={`kubectl get posts -l category=${category}`} />
     <h1>{category}</h1>

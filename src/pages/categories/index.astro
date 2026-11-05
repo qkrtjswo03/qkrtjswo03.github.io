@@ -6,7 +6,7 @@ import { countTerms, getPosts, termUrl } from '../../lib/posts';
 const terms = countTerms(await getPosts(), 'categories');
 ---
 
-<BaseLayout title="주제" description="글에 붙인 주제별 목록입니다.">
+<BaseLayout title="주제" description="글에 붙인 주제별 목록입니다." source="src/pages/categories/index.astro">
   <header class="page-intro">
     <Cmd command="kubectl get categories" />
     <h1>주제</h1>

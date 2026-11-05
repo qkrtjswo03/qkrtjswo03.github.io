@@ -6,7 +6,7 @@ import { site } from '../config';
 const placeholder = site.email.includes('your-email@example.com');
 ---
 
-<BaseLayout title="문의" description="운영자에게 이메일로 연락하는 방법입니다.">
+<BaseLayout title="문의" description="운영자에게 이메일로 연락하는 방법입니다." source="src/pages/contact.astro">
   <article class="prose prose-page">
     <header class="page-intro">
       <Cmd command="kubectl describe contact" />

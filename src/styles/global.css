@@ -3292,3 +3292,55 @@ pre.astro-code code {
   .status-dot, .prose figure.diagram-scan.is-scanning::after { animation: none; }
   .project-posts::details-content, .project-posts summary::before { transition: none; }
 }
+
+.page-source {
+  margin: 2.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  font-size: 0.85rem;
+  color: var(--muted, #8b949e);
+}
+.page-source code {
+  font-size: 0.82em;
+}
+
+.section-lead {
+  margin: -0.4rem 0 1rem;
+  color: var(--muted, #8b949e);
+  font-size: 0.95rem;
+}
+.record-card--award {
+  border-color: color-mix(in srgb, #f0c14b 45%, var(--border, rgba(255,255,255,0.1)));
+  background: color-mix(in srgb, #f0c14b 8%, transparent);
+}
+.award-badge {
+  display: inline-block;
+  width: fit-content;
+  margin-bottom: 0.35rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1a1408;
+  background: #f0c14b;
+}
+.award-result {
+  color: color-mix(in srgb, #f0c14b 70%, #fff);
+  font-weight: 600;
+}
+
+.timeline-item--current .timeline-year {
+  color: #7ee0a3;
+}
+.timeline-status--current {
+  color: #7ee0a3;
+  border-color: color-mix(in srgb, #7ee0a3 50%, transparent);
+}
+.timeline-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}

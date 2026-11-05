@@ -7,7 +7,7 @@ import { getPosts } from '../lib/posts';
 const posts = await getPosts();
 ---
 
-<BaseLayout title="검색" description="제목, 본문, 주제, 태그로 글을 찾습니다.">
+<BaseLayout title="검색" description="제목, 본문, 주제, 태그로 글을 찾습니다." source="src/pages/search.astro">
   <header class="page-intro">
     <Cmd command="grep -i" />
     <h1>글 검색</h1>
