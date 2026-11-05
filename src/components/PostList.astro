@@ -14,14 +14,46 @@ interface Props {
   posts: BlogPost[];
   searchable?: boolean;
   grouped?: boolean;
+  contextCategory?: string;
 }
 
-const { posts, searchable = false, grouped = false } = Astro.props;
+const { posts, searchable = false, grouped = false, contextCategory } = Astro.props;
 const groups = grouped ? groupByCategory(posts) : [];
 
 function categoryLabel(post: BlogPost) {
   const categories = post.data.categories ?? [];
   return categories.length > 0 ? categories.join(', ') : '—';
+}
+
+function primaryCategory(post: BlogPost) {
+  if (contextCategory) return contextCategory;
+  const categories = post.data.categories ?? [];
+  return categories.length > 0 ? categories[0] : '';
+}
+
+const CATEGORY_HUES: Record<string, number> = {
+  네트워크: 205,
+  쿠버네티스: 188,
+  'Kubernetes 구축': 265,
+  관측: 158,
+  트러블슈팅: 22,
+  엣지: 338,
+  보안: 285,
+  클라우드: 46,
+  AI: 310,
+  기타: 170,
+};
+
+const FALLBACK_HUES = [205, 188, 265, 158, 22, 338, 285, 46, 170, 310];
+
+function hueFor(category: string) {
+  const fixed = CATEGORY_HUES[category];
+  if (fixed !== undefined) return fixed;
+  let h = 5381;
+  for (let i = 0; i < category.length; i += 1) {
+    h = ((h * 33) ^ category.charCodeAt(i)) >>> 0;
+  }
+  return FALLBACK_HUES[h % FALLBACK_HUES.length];
 }
 ---
 
@@ -72,18 +104,23 @@ function categoryLabel(post: BlogPost) {
                 <ul class="post-list post-cards">
                   {loose.map((post) => (
                     <li>
-                      <a class="post-card" href={postUrl(post)}>
-                        <span class="post-title">{post.data.title}</span>
-                        <span class="post-desc">{post.data.description}</span>
-                        <span class="post-meta">
-                          <span class="post-cat">
-                            <span class="sr-only">주제 </span>
-                            {categoryLabel(post)}
+<a class="post-card" href={postUrl(post)}>
+                        <span class="post-cover" style={`--h: ${hueFor(primaryCategory(post))}`} aria-hidden="true">
+                          <span class="post-cover-cat">{primaryCategory(post) || 'post'}</span>
+                        </span>
+                        <span class="post-card-body">
+                          <span class="post-title">{post.data.title}</span>
+                          <span class="post-desc">{post.data.description}</span>
+                          <span class="post-meta">
+                            <span class="post-cat">
+                              <span class="sr-only">주제 </span>
+                              {categoryLabel(post)}
+                            </span>
+                            <time class="post-date" datetime={post.data.pubDate.toISOString()}>
+                              <span class="sr-only">날짜 </span>
+                              {formatDate(post.data.pubDate)}
+                            </time>
                           </span>
-                          <time class="post-date" datetime={post.data.pubDate.toISOString()}>
-                            <span class="sr-only">날짜 </span>
-                            {formatDate(post.data.pubDate)}
-                          </time>
                         </span>
                       </a>
                     </li>
@@ -101,18 +138,23 @@ function categoryLabel(post: BlogPost) {
       <ul class="post-list post-cards" id={searchable ? 'results' : undefined}>
         {posts.map((post) => (
           <li data-search={searchable ? searchText(post) : undefined}>
-            <a class="post-card" href={postUrl(post)}>
-              <span class="post-title">{post.data.title}</span>
-              <span class="post-desc">{post.data.description}</span>
-              <span class="post-meta">
-                <span class="post-cat">
-                  <span class="sr-only">주제 </span>
-                  {categoryLabel(post)}
+<a class="post-card" href={postUrl(post)}>
+              <span class="post-cover" style={`--h: ${hueFor(primaryCategory(post))}`} aria-hidden="true">
+                <span class="post-cover-cat">{primaryCategory(post) || 'post'}</span>
+              </span>
+              <span class="post-card-body">
+                <span class="post-title">{post.data.title}</span>
+                <span class="post-desc">{post.data.description}</span>
+                <span class="post-meta">
+                  <span class="post-cat">
+                    <span class="sr-only">주제 </span>
+                    {categoryLabel(post)}
+                  </span>
+                  <time class="post-date" datetime={post.data.pubDate.toISOString()}>
+                    <span class="sr-only">날짜 </span>
+                    {formatDate(post.data.pubDate)}
+                  </time>
                 </span>
-                <time class="post-date" datetime={post.data.pubDate.toISOString()}>
-                  <span class="sr-only">날짜 </span>
-                  {formatDate(post.data.pubDate)}
-                </time>
               </span>
             </a>
           </li>
