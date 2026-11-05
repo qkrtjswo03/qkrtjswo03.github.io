@@ -11,8 +11,9 @@ const base = 'main';
     <Cmd command="git clone && vim" />
     <h1>웹 터미널</h1>
     <p>
-      이 브라우저에서 GitHub 저장소의 글을 열어 고치고 커밋합니다. 토큰은 이 브라우저에만 저장되고 사이트에는
-      아무것도 남지 않습니다.
+      이 브라우저에서 저장소의 글을 조회하고 고쳐서 커밋합니다. <code>posts</code>로 글 목록을 보고,
+      <code>edit 3</code>처럼 번호로 열 수 있습니다. 토큰은 이 브라우저에만 저장되고 사이트에는 아무것도 남지
+      않습니다.
     </p>
   </header>
 
@@ -240,6 +241,7 @@ const base = 'main';
     });
     dirty.delete(path);
     tree = null;
+    postIndex = null;
   };
 
   const deleteFile = async (path: string, message: string) => {
@@ -250,6 +252,7 @@ const base = 'main';
       body: JSON.stringify({ message, sha, branch: target }),
     });
     tree = null;
+    postIndex = null;
   };
 
   const openEditor = (path: string, content: string) => {
@@ -279,10 +282,12 @@ const base = 'main';
       ['login [token]', '토큰을 넣고 로그인합니다. 토큰을 생략하면 입력란으로 물어봅니다.'],
       ['logout', '이 브라우저에 저장한 토큰을 지웁니다.'],
       ['whoami', '로그인한 계정과 저장소를 보여줍니다.'],
+      ['posts', '글 목록(title · 날짜 · 파일)을 번호와 함께 봅니다.'],
+      ['grep <단어>', '글 전체에서 단어가 나온 줄을 찾습니다.'],
       ['ls [path]', '폴더 목록을 봅니다.'],
       ['cd [path]', '작업 폴더를 옮깁니다. cd / 로 처음으로.'],
-      ['cat <path>', '파일 내용을 봅니다.'],
-      ['edit <path>', '편집기를 엽니다. 저장은 save.'],
+      ['cat <path|번호>', '파일 내용을 봅니다.'],
+      ['edit <path|번호>', '편집기를 엽니다. 저장은 save.'],
       ['new <path>', '새 파일을 만듭니다.'],
       ['save -m "메시지"', '고친 파일을 작업 브랜치에 커밋합니다.'],
       ['status', '커밋하지 않은 파일과 작업 브랜치를 봅니다.'],
@@ -291,6 +296,55 @@ const base = 'main';
       ['clear', '화면을 지웁니다.'],
     ];
     for (const [cmd, desc] of rows) print(`${cmd.padEnd(20, ' ')} ${desc}`);
+  };
+
+  const BLOG_DIR = 'src/content/blog';
+
+  type PostRow = { path: string; title: string; date: string };
+
+  let postIndex: PostRow[] | null = null;
+
+  const front = (body: string, key: string) => {
+    const match = body.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
+    if (!match) return '';
+    return match[1].trim().replace(/^["']|["']$/g, '');
+  };
+
+  const loadPosts = async () => {
+    if (postIndex) return postIndex;
+    const data = (await api(`/repos/${REPO}/contents/${BLOG_DIR}?ref=${encodeURIComponent(refOf())}`)) as Array<{
+      name: string;
+      type: string;
+    }>;
+    const files = data.filter((entry) => entry.type === 'file' && entry.name.endsWith('.md'));
+    const rows: PostRow[] = [];
+    for (const file of files) {
+      const path = `${BLOG_DIR}/${file.name}`;
+      const file_ = await readFile(path);
+      rows.push({
+        path,
+        title: front(file_.content, 'title') || file.name,
+        date: front(file_.content, 'pubDate') || '-',
+      });
+    }
+    rows.sort((a, b) => b.date.localeCompare(a.date));
+    postIndex = rows;
+    return rows;
+  };
+
+  const fromIndex = async (value: string) => {
+    const rows = await loadPosts();
+    const n = Number(value);
+    if (!Number.isInteger(n) || n < 1 || n > rows.length) {
+      throw new Error(`번호는 1부터 ${rows.length}까지입니다. posts 로 목록을 봅니다.`);
+    }
+    return rows[n - 1].path;
+  };
+
+  const pathArg = async (value: string | undefined) => {
+    if (!value) throw new Error('경로나 글 번호를 적어주세요. posts 로 목록을 봅니다.');
+    if (/^\d+$/.test(value)) return fromIndex(value);
+    return resolvePath(value);
   };
 
   const run = async (raw: string) => {
@@ -337,6 +391,39 @@ const base = 'main';
         case 'whoami':
           print(`account: ${login || '(없음)'}  repo: ${REPO}  branch: ${refOf()}`);
           break;
+        case 'posts': {
+          const rows = await loadPosts();
+          for (const [i, row] of rows.entries()) {
+            print(
+              `${String(i + 1).padStart(2, ' ')}. ${row.date}  ${row.title}`,
+              'dir',
+            );
+            print(`     ${row.path.replace(`${BLOG_DIR}/`, '')}`, 'dim');
+          }
+          print(`${rows.length}개. edit <번호> 로 엽니다.`, 'dim');
+          break;
+        }
+        case 'grep': {
+          if (!args[0]) throw new Error('찾을 단어를 적어주세요. 예: grep Cilium');
+          const needle = args[0].toLowerCase();
+          const rows = await loadPosts();
+          let hits = 0;
+          for (const row of rows) {
+            const file = await readFile(row.path);
+            const lines = file.content.split('\n');
+            const matched = lines
+              .map((text, i) => ({ text, i }))
+              .filter((entry) => entry.text.toLowerCase().includes(needle));
+            if (!matched.length) continue;
+            hits += matched.length;
+            print(`${row.path.replace(`${BLOG_DIR}/`, '')}  (${matched.length})`, 'dir');
+            for (const entry of matched.slice(0, 3)) {
+              print(`  ${String(entry.i + 1).padStart(4, ' ')}: ${entry.text.trim().slice(0, 110)}`);
+            }
+          }
+          print(hits ? `합계 ${hits}줄` : '일치하는 줄이 없습니다.', hits ? 'ok' : 'warn');
+          break;
+        }
         case 'ls': {
           const path = args[0] ? resolvePath(args[0]) : cwd;
           const entries = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as Array<{
@@ -368,16 +455,14 @@ const base = 'main';
           break;
         }
         case 'cat': {
-          if (!args[0]) throw new Error('경로를 적어주세요. 예: cat src/data/projects.ts');
-          const path = resolvePath(args[0]);
+          const path = await pathArg(args[0]);
           const file = await readFile(path);
           print(`--- ${path} (${file.content.split('\n').length}줄) ---`, 'dim');
           print(file.content.replace(/^\n/, '').replace(/\n$/, ''));
           break;
         }
         case 'edit': {
-          if (!args[0]) throw new Error('경로를 적어주세요. 예: edit src/pages/about.astro');
-          const path = resolvePath(args[0]);
+          const path = await pathArg(args[0]);
           const file = await readFile(path);
           openEditor(path, file.content);
           print(`${path} 를 열었습니다. 고치고 save -m "메시지" 로 커밋합니다.`, 'ok');
@@ -496,7 +581,8 @@ const base = 'main';
   if (login) {
     print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
   }
-  print('블로그 저장소를 브라우저에서 고치는 터미널입니다. help 로 명령을 봅니다.', 'dim');
+  print('블로그 저장소를 브라우저에서 고치는 터미널입니다.', 'dim');
+  print('posts 로 글 목록, grep <단어> 로 본문 검색, edit <번호> 로 편집, save -m "메시지" 로 커밋.', 'dim');
   if (!token) print('먼저 login 을 실행해 GitHub 토큰을 넣어주세요.', 'warn');
   input.focus();
 </script>
