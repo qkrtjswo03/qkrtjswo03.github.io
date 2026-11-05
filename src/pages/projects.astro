@@ -51,21 +51,24 @@ const groups: Array<{ title: string; note: string; projects: Project[] }> = [
                     <li>{result}</li>
                   ))}
                 </ul>
-                {(project.repo || (project.posts && project.posts.length > 0)) && (
+                {project.repo && (
                   <p class="project-links">
                     {project.repo && (
                       <a href={project.repo} target="_blank" rel="noopener noreferrer">
                         저장소
                       </a>
                     )}
-                    {project.repo && project.posts && project.posts.length > 0 && ' · '}
-                    {project.posts?.map((post, index) => (
-                      <>
-                        {index > 0 && ' · '}
-                        <a href={post.href}>{post.label}</a>
-                      </>
-                    ))}
                   </p>
+                )}
+                {project.posts && project.posts.length > 0 && (
+                  <details class="project-posts">
+                    <summary>$ get posts <span class="ns-count">{project.posts.length}</span></summary>
+                    <ul>
+                      {project.posts.map((post) => (
+                        <li><a href={post.href}>{post.label}</a></li>
+                      ))}
+                    </ul>
+                  </details>
                 )}
               </div>
             </article>
