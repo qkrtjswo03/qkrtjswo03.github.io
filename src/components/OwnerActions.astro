@@ -13,10 +13,17 @@ const { links } = Astro.props;
 
 <div class="owner-actions">
   {
-    links.map((link) => (
-      <a href={link.href} target="_blank" rel="noopener noreferrer">
-        {link.label}
-      </a>
-    ))
+    links.map((link) => {
+      const local = link.href.startsWith('#');
+      return (
+        <a
+          href={link.href}
+          target={local ? undefined : '_blank'}
+          rel={local ? undefined : 'noopener noreferrer'}
+        >
+          {link.label}
+        </a>
+      );
+    })
   }
 </div>

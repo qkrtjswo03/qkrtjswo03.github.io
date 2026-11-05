@@ -129,7 +129,11 @@ const commands: Record<string, string> = {
     <aside class="term-dock" aria-label="웹 터미널">
       <div class="term-dock-head">
         <span class="term-dock-title">$ vim</span>
-        <a href="/terminal/">전체 화면</a>
+        <div class="term-dock-actions">
+          <a href="#term-new-post">new post</a>
+          <a href="#term-login">login</a>
+          <a href="/terminal/">전체 화면</a>
+        </div>
       </div>
       <Terminal posts={termPosts} variant="panel" />
     </aside>

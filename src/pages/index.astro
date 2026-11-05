@@ -4,7 +4,6 @@ import Cmd from '../components/Cmd.astro';
 import KubeCube from '../components/KubeCube.astro';
 import OwnerActions from '../components/OwnerActions.astro';
 import PostList from '../components/PostList.astro';
-import { newPostUrl } from '../lib/github';
 import { site } from '../config';
 import { absoluteUrl } from '../lib/seo';
 import { getPosts } from '../lib/posts';
@@ -57,7 +56,7 @@ const jsonLd = {
   <section id="posts" class="home-main" aria-labelledby="latest-heading">
     <div class="list-head">
       <Cmd command="k9s -c posts" />
-      <OwnerActions links={[{ href: newPostUrl(), label: 'new post' }]} />
+      <OwnerActions links={[{ href: '#term-new-post', label: 'new post' }]} />
     </div>
     <h2 id="latest-heading" class="sr-only">최근 글</h2>
     <PostList posts={posts} grouped />

@@ -7,28 +7,25 @@ function fileName(post: BlogPost): string {
   return slug.endsWith('.md') ? slug : `${slug}.md`;
 }
 
+export function blogFilePath(post: BlogPost): string {
+  return `src/content/blog/${fileName(post)}`;
+}
+
+/** 하단 터미널에서 새 글 초안 열기 */
+export function newPostUrl(): string {
+  return '#term-new-post';
+}
+
+/** 하단 터미널에서 이 글 편집 */
 export function editPostUrl(post: BlogPost): string {
-  return `${repo}/edit/main/src/content/blog/${fileName(post)}`;
+  return `#term-edit-${encodeURIComponent(blogFilePath(post))}`;
 }
 
+/** 하단 터미널에서 이 글 삭제 커밋 */
 export function deletePostUrl(post: BlogPost): string {
-  return `${repo}/delete/main/src/content/blog/${fileName(post)}`;
+  return `#term-delete-${encodeURIComponent(blogFilePath(post))}`;
 }
 
-export function newPostUrl(now = new Date()): string {
-  const y = now.getUTCFullYear();
-  const m = String(now.getUTCMonth() + 1).padStart(2, '0');
-  const d = String(now.getUTCDate()).padStart(2, '0');
-  const value = `---
-title: ""
-description: ""
-pubDate: ${y}-${m}-${d}
-categories:
-  - 관측
-tags: []
-draft: true
----
-`;
-  const params = new URLSearchParams({ filename: 'new-post.md', value });
-  return `${repo}/new/main/src/content/blog?${params.toString()}`;
+export function githubRepoUrl(): string {
+  return repo;
 }
