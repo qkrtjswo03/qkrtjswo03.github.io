@@ -1,6 +1,6 @@
 ---
 import { site } from '../config';
-import { adsensePublisherId, gaMeasurementId, siteVerification } from '../lib/ads';
+import { adsensePublisherId, gaMeasurementId, goatcounterCode, siteVerification } from '../lib/ads';
 import { absoluteUrl } from '../lib/seo';
 
 interface Props {
@@ -31,6 +31,7 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
 const imageUrl = absoluteUrl(image);
 const adsense = adsensePublisherId();
 const ga = gaMeasurementId();
+const goatcounter = goatcounterCode();
 const google = siteVerification(site.googleSiteVerification);
 const naver = siteVerification(site.naverSiteVerification);
 const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
@@ -97,6 +98,14 @@ const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
     async
     src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsense}`}
     crossorigin="anonymous"
+  />
+)}
+{goatcounter && (
+  <script
+    is:inline
+    async
+    data-goatcounter={`https://${goatcounter}.goatcounter.com/count`}
+    src="https://gc.zgo.at/count.js"
   />
 )}
 {ga && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga}`} />}

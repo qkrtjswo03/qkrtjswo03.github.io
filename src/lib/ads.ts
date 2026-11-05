@@ -20,6 +20,13 @@ export function gaMeasurementId(value = site.ga4MeasurementId): string | null {
   return GA_ID.test(id) ? id : null;
 }
 
+const GOATCOUNTER_CODE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
+
+export function goatcounterCode(value = site.goatcounterCode ?? ''): string | null {
+  const code = value.trim();
+  return GOATCOUNTER_CODE.test(code) ? code : null;
+}
+
 export function siteVerification(value: string): string | null {
   const token = value.trim();
   return META_TOKEN.test(token) ? token : null;
