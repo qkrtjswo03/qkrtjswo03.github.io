@@ -33,8 +33,9 @@ draft: false
 
 <figure>
   <a href="/images/blog/edgemesh-overview/architecture.png">
-    <img src="/images/blog/edgemesh-overview/architecture.png" alt="Cloud Master Node, Cloud Node, Edge Node 1, Edge Node 2 각각에 EdgeMesh-Agent(dns resolver, loadBalancer, proxier, tunnel, controller)가 있고 tunnel끼리 연결된 EdgeMesh 구조" />
+    <img src="/images/blog/edgemesh-overview/architecture.png" alt="Cloud의 API Server·CloudCore와 Edge Node 두 대의 EdgeCore·EdgeMesh-Agent(DNS·Proxier·LB·Tunnel), Pod A에서 Pod B로 가는 P2P 흐름(1–5), hole punching 실패 시 Relay" />
   </a>
+  <figcaption>Cloud ↔ Edge 제어면과 EdgeMesh East-West P2P 경로(1 DNS → 2 Proxier → 3 LB → 4 Tunnel ⇄ Tunnel → 5 Pod B).</figcaption>
 </figure>
 
 모든 노드에 EdgeMesh-Agent가 하나씩 뜨고, Agent의 tunnel끼리 P2P로 연결된다. 단순하게 그리면 이렇다.
