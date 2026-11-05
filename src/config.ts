@@ -28,6 +28,8 @@ export interface SiteConfig {
   adsenseSidebarSlot: string;
   /** 예: "G-ABCD1234" */
   ga4MeasurementId: string;
+  /** GoatCounter 사이트 코드(서브도메인만, 예: "sunjae"). 비우면 꺼집니다. */
+  goatcounterCode: string;
   /** Google Search Console에서 받은 content 값 */
   googleSiteVerification: string;
   /** 네이버 서치어드바이저에서 받은 content 값 */
@@ -49,6 +51,7 @@ export const site: SiteConfig = {
   adsenseInArticleSlot: '',
   adsenseSidebarSlot: '',
   ga4MeasurementId: '',
+  goatcounterCode: 'sunjae',
   googleSiteVerification: '',
   naverSiteVerification: '',
   giscus: {
