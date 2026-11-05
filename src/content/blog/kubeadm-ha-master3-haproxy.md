@@ -5,6 +5,7 @@ pubDate: 2024-09-11
 categories:
   - Kubernetes 구축
 tags:
+  - 쿠버네티스
   - kubernetes
   - kubeadm
   - haproxy
