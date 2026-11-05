@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
+import LockGate from '../components/LockGate.astro';
 import GcViews from '../components/GcViews.astro';
 import { site } from '../config';
 import { adsensePublisherId } from '../lib/ads';
@@ -30,6 +31,7 @@ const showAds = Boolean(adsensePublisherId());
     <BaseHead title={documentTitle} description={description} {...rest} />
   </head>
   <body>
+    <LockGate />
     <Header source={source}>
       <slot />
     </Header>

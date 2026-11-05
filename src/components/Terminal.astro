@@ -1,11 +1,10 @@
 ---
-import { site } from '../config';
-
 interface PostIndexItem {
   path: string;
   title: string;
   date: string;
   body: string;
+  locked?: boolean;
 }
 
 
@@ -26,7 +25,7 @@ const {
 ---
 
 <script type="application/json" id="term-posts" set:html={JSON.stringify(posts)} />
-<section class:list={['term-shell', variant === 'panel' && 'term-shell--panel']} data-repo={repo} data-base={base} data-variant={variant} data-unlock-hash={site.postUnlockPasswordHash}>
+<section class:list={['term-shell', variant === 'panel' && 'term-shell--panel']} data-repo={repo} data-base={base} data-variant={variant}>
   <div class="term-titlebar" aria-hidden="true">
     <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
     <span class="term-title">sunjae@github — {repo}</span>
@@ -66,6 +65,16 @@ const {
 </section>
 
 <script>
+  import {
+    applyOwnerFlag,
+    clearOwnerSession,
+    ensureOwner,
+    markVerified,
+    readSession,
+    rememberVerified,
+    saveOwnerSession,
+    verifyOwnerToken,
+  } from '../lib/owner-session';
 
   type TreeEntry = { path: string; type: string };
 
@@ -94,71 +103,33 @@ const {
   const REPO = shell.dataset.repo ?? '';
   const BASE = shell.dataset.base ?? 'main';
   const API = 'https://api.github.com';
-  const TOKEN_KEY = 'blog-terminal-token';
-  const USER_KEY = 'blog-terminal-user';
   const WORK_KEY = 'blog-terminal-branch';
 
-  let token = localStorage.getItem(TOKEN_KEY) ?? '';
-  let login = localStorage.getItem(USER_KEY) ?? '';
+  const session0 = readSession();
+  let token = session0.token;
+  let login = session0.login;
 
-  const OWNER_MODE = 'owner-mode';
   const repoOwner = () => (REPO.split('/')[0] || '').toLowerCase();
-  const isOwner = () => Boolean(token && login && login.toLowerCase() === repoOwner());
   const setOwnerUi = (on: boolean) => {
-    try {
-      if (on) {
-        localStorage.setItem(OWNER_MODE, '1');
-        document.documentElement.setAttribute('data-owner', '1');
-      } else {
-        localStorage.removeItem(OWNER_MODE);
-        document.documentElement.removeAttribute('data-owner');
-      }
-    } catch (e) {}
-  };
-  const UNLOCK_KEY = 'blog-posts-unlocked';
-  const unlockHash = shell.dataset.unlockHash ?? '';
-  const sha256Hex = async (text: string) => {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-    return Array.from(new Uint8Array(buf))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
-  };
-  /** UI 버튼에서 방금 확인한 비밀번호를 바로 이어지는 명령 1회에만 재사용 (이중 프롬프트 방지) */
-  let sitePwOneShot = false;
-  /** force=true 이면 세션 기억 없이 매번 묻음 (자물쇠 걸기/풀기) */
-  const requireSitePassword = async (action: string, force = false) => {
-    if (!unlockHash) {
-      print('사이트 비밀번호 해시가 설정되지 않았습니다.', 'warn');
-      return false;
-    }
-    if (sitePwOneShot) { sitePwOneShot = false; return true; }
-    if (!force && localStorage.getItem(UNLOCK_KEY) === '1') return true;
-    const value = window.prompt(`${action} 하려면 사이트 비밀번호를 입력하세요.`);
-    if (value == null) {
-      print('취소했습니다.', 'warn');
-      return false;
-    }
-    const digest = await sha256Hex(value.trim());
-    if (digest !== unlockHash) {
-      print('비밀번호가 맞지 않습니다.', 'warn');
-      return false;
-    }
-    localStorage.setItem(UNLOCK_KEY, '1');
-    print('사이트 비밀번호 확인됨.', 'ok');
-    return true;
+    applyOwnerFlag(on);
+    markVerified(on);
   };
 
   const requireOwner = async (action: string) => {
-    if (isOwner()) return true;
-    print(`${action}은 저장소 주인(${repoOwner()}) 로그인 후에만 됩니다.`, 'warn');
     if (!token) {
+      print(`${action}은 저장소 주인(${repoOwner()}) 로그인 후에만 됩니다.`, 'warn');
       await run('login');
     }
-    if (!isOwner()) {
+    if (!token) return false;
+    const check = await ensureOwner(repoOwner());
+    token = readSession().token || (check.ok ? check.token : '');
+    if (!check.ok) {
       print('권한이 없습니다. 본인 GitHub 토큰으로 login 하세요.', 'warn');
       setOwnerUi(false);
       return false;
     }
+    login = check.login;
+    token = check.token || token;
     setOwnerUi(true);
     return true;
   };
@@ -478,7 +449,7 @@ const {
       }
       print('');
       print('팁: whereami · go about · go blog · posts · help');
-      print('잠긴 글은 비밀번호로 읽고, edit/lock 은 주인 login + 사이트 비밀번호가 필요합니다.');
+      print('잠긴 글은 저장소 주인 login 후에만 열립니다. edit/lock 도 주인 토큰이 필요합니다.');
       return;
     }
     const page = SITE_PAGES.find((p) => p.id === key || p.title === topic);
@@ -544,7 +515,7 @@ const {
 
   const BLOG_DIR = 'src/content/blog';
 
-  type PostRow = { path: string; title: string; date: string; body: string };
+  type PostRow = { path: string; title: string; date: string; body: string; locked?: boolean };
 
   const bakedPosts: PostRow[] = (() => {
     const node = document.getElementById('term-posts');
@@ -556,6 +527,18 @@ const {
   })();
 
   const loadPosts = async () => bakedPosts;
+  const lockedFiles = new Set(bakedPosts.filter((row) => row.locked).map((row) => row.path));
+  const denyLockedFile = async (path: string) => {
+    if (!lockedFiles.has(path)) return false;
+    const check = await ensureOwner(repoOwner());
+    if (check.ok) {
+      token = check.token || token;
+      login = check.login || login;
+      return false;
+    }
+    print('잠긴 글입니다. 저장소 주인으로 login 한 뒤에만 볼 수 있습니다.', 'warn');
+    return true;
+  };
 
   const fromIndex = async (value: string) => {
     const rows = await loadPosts();
@@ -576,10 +559,10 @@ const {
   const run = async (raw: string) => {
     const line = raw.trim();
     if (!line) return;
-    printEcho(line);
     const parts = line.match(/"[^"]*"|\S+/g) ?? [];
     const cmd = parts[0];
     const args = parts.slice(1).map((a) => a.replace(/^"|"$/g, ''));
+    printEcho(cmd === 'login' ? 'login' : line);
 
     try {
       switch (cmd) {
@@ -603,33 +586,41 @@ const {
           log.replaceChildren();
           break;
         case 'login': {
-          const value = args[0] ?? window.prompt('GitHub 토큰을 붙여 넣으세요. 이 브라우저에만 저장됩니다.');
+          const value = args[0] ?? window.prompt('GitHub 토큰을 붙여 넣으세요. 이 탭을 닫으면 지워집니다.');
           if (!value) {
             print('취소했습니다.', 'warn');
             break;
           }
-          token = value.trim();
-          localStorage.setItem(TOKEN_KEY, token);
-          const me = (await api('/user')) as { login: string };
-          login = me.login;
-          localStorage.setItem(USER_KEY, login);
-          const ok = isOwner();
-          setOwnerUi(ok);
+          const entered = value.trim();
+          const check = await verifyOwnerToken(entered, repoOwner());
+          if (!check.login) {
+            token = '';
+            login = '';
+            clearOwnerSession();
+            setOwnerUi(false);
+            print(check.error || '토큰이 올바르지 않습니다.', 'warn');
+            break;
+          }
+          token = entered;
+          login = check.login;
+          saveOwnerSession(token, login);
+          rememberVerified(token, { ...check, token });
+          setOwnerUi(check.ok);
+          document.dispatchEvent(new CustomEvent('blog:owner-session', { detail: { ok: check.ok } }));
           print(
-            ok ? `로그인했습니다: ${login}` : `로그인은 됐지만 계정이 ${login} 입니다. 저장소 주인은 ${repoOwner()} 입니다.`,
-            ok ? 'ok' : 'warn',
+            check.ok ? `로그인했습니다: ${login}` : `로그인은 됐지만 계정이 ${login} 입니다. 저장소 주인은 ${repoOwner()} 입니다.`,
+            check.ok ? 'ok' : 'warn',
           );
           break;
         }
         case 'logout':
           token = '';
           login = '';
-          localStorage.removeItem(TOKEN_KEY);
-          localStorage.removeItem(USER_KEY);
+          clearOwnerSession();
           localStorage.removeItem(WORK_KEY);
           setOwnerUi(false);
           setBranch('');
-          print('토큰을 지웠습니다.');
+          print('이 탭의 토큰을 지웠습니다.');
           break;
         case 'reset':
           setBranch('');
@@ -643,7 +634,7 @@ const {
           const rows = await loadPosts();
           for (const [i, row] of rows.entries()) {
             print(
-              `${String(i + 1).padStart(2, ' ')}. ${row.date}  ${row.title}`,
+              `${String(i + 1).padStart(2, ' ')}. ${row.date}  ${row.title}${row.locked ? '  [잠김]' : ''}`,
               'dir',
             );
             print(`     ${row.path.replace(`${BLOG_DIR}/`, '')}`, 'dim');
@@ -705,6 +696,7 @@ const {
         }
         case 'cat': {
           const path = await pathArg(args[0]);
+          if (await denyLockedFile(path)) break;
           const file = await readFile(path);
           print(`--- ${path} (${file.content.split('\n').length}줄) ---`, 'dim');
           print(file.content.replace(/^\n/, '').replace(/\n$/, ''));
@@ -712,8 +704,14 @@ const {
         }
 
         case 'lock': {
-          if (!(await requireSitePassword('lock', true))) break;
-          if (!(await requireOwner('lock'))) break;
+          if (!(await requireOwner('lock'))) {
+            document.dispatchEvent(
+              new CustomEvent('blog:post-lock', {
+                detail: { path: args[0] ?? '', ok: false },
+              }),
+            );
+            break;
+          }
           const path = await pathArg(args[0]);
           if (!path.startsWith('src/content/blog/') || !path.endsWith('.md')) {
             print('blog 마크다운만 lock 할 수 있습니다.', 'warn');
@@ -799,16 +797,15 @@ const {
         }
 
         case 'edit': {
-          if (!(await requireSitePassword('edit', true))) break;
           if (!(await requireOwner('edit'))) break;
           const path = await pathArg(args[0]);
+          if (await denyLockedFile(path)) break;
           const file = await readFile(path);
           openEditor(path, file.content);
           print(`${path} 를 열었습니다. 고치고 save -m "메시지" 로 커밋합니다.`, 'ok');
           break;
         }
         case 'new': {
-          if (!(await requireSitePassword('new', true))) break;
           if (!(await requireOwner('new'))) break;
           const openNewPost = (slugRaw?: string) => {
             const slug = (slugRaw || 'new-post').replace(/\.md$/i, '').replace(/[^a-zA-Z0-9._-]+/g, '-');
@@ -870,7 +867,6 @@ draft: true
           break;
         }
         case 'rm': {
-          if (!(await requireSitePassword('rm', true))) break;
           if (!(await requireOwner('rm'))) break;
           if (!args[0]) throw new Error('경로를 적어주세요.');
           const path = resolvePath(args[0]);
@@ -1100,9 +1096,7 @@ draft: true
     focusTerminal();
     if (hash === '#term-new-post') {
       void (async () => {
-        if (!(await requireSitePassword('new', true))) return;
         if (!(await requireOwner('new'))) return;
-        sitePwOneShot = true;
         await run('new post');
       })();
       return true;
@@ -1110,9 +1104,7 @@ draft: true
     if (hash.startsWith('#term-edit-')) {
       const path = decodeURIComponent(hash.slice('#term-edit-'.length));
       void (async () => {
-        if (!(await requireSitePassword('edit', true))) return;
         if (!(await requireOwner('edit'))) return;
-        sitePwOneShot = true;
         await run(`edit ${path}`);
       })();
       return true;
@@ -1125,13 +1117,11 @@ draft: true
     if (hash.startsWith('#term-delete-')) {
       const path = decodeURIComponent(hash.slice('#term-delete-'.length));
       void (async () => {
-        if (!(await requireSitePassword('delete', true))) return;
         if (!(await requireOwner('delete'))) return;
         const ok = window.confirm(
           `${path}\n\n삭제 커밋을 만들고 main에 머지합니다.`,
         );
         if (!ok) return;
-        sitePwOneShot = true;
         await run(`rm ${path}`);
         try { await run('pr'); } catch (e) {}
         await run('merge');
@@ -1162,13 +1152,32 @@ draft: true
 
   void (async () => {
     await ensureLiveRef();
-    setOwnerUi(isOwner());
-    if (login) {
-      print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
-      if (!isOwner()) print('이 계정으로는 수정할 수 없습니다. 저장소 주인으로 login 하세요.', 'warn');
+    if (token) {
+      const check = await ensureOwner(repoOwner());
+      token = readSession().token;
+      if (check.ok) {
+        login = check.login;
+        setOwnerUi(true);
+        print(`${login} 계정으로 인증했습니다. 저장소 ${REPO}.`, 'dim');
+      } else if (check.login) {
+        login = check.login;
+        setOwnerUi(false);
+        print(`저장된 계정은 ${login} 입니다. 저장소 주인은 ${repoOwner()} 입니다.`, 'warn');
+      } else if (check.invalid) {
+        token = '';
+        login = '';
+        setOwnerUi(false);
+        print('저장된 토큰이 유효하지 않아 지웠습니다. login 으로 다시 넣어 주세요.', 'warn');
+      } else {
+        markVerified(false);
+        print(check.error || '주인 인증에 실패했습니다.', 'warn');
+      }
+    } else {
+      setOwnerUi(false);
     }
     print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
     print('UI: new post / edit / delete / 커밋 버튼 · 또는 posts, edit, save 명령.', 'dim');
+    print('잠긴 글은 저장소 주인 토큰으로만 열립니다.', 'dim');
     if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login(또는 독의 login)으로 토큰을 넣어주세요.', 'dim');
     if (handleTermHash(location.hash)) {
       history.replaceState(null, '', location.pathname + location.search);

@@ -35,8 +35,6 @@ export interface SiteConfig {
   /** 네이버 서치어드바이저에서 받은 content 값 */
   naverSiteVerification: string;
   giscus: GiscusConfig;
-  /** 잠긴 글 공통 비밀번호 SHA-256 hex. 비우면 잠금 UI만 막힘. */
-  postUnlockPasswordHash: string;
 }
 
 export const site: SiteConfig = {
@@ -64,8 +62,6 @@ export const site: SiteConfig = {
     categoryId: '',
     lang: 'ko',
   },
-  // SHA-256 of the shared unlock password (not the password itself)
-  postUnlockPasswordHash: 'fa7835fc1c74a9e014c750a4f452b56f215702a9802d386a0560e5099da94fbb',
 };
 
 export const nav = [

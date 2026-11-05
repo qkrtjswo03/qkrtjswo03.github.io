@@ -1,6 +1,6 @@
 ---
 import { nav, site } from '../config';
-import { countTerms, getPosts, postSlug, termUrl } from '../lib/posts';
+import { countTerms, getPosts, terminalPostIndex, termUrl } from '../lib/posts';
 import Terminal from './Terminal.astro';
 import StatusPanel from './StatusPanel.astro';
 
@@ -15,14 +15,7 @@ const topics = countTerms(allPosts, 'categories');
 const year = new Date().getFullYear();
 const showTermDock = !path.startsWith('/terminal');
 const showStatusRail = !path.startsWith('/terminal');
-const termPosts = showTermDock
-  ? allPosts.map((post) => ({
-      path: `src/content/blog/${postSlug(post.id)}.md`,
-      title: post.data.title,
-      date: post.data.pubDate.toISOString().slice(0, 10),
-      body: post.body ?? '',
-    }))
-  : [];
+const termPosts = showTermDock ? terminalPostIndex(allPosts) : [];
 
 function current(href: string) {
   return path === href || path.startsWith(href);
