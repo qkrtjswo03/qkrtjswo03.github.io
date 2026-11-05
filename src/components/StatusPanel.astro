@@ -45,6 +45,10 @@ const certifications = [
           <dd data-gc-count>—</dd>
         </div>
       )}
+      <div title="서울 현재 시각 (KST)">
+        <dt>KST</dt>
+        <dd data-kst-clock>--:--:--</dd>
+      </div>
     </dl>
     <ul class="status-ns">
       {
@@ -96,3 +100,13 @@ const certifications = [
     </ul>
   </div>
 </aside>
+
+<script>
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const tick = () => {
+    const now = fmt.format(new Date());
+    document.querySelectorAll<HTMLElement>('[data-kst-clock]').forEach((el) => { el.textContent = now; });
+  };
+  tick();
+  setInterval(tick, 1000);
+</script>
