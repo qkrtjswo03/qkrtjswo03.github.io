@@ -21,6 +21,16 @@
     update();
   };
   init();
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { e.target.classList.add('is-scanning'); io.unobserve(e.target); }
+      }
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.prose figure').forEach((f) => {
+      if (f.querySelector('img[src*="/images/blog/"][src$=".png"]')) { f.classList.add('diagram-scan'); io.observe(f); }
+    });
+  }
 </script>
 <style>
   .reading-progress {

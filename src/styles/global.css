@@ -3251,3 +3251,44 @@ pre.astro-code code {
     transition: none;
   }
 }
+
+/* ---- animations: status pulse, project accordion, diagram scan ---- */
+.status-dot { animation: status-pulse 2.4s ease-in-out infinite; }
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+  50% { opacity: 0.55; box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 6%, transparent); }
+}
+
+.project-posts { margin-top: 0.6rem; font-size: 0.9em; interpolate-size: allow-keywords; }
+.project-posts summary {
+  cursor: pointer; list-style: none; color: var(--accent-ink);
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+.project-posts summary::-webkit-details-marker { display: none; }
+.project-posts summary::before { content: '▸ '; display: inline-block; transition: transform 0.2s ease; }
+.project-posts[open] summary::before { transform: rotate(90deg); }
+.project-posts ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
+.project-posts::details-content {
+  block-size: 0; overflow: hidden; opacity: 0;
+  transition: block-size 0.28s ease, opacity 0.28s ease, content-visibility 0.28s allow-discrete;
+}
+.project-posts[open]::details-content { block-size: auto; opacity: 1; }
+
+.prose figure.diagram-scan { position: relative; overflow: hidden; }
+.prose figure.diagram-scan::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent) 16%, transparent) 50%, transparent 100%);
+  transform: translateX(-100%); opacity: 0;
+}
+.prose figure.diagram-scan.is-scanning::after { animation: diagram-scan 2.6s ease-in-out 1; }
+@keyframes diagram-scan {
+  0% { transform: translateX(-100%); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot, .prose figure.diagram-scan.is-scanning::after { animation: none; }
+  .project-posts::details-content, .project-posts summary::before { transition: none; }
+}
