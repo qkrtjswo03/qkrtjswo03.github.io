@@ -796,6 +796,7 @@ const {
         }
 
         case 'edit': {
+          if (!(await requireSitePassword('edit', true))) break;
           if (!(await requireOwner('edit'))) break;
           const path = await pathArg(args[0]);
           const file = await readFile(path);
@@ -804,6 +805,7 @@ const {
           break;
         }
         case 'new': {
+          if (!(await requireSitePassword('new', true))) break;
           if (!(await requireOwner('new'))) break;
           const openNewPost = (slugRaw?: string) => {
             const slug = (slugRaw || 'new-post').replace(/\.md$/i, '').replace(/[^a-zA-Z0-9._-]+/g, '-');
@@ -865,6 +867,7 @@ draft: true
           break;
         }
         case 'rm': {
+          if (!(await requireSitePassword('rm', true))) break;
           if (!(await requireOwner('rm'))) break;
           if (!args[0]) throw new Error('경로를 적어주세요.');
           const path = resolvePath(args[0]);
@@ -1094,7 +1097,7 @@ draft: true
     focusTerminal();
     if (hash === '#term-new-post') {
       void (async () => {
-        if (!(await requireSitePassword('new'))) return;
+        if (!(await requireSitePassword('new', true))) return;
         if (!(await requireOwner('new'))) return;
         await run('new post');
       })();
@@ -1103,7 +1106,7 @@ draft: true
     if (hash.startsWith('#term-edit-')) {
       const path = decodeURIComponent(hash.slice('#term-edit-'.length));
       void (async () => {
-        if (!(await requireSitePassword('edit'))) return;
+        if (!(await requireSitePassword('edit', true))) return;
         if (!(await requireOwner('edit'))) return;
         await run(`edit ${path}`);
       })();
@@ -1117,7 +1120,7 @@ draft: true
     if (hash.startsWith('#term-delete-')) {
       const path = decodeURIComponent(hash.slice('#term-delete-'.length));
       void (async () => {
-        if (!(await requireSitePassword('delete'))) return;
+        if (!(await requireSitePassword('delete', true))) return;
         if (!(await requireOwner('delete'))) return;
         const ok = window.confirm(
           `${path}\n\n삭제 커밋을 만들고 main에 머지합니다.`,
