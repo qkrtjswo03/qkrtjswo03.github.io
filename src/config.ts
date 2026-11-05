@@ -66,6 +66,7 @@ export const nav = [
   { href: '/projects/', label: '프로젝트' },
   { href: '/archive/', label: '아카이브' },
   { href: '/search/', label: '검색' },
+  { href: '/terminal/', label: '터미널' },
   { href: '/about/', label: '소개' },
 ] as const;
 
