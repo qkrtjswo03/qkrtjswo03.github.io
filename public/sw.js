@@ -1,0 +1,113 @@
+/**
+ * SunJae.Log 서비스 워커.
+ * HTML은 네트워크를 먼저 보고, 실패하면 이 기기에 남은 페이지를 보여 줍니다.
+ * 캐시 이름을 바꾸면 다음 배포에서 이전 캐시가 지워집니다.
+ * api.github.com 과 GitHub 파일 응답은 절대 캐시하지 않습니다. 잠긴 글 본문이 여기 남으면 안 됩니다.
+ */
+const CACHE = 'sunjae-pwa-v1';
+
+const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png'];
+
+const OFFLINE_HTML = `<!doctype html>
+<html lang="ko">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#050b1f" />
+<title>오프라인 · SunJae.Log</title>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#050b1f;color:#e7eefc;font-family:sans-serif">
+  <main style="max-width:28rem;padding:1.5rem">
+    <h1 style="font-size:1.25rem">오프라인입니다</h1>
+    <p>이 주소는 아직 이 기기에 저장되지 않았습니다. 네트워크에 연결한 뒤 다시 열면, 그다음부터는 오프라인에서도 볼 수 있습니다.</p>
+  </main>
+</body>
+</html>`;
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then(async (cache) => {
+      await cache.addAll(SHELL);
+      await cache.put(
+        new Request('/offline'),
+        new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }),
+      );
+    }),
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim()),
+  );
+});
+
+function isGithub(url) {
+  return (
+    url.hostname === 'api.github.com' ||
+    url.hostname === 'github.com' ||
+    url.hostname.endsWith('.github.com') ||
+    url.hostname.endsWith('githubusercontent.com')
+  );
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE);
+  try {
+    const fresh = await fetch(request);
+    if (fresh && fresh.ok && fresh.type === 'basic') {
+      try {
+        await cache.put(request, fresh.clone());
+      } catch {
+        /* 일부 이동 응답은 캐시에 넣지 않습니다. */
+      }
+    }
+    return fresh;
+  } catch {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    const offline = await caches.match('/offline');
+    if (offline) return offline;
+    return new Response(OFFLINE_HTML, {
+      status: 503,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const fresh = await fetch(request);
+  if (fresh && fresh.ok && fresh.type === 'basic') {
+    const cache = await caches.open(CACHE);
+    try {
+      await cache.put(request, fresh.clone());
+    } catch {
+      /* ignore */
+    }
+  }
+  return fresh;
+}
+
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch {
+    return;
+  }
+
+  if (isGithub(url)) return;
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname === '/sw.js') return;
+
+  const accept = request.headers.get('accept') || '';
+  const isDocument = request.mode === 'navigate' || accept.includes('text/html');
+  event.respondWith(isDocument ? networkFirst(request) : cacheFirst(request));
+});
