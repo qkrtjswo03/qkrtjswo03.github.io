@@ -331,6 +331,7 @@ const {
       ['clear', '화면을 지웁니다.'],
     ];
     for (const [cmd, desc] of rows) print(`${cmd.padEnd(20, ' ')} ${desc}`);
+    print('Tab: 명령어·경로 자동 완성 · ↑: 직전 명령');
   };
 
   const BLOG_DIR = 'src/content/blog';
@@ -471,7 +472,7 @@ const {
         }
         case 'cd': {
           await ensureLiveRef();
-          const next = args[0] === '/' ? '' : resolvePath(args[0] ?? '');
+          const next = !args[0] || args[0] === '/' || args[0] === '~' ? '' : resolvePath(args[0]);
           if (next) {
             const entries = (await api(`/repos/${REPO}/contents/${next}?ref=${encodeURIComponent(refOf())}`)) as unknown;
             if (!Array.isArray(entries)) throw new Error(`폴더가 아닙니다: ${next}`);
@@ -602,7 +603,73 @@ draft: true
     void run(value);
   });
 
+  const COMMANDS = ['help', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'new', 'save', 'status', 'rm', 'pr', 'find'];
+  const dirCache = new Map<string, Array<{ name: string; type: string }>>();
+  const listDir = async (dir: string) => {
+    const key = `${refOf()}:${dir}`;
+    const hit = dirCache.get(key);
+    if (hit) return hit;
+    const data = (await api(`/repos/${REPO}/contents/${dir}?ref=${encodeURIComponent(refOf())}`)) as unknown;
+    const list = Array.isArray(data) ? (data as Array<{ name: string; type: string }>).map((e) => ({ name: e.name, type: e.type })) : [];
+    dirCache.set(key, list);
+    return list;
+  };
+  const commonPrefix = (xs: string[]) =>
+    xs.reduce((a, b) => {
+      let i = 0;
+      while (i < a.length && i < b.length && a[i] === b[i]) i++;
+      return a.slice(0, i);
+    });
+  let completing = false;
+  const complete = async () => {
+    if (completing) return;
+    completing = true;
+    try {
+      const value = input.value;
+      const m = value.match(/^(.*?)(\S*)$/);
+      const before = m?.[1] ?? '';
+      const token = m?.[2] ?? '';
+      let candidates: string[] = [];
+      let base = '';
+      if (!before.trim()) {
+        candidates = COMMANDS.filter((c) => c.startsWith(token)).map((c) => c + ' ');
+      } else {
+        const slash = token.lastIndexOf('/');
+        base = slash >= 0 ? token.slice(0, slash + 1) : '';
+        const partial = slash >= 0 ? token.slice(slash + 1) : token;
+        const dir = base ? (base === '/' ? '' : resolvePath(base)) : cwd;
+        const entries = await listDir(dir);
+        candidates = entries
+          .filter((e) => e.name.startsWith(partial))
+          .map((e) => (e.type === 'dir' ? `${e.name}/` : `${e.name} `));
+      }
+      if (input.value !== value) return;
+      if (!candidates.length) return;
+      if (candidates.length === 1) {
+        input.value = before + base + candidates[0];
+        return;
+      }
+      const prefix = commonPrefix(candidates.map((c) => c.trimEnd()));
+      const partialLen = token.length - base.length;
+      if (prefix.length > partialLen) {
+        input.value = before + base + prefix;
+      } else {
+        printEcho(value);
+        print(candidates.map((c) => c.trimEnd()).join('  '));
+      }
+    } catch {
+      /* 자동 완성 실패는 조용히 무시 */
+    } finally {
+      completing = false;
+    }
+  };
+
   input.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      void complete();
+      return;
+    }
     if (event.key === 'ArrowUp') {
       const last = [...log.querySelectorAll('.term-echo')].pop();
       if (last?.textContent) {
