@@ -191,7 +191,26 @@ const {
     return normalize(cwd ? `${cwd}/${target}` : target);
   };
 
+  const ensureLiveRef = async () => {
+    if (!branch) return BASE;
+    const stale = branch;
+    try {
+      await api(`/repos/${REPO}/git/ref/heads/${encodeURIComponent(stale)}`);
+      return stale;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (/^404\b|Not Found|No commit found/i.test(message)) {
+        print(`작업 브랜치 ${stale} 가 없어 main 으로 돌아갑니다.`, 'warn');
+        setBranch('');
+        tree = null;
+        return BASE;
+      }
+      throw error;
+    }
+  };
+
   const loadTree = async () => {
+    await ensureLiveRef();
     const data = (await api(`/repos/${REPO}/git/trees/${refOf()}?recursive=1`)) as {
       tree: TreeEntry[];
     };
@@ -223,6 +242,7 @@ const {
   };
 
   const readFile = async (path: string) => {
+    await ensureLiveRef();
     if (token) {
       const data = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as {
         content?: string;
@@ -294,6 +314,7 @@ const {
     const rows: Array<[string, string]> = [
       ['login [token]', '토큰을 넣고 로그인합니다. 토큰을 생략하면 입력란으로 물어봅니다.'],
       ['logout', '이 브라우저에 저장한 토큰을 지웁니다.'],
+      ['reset', '사라진 작업 브랜치를 비우고 main 으로 돌아갑니다.'],
       ['whoami', '로그인한 계정과 저장소를 보여줍니다.'],
       ['posts', '글 목록(title · 날짜 · 파일)을 번호와 함께 봅니다.'],
       ['grep <단어>', '글 전체에서 단어가 나온 줄을 찾습니다.'],
@@ -382,7 +403,14 @@ const {
           login = '';
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(USER_KEY);
+          localStorage.removeItem(WORK_KEY);
+          setBranch('');
           print('토큰을 지웠습니다.');
+          break;
+        case 'reset':
+          setBranch('');
+          tree = null;
+          print('작업 브랜치를 비우고 main 을 봅니다.', 'ok');
           break;
         case 'whoami':
           print(`account: ${login || '(없음)'}  repo: ${REPO}  branch: ${refOf()}`);
@@ -420,6 +448,7 @@ const {
           break;
         }
         case 'ls': {
+          await ensureLiveRef();
           const path = args[0] ? resolvePath(args[0]) : cwd;
           const entries = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as Array<{
             name: string;
@@ -441,6 +470,7 @@ const {
           break;
         }
         case 'cd': {
+          await ensureLiveRef();
           const next = args[0] === '/' ? '' : resolvePath(args[0] ?? '');
           if (next) {
             const entries = (await api(`/repos/${REPO}/contents/${next}?ref=${encodeURIComponent(refOf())}`)) as unknown;
@@ -693,16 +723,19 @@ draft: true
   setBranch(branch);
   setCwd('');
 
-  if (login) {
-    print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
-  }
-  print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
-  print('UI: new post / edit / delete / 커밋 버튼 · 또는 posts, edit, save 명령.', 'dim');
-  if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login(또는 독의 login)으로 토큰을 넣어주세요.', 'dim');
-  if (handleTermHash(location.hash)) {
-    history.replaceState(null, '', location.pathname + location.search);
-  } else {
-    input.focus();
-  }
+  void (async () => {
+    await ensureLiveRef();
+    if (login) {
+      print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
+    }
+    print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
+    print('UI: new post / edit / delete / 커밋 버튼 · 또는 posts, edit, save 명령.', 'dim');
+    if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login(또는 독의 login)으로 토큰을 넣어주세요.', 'dim');
+    if (handleTermHash(location.hash)) {
+      history.replaceState(null, '', location.pathname + location.search);
+    } else {
+      input.focus();
+    }
+  })();
 
 </script>
