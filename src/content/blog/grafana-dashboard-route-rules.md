@@ -17,6 +17,12 @@ draft: false
 
 [Grafana 링크 일원화](/blog/grafana-unified-dashboard-routing/)에서 대시보드를 `https://console.example.com/v1/grafana/dashboards/<그룹>/<별칭>` 한 가지 모양으로 모았다. 이번 글은 그 경로를 실제로 만드는 Istio VirtualService 규칙이다.
 
+<figure>
+  <a href="/images/blog/grafana-dashboard-route-rules/route-rules.png">
+    <img src="/images/blog/grafana-dashboard-route-rules/route-rules.png" alt="Gateway를 지난 요청이 VirtualService http 규칙을 위에서부터 exact(대시보드 별칭 rewrite), prefix(API·정적 리소스·로그인), catch-all 순으로 평가해 Grafana 대시보드, API·정적 리소스, Grafana UI로 나뉘는 구조" />
+  </a>
+</figure>
+
 ## 대시보드와 UID
 
 Grafana 대시보드 URL은 `/d/<uid>/<slug>?<변수>` 모양이다. UID를 버전 접미사까지 고정해 두면 대시보드를 다시 import해도 주소가 바뀌지 않는다. 아래는 실제 목록을 대분류별로 묶어 패턴만 남긴 것이다(접두사는 `paas-`로 바꿔 적었다).
