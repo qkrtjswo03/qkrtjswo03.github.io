@@ -172,6 +172,7 @@ const commands: Record<string, string> = {
     const rail = document.querySelector('.rail');
     const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
     rail?.classList.remove('is-open');
+    document.documentElement.classList.remove('nav-open');
     toggle?.setAttribute('aria-expanded', 'false');
     if (focusToggle) toggle?.focus();
   };
@@ -198,6 +199,7 @@ const commands: Record<string, string> = {
     toggle.dataset.navBound = '1';
     toggle.addEventListener('click', () => {
       const open = rail?.classList.toggle('is-open') ?? false;
+      document.documentElement.classList.toggle('nav-open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   }
@@ -206,6 +208,8 @@ const commands: Record<string, string> = {
     link.dataset.navBound = '1';
     link.addEventListener('click', () => closeNav());
   });
+
+  if (!rail?.classList.contains('is-open')) document.documentElement.classList.remove('nav-open');
 
   const dock = document.getElementById('term-dock');
   const lockBtn = document.getElementById('term-dock-lock');
@@ -237,8 +241,31 @@ const commands: Record<string, string> = {
       return active instanceof Node && dock.contains(active);
     };
 
+    const mobileDock = () => window.matchMedia('(max-width: 860px)').matches;
+    if (mobileDock() && !locked) {
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && dock.contains(active)) active.blur();
+    }
+    dock.querySelector('.term-dock-head')?.addEventListener('click', (event) => {
+      if (!mobileDock()) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest('a, button')) {
+        dock.dataset.userOpen = '1';
+      } else {
+        dock.dataset.userOpen = dock.dataset.userOpen === '1' ? '0' : '1';
+        if (dock.dataset.userOpen !== '1') {
+          const active = document.activeElement;
+          if (active instanceof HTMLElement && dock.contains(active)) active.blur();
+        }
+      }
+      syncDock();
+    });
+
     const syncDock = () => {
-      const open = locked || dock.matches(':hover') || dockFocused() || dock.classList.contains('is-resizing');
+      const open = locked || dock.classList.contains('is-resizing') || (mobileDock()
+        ? dock.dataset.userOpen === '1'
+        : dock.matches(':hover') || dockFocused());
       dock.classList.toggle('is-open', open);
       dock.classList.toggle('is-locked', locked);
       dock.dataset.collapsed = open ? 'false' : 'true';

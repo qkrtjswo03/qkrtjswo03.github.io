@@ -1241,6 +1241,11 @@ draft: true
       history.replaceState(null, '', location.pathname + location.search);
     } else if (shell.dataset.variant === 'page') {
       input.focus();
+    } else if (window.matchMedia('(max-width: 860px)').matches) {
+      log.tabIndex = -1;
+      if (document.activeElement === input || document.activeElement === log) {
+        (document.activeElement as HTMLElement).blur();
+      }
     }
     } catch (error) {
       print(error instanceof Error ? error.message : String(error), 'err');
