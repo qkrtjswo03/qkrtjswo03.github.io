@@ -2,11 +2,8 @@
 import {
   formatDate,
   groupByCategory,
-  postsInSeries,
   postUrl,
   searchText,
-  seriesLabel,
-  seriesTitle,
   type BlogPost,
 } from '../lib/posts';
 
@@ -21,6 +18,7 @@ const { posts, searchable = false, grouped = false, contextCategory } = Astro.pr
 const groups = grouped ? groupByCategory(posts) : [];
 
 function categoryLabel(post: BlogPost) {
+  if (contextCategory) return contextCategory;
   const categories = post.data.categories ?? [];
   return categories.length > 0 ? categories.join(', ') : '—';
 }
@@ -28,138 +26,82 @@ function categoryLabel(post: BlogPost) {
 function primaryCategory(post: BlogPost) {
   if (contextCategory) return contextCategory;
   const categories = post.data.categories ?? [];
-  return categories.length > 0 ? categories[0] : '';
+  return categories.length > 0 ? categories[0]! : '—';
 }
 
-const CATEGORY_HUES: Record<string, number> = {
-  네트워크: 205,
-  쿠버네티스: 188,
-  'Kubernetes 구축': 265,
-  관측: 158,
-  트러블슈팅: 22,
-  엣지: 338,
-  보안: 285,
-  클라우드: 46,
-  AI: 310,
-  기타: 170,
-};
-
-const FALLBACK_HUES = [205, 188, 265, 158, 22, 338, 285, 46, 170, 310];
-
-function hueFor(category: string) {
-  const fixed = CATEGORY_HUES[category];
-  if (fixed !== undefined) return fixed;
-  let h = 5381;
-  for (let i = 0; i < category.length; i += 1) {
-    h = ((h * 33) ^ category.charCodeAt(i)) >>> 0;
-  }
-  return FALLBACK_HUES[h % FALLBACK_HUES.length];
-}
+const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 ---
 
 {
   posts.length === 0 ? (
     <p class="empty">아직 공개된 글이 없습니다.</p>
-  ) : grouped ? (
-    <>
-      <nav class="jump-nav" aria-label="주제 바로가기">
-        {groups.map((group, index) => (
-          <a href={`#group-${index}`}>
-            {group.category} <span class="count">{group.posts.length}</span>
-          </a>
-        ))}
-      </nav>
-      {groups.map((group, index) => {
-        const seriesIds = [
-          ...new Set(group.posts.map((post) => post.data.series).filter((id): id is string => Boolean(id))),
-        ];
-        const loose = group.posts.filter((post) => !post.data.series);
-        return (
-          <section class="post-group" id={`group-${index}`} aria-labelledby={`group-${index}-title`}>
-            <h2 class="post-group-title" id={`group-${index}-title`}>
+  ) : (
+    <div class="k9s">
+      {grouped && groups.length > 0 && (
+        <nav class="jump-nav k9s-jumps" aria-label="주제 바로가기">
+          {groups.map((group, index) => (
+            <a href={`#ns-${index}`}>
               {group.category} <span class="count">{group.posts.length}</span>
-            </h2>
-            <div class="post-body">
-              {seriesIds.map((id) => {
-                const parts = postsInSeries(group.posts, id);
+            </a>
+          ))}
+        </nav>
+      )}
+
+      <div class="k9s-frame" role="region" aria-label="글 목록">
+        <div class="k9s-top">
+          <span class="k9s-pill">ctx sunjae-blog</span>
+          <span>&lt;posts&gt;</span>
+          <span>{posts.length} items</span>
+          <span class="k9s-crumbs">sorted by AGE</span>
+        </div>
+
+        <p class="sr-only">글 목록. 주제, 이름, 상태, 날짜.</p>
+        <div class="k9s-table-wrap">
+          <table class="k9s-table">
+            <thead>
+              <tr>
+                <th scope="col">NAMESPACE</th>
+                <th scope="col">NAME</th>
+                <th scope="col">READY</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">AGE</th>
+              </tr>
+            </thead>
+            <tbody id={searchable ? 'results' : undefined}>
+              {sorted.map((post, index) => {
+                const ns = primaryCategory(post);
+                const groupIndex = grouped ? groups.findIndex((g) => g.category === ns) : -1;
+                const firstOfNs =
+                  groupIndex >= 0 && sorted.findIndex((p) => primaryCategory(p) === ns) === index;
                 return (
-                  <div class="series-list">
-                    <p class="series-list-title">
-                      {seriesTitle(id)} <span class="count">{parts.length}</span>
-                    </p>
-                    <ol>
-                      {parts.map((post) => (
-                        <li>
-                          <a href={postUrl(post)}>
-                            <span class="series-num">{post.data.seriesOrder}</span>
-                            {seriesLabel(post)}
-                          </a>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                  <tr
+                    class:list={['k9s-row', index === 0 && 'is-active']}
+                    id={firstOfNs ? `ns-${groupIndex}` : undefined}
+                    data-search={searchable ? searchText(post) : undefined}
+                  >
+                    <td class="k9s-ns">{ns}</td>
+                    <td class="k9s-name">
+                      <a href={postUrl(post)}>{post.data.title}</a>
+                    </td>
+                    <td class="k9s-ready">1/1</td>
+                    <td class="k9s-status">Published</td>
+                    <td class="k9s-age">
+                      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                    </td>
+                  </tr>
                 );
               })}
-              {loose.length > 0 && (
-                <ul class="post-list post-cards">
-                  {loose.map((post) => (
-                    <li>
-<a class="post-card" href={postUrl(post)}>
-                        <span class="post-cover" style={`--h: ${hueFor(primaryCategory(post))}`} aria-hidden="true">
-                          <span class="post-cover-cat">{primaryCategory(post) || 'post'}</span>
-                        </span>
-                        <span class="post-card-body">
-                          <span class="post-title">{post.data.title}</span>
-                          <span class="post-desc">{post.data.description}</span>
-                          <span class="post-meta">
-                            <span class="post-cat">
-                              <span class="sr-only">주제 </span>
-                              {categoryLabel(post)}
-                            </span>
-                            <time class="post-date" datetime={post.data.pubDate.toISOString()}>
-                              <span class="sr-only">날짜 </span>
-                              {formatDate(post.data.pubDate)}
-                            </time>
-                          </span>
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </section>
-        );
-      })}
-    </>
-  ) : (
-    <>
-      <p class="sr-only">글 목록. 이름, 주제, 날짜.</p>
-      <ul class="post-list post-cards" id={searchable ? 'results' : undefined}>
-        {posts.map((post) => (
-          <li data-search={searchable ? searchText(post) : undefined}>
-<a class="post-card" href={postUrl(post)}>
-              <span class="post-cover" style={`--h: ${hueFor(primaryCategory(post))}`} aria-hidden="true">
-                <span class="post-cover-cat">{primaryCategory(post) || 'post'}</span>
-              </span>
-              <span class="post-card-body">
-                <span class="post-title">{post.data.title}</span>
-                <span class="post-desc">{post.data.description}</span>
-                <span class="post-meta">
-                  <span class="post-cat">
-                    <span class="sr-only">주제 </span>
-                    {categoryLabel(post)}
-                  </span>
-                  <time class="post-date" datetime={post.data.pubDate.toISOString()}>
-                    <span class="sr-only">날짜 </span>
-                    {formatDate(post.data.pubDate)}
-                  </time>
-                </span>
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="k9s-foot" aria-hidden="true">
+          <span><b>&lt;enter&gt;</b> open</span>
+          <span><b>/</b> filter</span>
+          <span><b>:</b> command</span>
+          <span class="k9s-foot-end">CPU · MEM ok · Ready</span>
+        </div>
+      </div>
+    </div>
   )
 }
