@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
+import { compressOgImage } from './og-compress';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -111,5 +112,10 @@ export async function renderOgSvg(input: OgCardInput): Promise<string> {
 export async function renderOgPng(input: OgCardInput): Promise<Buffer> {
   const svg = await renderOgSvg(input);
   const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: OG_WIDTH } });
-  return Buffer.from(resvg.render().asPng());
+  const raw = Buffer.from(resvg.render().asPng());
+  const compressed = await compressOgImage(raw);
+  if (compressed.ext !== 'png') {
+    throw new Error(`OG image compressed to ${compressed.ext} (${compressed.buffer.length} bytes); expected png`);
+  }
+  return compressed.buffer;
 }

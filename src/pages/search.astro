@@ -11,7 +11,7 @@ const posts = await getPosts();
   <header class="page-intro">
     <Cmd command="grep -i" />
     <h1>글 검색</h1>
-    <p id="search-count">{posts.length}개의 글에서 찾습니다. 목록은 이 페이지 안에 있어서 따로 서버를 거치지 않습니다.</p>
+    <p id="search-count">{posts.length}개의 글에서 제목·본문·주제·태그로 찾습니다. 본문 색인은 처음 검색할 때 불러옵니다.</p>
   </header>
   <form class="search-form" role="search">
     <label class="sr-only" for="q">검색어</label>
@@ -27,18 +27,50 @@ const posts = await getPosts();
 </BaseLayout>
 
 <script>
+  type SearchDoc = { url: string; title: string; description: string; categories: string[]; tags: string[]; body: string };
+
   const form = document.querySelector<HTMLFormElement>('.search-form');
   const input = document.querySelector<HTMLInputElement>('#q');
   const items = [...document.querySelectorAll<HTMLElement>('#results tr')];
   const empty = document.querySelector<HTMLElement>('#search-empty');
   const count = document.querySelector<HTMLElement>('#search-count');
 
-  const apply = () => {
+  let bodyIndex: SearchDoc[] | null = null;
+  let bodyIndexPromise: Promise<SearchDoc[]> | null = null;
+
+  const loadIndex = () => {
+    if (bodyIndex) return Promise.resolve(bodyIndex);
+    if (!bodyIndexPromise) {
+      bodyIndexPromise = fetch('/search-index.json')
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data: SearchDoc[]) => {
+          bodyIndex = Array.isArray(data) ? data : [];
+          return bodyIndex;
+        })
+        .catch(() => {
+          bodyIndex = [];
+          return bodyIndex;
+        });
+    }
+    return bodyIndexPromise;
+  };
+
+  const haystackOf = (item: HTMLElement, docs: SearchDoc[] | null) => {
+    const base = item.dataset.search ?? '';
+    if (!docs?.length) return base;
+    const url = item.dataset.url ?? item.querySelector('a')?.getAttribute('href') ?? '';
+    const doc = docs.find((entry) => entry.url === url);
+    if (!doc) return base;
+    return `${base} ${doc.body}`.toLowerCase();
+  };
+
+  const apply = async () => {
     if (!input) return;
     const term = input.value.trim().toLowerCase();
+    const docs = term ? await loadIndex() : bodyIndex;
     let visible = 0;
     for (const item of items) {
-      const haystack = item.dataset.search ?? '';
+      const haystack = haystackOf(item, docs);
       const show = term.length === 0 || haystack.includes(term);
       item.hidden = !show;
       if (show) visible += 1;
@@ -47,7 +79,7 @@ const posts = await getPosts();
     if (count) {
       count.textContent = term
         ? `${visible}개가 일치합니다.`
-        : `${items.length}개의 글에서 찾습니다. 목록은 이 페이지 안에 있어서 따로 서버를 거치지 않습니다.`;
+        : `${items.length}개의 글에서 제목·본문·주제·태그로 찾습니다. 본문 색인은 처음 검색할 때 불러옵니다.`;
     }
   };
 
