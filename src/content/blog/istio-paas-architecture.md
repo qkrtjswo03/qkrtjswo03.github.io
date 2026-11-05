@@ -14,6 +14,7 @@ tags:
 series: istio-control-plane
 seriesOrder: 1
 draft: false
+locked: true
 ---
 
 사내 Kubernetes PaaS는 서비스 메시로 Istio를 쓴다. 외부 요청은 모두 Istio Ingress Gateway로 들어오고, 메시 안의 워크로드에는 Envoy 사이드카가 붙어 있다. [istiod가 내려가면 무슨 일이 생기는지](/blog/istiod-outage-impact/) 보기 전에, 먼저 트래픽이 어떻게 흐르고 istiod가 그 사이에서 무엇을 맡는지 정리해 둔다.
