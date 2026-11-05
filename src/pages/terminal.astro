@@ -1,9 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
+import { getPosts, postSlug } from '../lib/posts';
 
 const repo = 'qkrtjswo03/qkrtjswo03.github.io';
 const base = 'main';
+const posts = await getPosts();
+const postIndex = posts.map((post) => ({
+  path: `src/content/blog/${postSlug(post.id)}.md`,
+  title: post.data.title,
+  date: post.data.pubDate.toISOString().slice(0, 10),
+  body: post.body ?? '',
+}));
 ---
 
 <BaseLayout title="터미널" description="브라우저에서 저장소 글을 고치는 터미널입니다." noindex>
@@ -17,6 +25,7 @@ const base = 'main';
     </p>
   </header>
 
+  <script type="application/json" id="term-posts" set:html={JSON.stringify(postIndex)} />
   <section class="term-shell" data-repo={repo} data-base={base}>
     <div class="term-titlebar" aria-hidden="true">
       <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
@@ -214,13 +223,18 @@ const base = 'main';
   };
 
   const readFile = async (path: string) => {
-    const data = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as {
-      content?: string;
-      sha: string;
-      encoding?: string;
-    };
-    const content = data.encoding === 'base64' && data.content ? b64decode(data.content) : '';
-    return { content, sha: data.sha };
+    if (token) {
+      const data = (await api(`/repos/${REPO}/contents/${path}?ref=${encodeURIComponent(refOf())}`)) as {
+        content?: string;
+        sha: string;
+        encoding?: string;
+      };
+      const content = data.encoding === 'base64' && data.content ? b64decode(data.content) : '';
+      return { content, sha: data.sha };
+    }
+    const res = await fetch(`https://raw.githubusercontent.com/${REPO}/${refOf()}/${path}`);
+    if (!res.ok) throw new Error(`${res.status} · raw ${path}`);
+    return { content: await res.text(), sha: '' };
   };
 
   const writeFile = async (path: string, content: string, message: string) => {
@@ -242,7 +256,6 @@ const base = 'main';
     });
     dirty.delete(path);
     tree = null;
-    postIndex = null;
   };
 
   const deleteFile = async (path: string, message: string) => {
@@ -253,7 +266,6 @@ const base = 'main';
       body: JSON.stringify({ message, sha, branch: target }),
     });
     tree = null;
-    postIndex = null;
   };
 
   const openEditor = (path: string, content: string) => {
@@ -301,37 +313,18 @@ const base = 'main';
 
   const BLOG_DIR = 'src/content/blog';
 
-  type PostRow = { path: string; title: string; date: string };
+  type PostRow = { path: string; title: string; date: string; body: string };
 
-  let postIndex: PostRow[] | null = null;
-
-  const front = (body: string, key: string) => {
-    const match = body.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
-    if (!match) return '';
-    return match[1].trim().replace(/^["']|["']$/g, '');
-  };
-
-  const loadPosts = async () => {
-    if (postIndex) return postIndex;
-    const data = (await api(`/repos/${REPO}/contents/${BLOG_DIR}?ref=${encodeURIComponent(refOf())}`)) as Array<{
-      name: string;
-      type: string;
-    }>;
-    const files = data.filter((entry) => entry.type === 'file' && entry.name.endsWith('.md'));
-    const rows: PostRow[] = [];
-    for (const file of files) {
-      const path = `${BLOG_DIR}/${file.name}`;
-      const file_ = await readFile(path);
-      rows.push({
-        path,
-        title: front(file_.content, 'title') || file.name,
-        date: front(file_.content, 'pubDate') || '-',
-      });
+  const bakedPosts: PostRow[] = (() => {
+    const node = document.getElementById('term-posts');
+    try {
+      return JSON.parse(node?.textContent || '[]') as PostRow[];
+    } catch {
+      return [];
     }
-    rows.sort((a, b) => b.date.localeCompare(a.date));
-    postIndex = rows;
-    return rows;
-  };
+  })();
+
+  const loadPosts = async () => bakedPosts;
 
   const fromIndex = async (value: string) => {
     const rows = await loadPosts();
@@ -347,6 +340,7 @@ const base = 'main';
     if (/^\d+$/.test(value)) return fromIndex(value);
     return resolvePath(value);
   };
+
 
   const run = async (raw: string) => {
     const line = raw.trim();
@@ -410,8 +404,7 @@ const base = 'main';
           const rows = await loadPosts();
           let hits = 0;
           for (const row of rows) {
-            const file = await readFile(row.path);
-            const lines = file.content.split('\n');
+            const lines = `${row.title}\n${row.body}`.split('\n');
             const matched = lines
               .map((text, i) => ({ text, i }))
               .filter((entry) => entry.text.toLowerCase().includes(needle));
@@ -582,8 +575,8 @@ const base = 'main';
   if (login) {
     print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
   }
-  print('블로그 저장소를 브라우저에서 고치는 터미널입니다.', 'dim');
-  print('posts 로 글 목록, grep <단어> 로 본문 검색, edit <번호> 로 편집, save -m "메시지" 로 커밋.', 'dim');
+  print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
+  print('posts 로 목록, grep <단어> 로 검색, edit <번호> 로 편집, save -m "메시지" 로 커밋.', 'dim');
   if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login 으로 토큰을 넣어주세요.', 'dim');
   input.focus();
 </script>
