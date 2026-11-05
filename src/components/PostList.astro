@@ -163,15 +163,17 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
       preview.hidden = false;
     };
 
-    const setActive = (row: HTMLTableRowElement | undefined) => {
+    const setActive = (row: HTMLTableRowElement | undefined, reveal = true) => {
       rows().forEach((r) => r.classList.remove('is-active'));
       if (!row) {
         showPreview(undefined);
         return;
       }
       row.classList.add('is-active');
-      row.scrollIntoView({ block: 'nearest' });
-      showPreview(row);
+      if (reveal) {
+        row.scrollIntoView({ block: 'nearest' });
+        showPreview(row);
+      }
     };
 
     const activeRow = () => visibleRows().find((row) => row.classList.contains('is-active')) ?? visibleRows()[0];
@@ -192,7 +194,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
         statusEl.textContent = term ? (visible ? `filter "${term}"` : 'no match') : 'Ready';
       }
       const current = activeRow();
-      setActive(current);
+      setActive(current, !preview?.hidden);
     };
 
     const openFilter = () => {
@@ -342,6 +344,19 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
       row.addEventListener('mouseenter', () => setActive(row));
     });
 
-    setActive(activeRow());
+    // Hide preview once the pointer leaves the table (and the preview panel).
+    const hideOnLeave = (event: MouseEvent) => {
+      const to = event.relatedTarget as Node | null;
+      if (to && (body.contains(to) || preview?.contains(to))) return;
+      showPreview(undefined);
+    };
+    body.addEventListener('mouseleave', hideOnLeave);
+    preview?.addEventListener('mouseleave', hideOnLeave);
+    frame.addEventListener('focusout', (event) => {
+      const to = event.relatedTarget as Node | null;
+      if (!to || !frame.contains(to)) showPreview(undefined);
+    });
+
+    setActive(activeRow(), false);
   });
 </script>
