@@ -195,9 +195,15 @@ const {
     headers.set('Accept', 'application/vnd.github+json');
     if (token) headers.set('Authorization', `Bearer ${token}`);
     headers.set('X-GitHub-Api-Version', '2022-11-28');
-    headers.set('Cache-Control', 'no-cache');
+    // Cache-Control 요청 헤더는 CORS preflight를 깨뜨려 Firefox에서 NetworkError가 납니다.
     if (init.body) headers.set('Content-Type', 'application/json');
-    const res = await fetch(`${API}${path}`, { ...init, headers, cache: 'no-store' });
+    let res: Response;
+    try {
+      res = await fetch(`${API}${path}`, { ...init, headers, cache: 'no-store' });
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`GitHub API 연결 실패 · ${detail}`);
+    }
     if (!res.ok) {
       let message = `${res.status}`;
       try {
@@ -227,12 +233,14 @@ const {
     if (!branch) return BASE;
     const stale = branch;
     try {
-      await api(`/repos/${REPO}/git/ref/heads/${encodeURIComponent(stale)}`);
+      // 브랜치명 슬래시는 경로로 두고, 각 세그먼트만 인코딩 (webedit/… 404·깨짐 방지)
+      const refPath = stale.split('/').map(encodeURIComponent).join('/');
+      await api(`/repos/${REPO}/git/ref/heads/${refPath}`);
       return stale;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      if (/^404\b|Not Found|No commit found/i.test(message)) {
-        print(`작업 브랜치 ${stale} 가 없어 main 으로 돌아갑니다.`, 'warn');
+      if (/^404\b|Not Found|No commit found|연결 실패|NetworkError|Failed to fetch/i.test(message)) {
+        print(`작업 브랜치 ${stale} 를 쓰지 못해 main 으로 돌아갑니다.`, 'warn');
         setBranch('');
         tree = null;
         return BASE;
