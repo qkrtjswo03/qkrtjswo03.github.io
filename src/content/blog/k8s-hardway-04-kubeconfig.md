@@ -3,7 +3,7 @@ title: "[K8s Hard Way 4/12] kubeconfig 생성"
 description: "클라이언트 인증서와 키로 kubeconfig를 만들고, API 주소는 master01(172.31.1.2) 또는 VIP(172.31.1.8)를 쓴다."
 pubDate: 2025-01-11
 categories:
-  - Kubernetes 구축
+  - 쿠버네티스
 tags:
   - 쿠버네티스
   - kubernetes

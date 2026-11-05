@@ -3,7 +3,7 @@ title: "[K8s Hard Way 10/12] Cilium CNI, RBAC, CoreDNS"
 description: "Bastion에서 Helm으로 Cilium 1.15.4를 kube-system에 설치하고, RBAC와 CoreDNS를 구성한다."
 pubDate: 2025-01-17
 categories:
-  - Kubernetes 구축
+  - 쿠버네티스
 tags:
   - 쿠버네티스
   - kubernetes

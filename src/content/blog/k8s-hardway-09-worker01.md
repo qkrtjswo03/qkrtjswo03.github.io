@@ -3,7 +3,7 @@ title: "[K8s Hard Way 9/12] Worker01 구성 (수동 인증서)"
 description: "Bastion에서 worker01(172.31.1.5, k8s-hardway-worker01)의 kubelet 클라이언트 인증서와 kubeconfig를 수동으로 만든다."
 pubDate: 2025-01-16
 categories:
-  - Kubernetes 구축
+  - 쿠버네티스
 tags:
   - 쿠버네티스
   - kubernetes
