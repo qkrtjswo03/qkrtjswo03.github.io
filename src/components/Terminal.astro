@@ -54,7 +54,9 @@ const {
     </div>
     <textarea id="term-editor-text" spellcheck="false" aria-label="파일 내용"></textarea>
     <div class="term-editor-actions">
-      <button type="button" class="term-btn" id="term-editor-save">저장 (<span id="term-editor-lines">0</span>줄)</button>
+      <button type="button" class="term-btn" id="term-editor-save">임시 저장 (<span id="term-editor-lines">0</span>줄)</button>
+      <button type="button" class="term-btn" id="term-editor-commit">커밋</button>
+      <button type="button" class="term-btn" id="term-editor-pr">커밋 후 PR</button>
       <button type="button" class="term-btn term-btn-ghost" id="term-editor-cancel">닫기</button>
     </div>
   </div>
@@ -80,6 +82,8 @@ const {
   const editorText = shell.querySelector<HTMLTextAreaElement>('#term-editor-text');
   const editorLines = shell.querySelector<HTMLElement>('#term-editor-lines');
   const editorSave = shell.querySelector<HTMLButtonElement>('#term-editor-save');
+  const editorCommit = shell.querySelector<HTMLButtonElement>('#term-editor-commit');
+  const editorPr = shell.querySelector<HTMLButtonElement>('#term-editor-pr');
   const editorCancel = shell.querySelector<HTMLButtonElement>('#term-editor-cancel');
 
   if (!log || !form || !input || !cwdEl) throw new Error('terminal markup missing');
@@ -270,7 +274,7 @@ const {
     editorPath.textContent = path || '(새 파일)';
     editor.dataset.path = path;
     editorText.value = content;
-    editorState.textContent = '수정하면 Ctrl+S 또는 저장 버튼';
+    editorState.textContent = '고친 뒤 커밋 / 커밋 후 PR 버튼';
     const count = () => {
       if (editorLines) editorLines.textContent = String(editorText.value.split('\n').length);
     };
@@ -297,7 +301,8 @@ const {
       ['cd [path]', '작업 폴더를 옮깁니다. cd / 로 처음으로.'],
       ['cat <path|번호>', '파일 내용을 봅니다.'],
       ['edit <path|번호>', '편집기를 엽니다. 저장은 save.'],
-      ['new <path>', '새 파일을 만듭니다.'],
+      ['new post [slug]', '새 글 초안을 편집기로 엽니다.'],
+      ['new <path>', '빈 파일을 만듭니다.'],
       ['save -m "메시지"', '고친 파일을 작업 브랜치에 커밋합니다.'],
       ['status', '커밋하지 않은 파일과 작업 브랜치를 봅니다.'],
       ['rm <path>', '파일을 지웁니다(커밋).'],
@@ -459,8 +464,20 @@ const {
           break;
         }
         case 'new': {
-          if (!args[0]) throw new Error('경로를 적어주세요. 예: new src/content/blog/new-post.md');
+          const openNewPost = (slugRaw?: string) => {
+            const slug = (slugRaw || 'new-post').replace(/\.md$/i, '').replace(/[^a-zA-Z0-9._-]+/g, '-');
+            const path = `src/content/blog/${slug || 'new-post'}.md`;
+            const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+            const body = `---\ntitle: ""\ndescription: ""\npubDate: ${date}\ncategories:\n  - 관측\ntags: []\ndraft: true\n---\n\n`;
+            openEditor(path, body);
+            print(`${path} 초안을 열었습니다. 고치고 save -m "메시지" 로 커밋합니다.`, 'ok');
+          };
+          if (!args[0] || args[0] === 'post') {
+            openNewPost(args[0] === 'post' ? args[1] : undefined);
+            break;
+          }
           openEditor(resolvePath(args[0]), '');
+          print(`${resolvePath(args[0])} 빈 파일을 열었습니다.`, 'ok');
           break;
         }
         case 'status': {
@@ -553,17 +570,104 @@ const {
     }
   });
 
-  editorSave?.addEventListener('click', () => {
-    if (!editor || !editorText || !editorState) return;
+  const stashEditor = () => {
+    if (!editor || !editorText || !editorState) return null;
     const path = editor.dataset.path;
-    if (!path) return;
+    if (!path) return null;
     dirty.set(path, editorText.value);
-    editorState.textContent = `저장 대기 · save -m "메시지" 로 커밋`;
-    print(`${path} 편집 내용을 담았습니다. save -m "메시지" 로 커밋하세요.`, 'ok');
+    editorState.textContent = '저장 대기 · 커밋 버튼으로 반영';
+    return path;
+  };
+
+  editorSave?.addEventListener('click', () => {
+    const path = stashEditor();
+    if (!path) return;
+    print(`${path} 내용을 담았습니다. 커밋 버튼으로 저장소에 반영하세요.`, 'ok');
     closeEditor();
   });
 
+  const commitDirty = async (makePr: boolean) => {
+    const path = stashEditor();
+    if (!path && !dirty.size) {
+      print('커밋할 내용이 없습니다.', 'warn');
+      return;
+    }
+    closeEditor();
+    if (!token) {
+      print('먼저 login 으로 토큰을 넣어주세요.', 'warn');
+      await run('login');
+      if (!token) return;
+    }
+    const defaultMsg = path ? `Update ${path.split('/').pop()}` : 'Edit from web terminal';
+    const message = window.prompt('커밋 메시지', defaultMsg);
+    if (!message) {
+      print('커밋을 취소했습니다.', 'warn');
+      return;
+    }
+    await run(`save -m "${message.replace(/"/g, '')}"`);
+    if (makePr) await run('pr');
+  };
+
+  editorCommit?.addEventListener('click', () => {
+    void commitDirty(false);
+  });
+  editorPr?.addEventListener('click', () => {
+    void commitDirty(true);
+  });
+
   editorCancel?.addEventListener('click', closeEditor);
+
+  const focusTerminal = () => {
+    shell.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    input.focus();
+  };
+
+  const handleTermHash = (hash: string) => {
+    if (!hash.startsWith('#term-')) return false;
+    focusTerminal();
+    if (hash === '#term-new-post') {
+      void run('new post');
+      return true;
+    }
+    if (hash.startsWith('#term-edit-')) {
+      const path = decodeURIComponent(hash.slice('#term-edit-'.length));
+      void run(`edit ${path}`);
+      return true;
+    }
+    if (hash.startsWith('#term-delete-')) {
+      const path = decodeURIComponent(hash.slice('#term-delete-'.length));
+      const ok = window.confirm(`${path}\n이 글을 삭제 커밋할까요?`);
+      if (!ok) return true;
+      void (async () => {
+        if (!token) {
+          print('먼저 login 으로 토큰을 넣어주세요.', 'warn');
+          await run('login');
+          if (!token) return;
+        }
+        await run(`rm ${path}`);
+        const doPr = window.confirm('삭제 브랜치로 PR도 만들까요?');
+        if (doPr) await run('pr');
+      })();
+      return true;
+    }
+    if (hash === '#term-login') {
+      void run('login');
+      return true;
+    }
+    return false;
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const link = target.closest('a[href^="#term-"]');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
+    event.preventDefault();
+    handleTermHash(href);
+    history.replaceState(null, '', location.pathname + location.search);
+  });
 
   setBranch(branch);
   setCwd('');
@@ -572,8 +676,12 @@ const {
     print(`${login} 계정으로 저장된 토큰이 있습니다. 저장소 ${REPO}.`, 'dim');
   }
   print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
-  print('posts 로 목록, grep <단어> 로 검색, edit <번호> 로 편집, save -m "메시지" 로 커밋.', 'dim');
-  if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login 으로 토큰을 넣어주세요.', 'dim');
-  input.focus();
+  print('UI: new post / edit / delete / 커밋 버튼 · 또는 posts, edit, save 명령.', 'dim');
+  if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login(또는 독의 login)으로 토큰을 넣어주세요.', 'dim');
+  if (handleTermHash(location.hash)) {
+    history.replaceState(null, '', location.pathname + location.search);
+  } else {
+    input.focus();
+  }
 
 </script>

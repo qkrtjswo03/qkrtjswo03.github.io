@@ -3071,6 +3071,12 @@ pre.astro-code code {
   color: var(--cyan);
 }
 
+.term-dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .term-dock-head a {
   font-family: var(--mono);
   font-size: 0.72rem;
