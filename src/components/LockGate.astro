@@ -49,6 +49,7 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
     saveOwnerSession,
     verifyOwnerToken,
   } from '../lib/owner-session';
+  import { normalizeBlogPath, reconcilePendingLock, writePendingLock } from '../lib/post-lock';
 
   const dataNode = document.getElementById('locked-post-hrefs');
   const repo = dataNode?.dataset.repo || 'qkrtjswo03/qkrtjswo03.github.io';
@@ -84,12 +85,47 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
     errorEl.hidden = true;
   };
 
+  const lockBody = () => document.querySelector<HTMLElement>('[data-post-lock-body]');
+  const lockProse = (article: HTMLElement | null) => article?.querySelector<HTMLElement>('[data-locked-prose]');
+  const deployNote = () => document.querySelector<HTMLElement>('[data-lock-deploy]');
+  const pendingNote = () => document.querySelector<HTMLElement>('[data-locked-pending]');
+
+  const bakedLockedOf = (article: HTMLElement | null) => article?.dataset.bakedLocked === '1' || article?.hasAttribute('data-locked-article');
+
+  const setDeployNote = (text: string) => {
+    const note = deployNote();
+    if (!(note instanceof HTMLElement)) return;
+    note.textContent = text;
+    note.hidden = !text;
+  };
+
+  const setLockedBadge = (locked: boolean) => {
+    const badge = document.querySelector('.post-lock-badge');
+    if (!(badge instanceof HTMLElement)) return;
+    badge.classList.toggle('is-locked', locked);
+    badge.classList.toggle('is-open', !locked);
+    badge.title = locked ? '잠긴 글' : '공개된 글';
+    const text = locked ? '잠김' : '공개';
+    const nodes = [...badge.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE);
+    if (nodes.length) nodes[nodes.length - 1].textContent = ` ${text}`;
+    else badge.append(` ${text}`);
+  };
+
+  const sealArticle = (article: HTMLElement | null) => {
+    if (!(article instanceof HTMLElement)) return;
+    article.hidden = true;
+    const prose = lockProse(article);
+    if (prose) prose.replaceChildren();
+    const pending = pendingNote();
+    if (pending) pending.hidden = false;
+  };
+
   async function revealArticle(token: string) {
-    const article = document.querySelector<HTMLElement>('[data-locked-article]');
-    const prose = article?.querySelector<HTMLElement>('[data-locked-prose]');
-    const pending = document.querySelector<HTMLElement>('[data-locked-pending]');
+    const article = lockBody();
+    const prose = lockProse(article);
+    const pending = pendingNote();
     const path = article?.dataset.path || '';
-    if (!(article instanceof HTMLElement) || !(prose instanceof HTMLElement) || !path) return;
+    if (!(article instanceof HTMLElement) || !(prose instanceof HTMLElement) || !path || !token) return;
     prose.textContent = '본문을 불러오는 중…';
     article.hidden = false;
     if (pending) pending.hidden = true;
@@ -208,16 +244,62 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
     })();
   });
 
+  const applyPendingAndAuth = async () => {
+    const article = lockBody();
+    const path = article?.dataset.path || '';
+    const bakedLocked = bakedLockedOf(article);
+    const pending = path ? reconcilePendingLock(path, bakedLocked) : undefined;
+    if (bakedLocked && document.documentElement.getAttribute('data-owner-verified') !== '1') {
+      sealArticle(article);
+    }
+
+    const check = path || bakedLocked || readSession().token ? await ensureOwner(owner) : { ok: false, login: '', token: '' };
+    const isOwner = Boolean(check.ok && check.token);
+
+    if (!isOwner) {
+      if (bakedLocked) {
+        sealArticle(article);
+        openDialog(location.href, 'here');
+      } else if (readSession().token) {
+        /* token was invalid */
+      } else {
+        applyOwnerFlag(false);
+        markVerified(false);
+      }
+      return;
+    }
+
+    if (pending?.locked) {
+      sealArticle(article);
+      setLockedBadge(true);
+      setDeployNote('잠금이 main에 반영됐습니다. Pages 배포가 끝나면 방문자에게도 본문이 숨겨집니다.');
+      const pendingEl = pendingNote();
+      if (pendingEl) pendingEl.hidden = false;
+      return;
+    }
+
+    if (pending && pending.locked === false) {
+      setLockedBadge(false);
+      setDeployNote('공개로 바꾸는 중입니다. Pages 배포가 끝나기 전에는 새로고침해도 이 상태가 유지됩니다.');
+      await revealArticle(check.token);
+      return;
+    }
+
+    if (bakedLocked) {
+      setDeployNote('');
+      await revealArticle(check.token);
+      return;
+    }
+
+    setDeployNote('');
+  };
+
   const watchLockedPage = () => {
-    const article = document.querySelector('[data-locked-article]');
+    const article = lockBody();
     if (article instanceof HTMLElement) {
       if (article.dataset.lockWatch === '1') return;
       article.dataset.lockWatch = '1';
-      void (async () => {
-        const check = await ensureOwner(owner);
-        if (check.ok && check.token) await revealArticle(check.token);
-        else openDialog(location.href, 'here');
-      })();
+      void applyPendingAndAuth();
       return;
     }
     if (readSession().token) void ensureOwner(owner);
@@ -226,6 +308,19 @@ const lockedHrefs = (await getPosts()).filter((post) => post.data.locked).map((p
       markVerified(false);
     }
   };
+
+  document.addEventListener('blog:post-lock', ((event: CustomEvent<{ path?: string; locked?: boolean; ok?: boolean }>) => {
+    const detail = event.detail;
+    if (!detail?.path || detail.ok === false || typeof detail.locked !== 'boolean') return;
+    writePendingLock(detail.path, detail.locked);
+    const article = lockBody();
+    if (!article || normalizeBlogPath(article.dataset.path || '') !== normalizeBlogPath(detail.path)) return;
+    void applyPendingAndAuth();
+  }) as EventListener);
+  document.addEventListener('blog:owner-session', () => {
+    const article = lockBody();
+    if (article) void applyPendingAndAuth();
+  });
   watchLockedPage();
   document.addEventListener('astro:page-load', watchLockedPage);
 </script>

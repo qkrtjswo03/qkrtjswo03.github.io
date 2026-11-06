@@ -197,6 +197,7 @@ export function stripFrontmatter(text: string): string {
  * 저장소가 공개면 GitHub 쪽 파일은 토큰 없이도 읽을 수 있습니다.
  */
 export async function fetchRepoMarkdown(token: string, repo: string, path: string, ref = 'main'): Promise<string> {
+  if (!token) throw new Error('저장소 주인 토큰이 있어야 본문을 가져올 수 있습니다.');
   const encoded = path
     .split('/')
     .map((part) => encodeURIComponent(part))

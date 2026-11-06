@@ -107,6 +107,7 @@ const publicCount = posts.filter((post) => !post.data.locked).length;
                     data-edit={editPostUrl(post)}
                     data-lock={lockPostUrl(post)}
                     data-locked={post.data.locked ? '1' : '0'}
+                    data-baked-locked={post.data.locked ? '1' : '0'}
                   >
                     <td class="k9s-ns">{ns}</td>
                     <td class="k9s-name">
@@ -216,6 +217,8 @@ const publicCount = posts.filter((post) => !post.data.locked).length;
 </style>
 
 <script>
+  import { pathFromLockHash, reconcilePendingLock, writePendingLock } from '../lib/post-lock';
+
   const mountK9s = () => {
   const roots = document.querySelectorAll<HTMLElement>('[data-k9s]');
 
@@ -403,8 +406,16 @@ const publicCount = posts.filter((post) => !post.data.locked).length;
         if (statusEl) statusEl.textContent = 'lock: 실패 · 주인 인증 또는 터미널 로그를 확인하세요';
         return;
       }
-      if (typeof detail.locked === 'boolean') applyLockUi(row, detail.locked);
-      if (statusEl) statusEl.textContent = detail.locked ? 'lock: Pending · main 반영됨' : 'lock: Published · main 반영됨';
+      if (typeof detail.locked === 'boolean') {
+        writePendingLock(detail.path, detail.locked);
+        applyLockUi(row, detail.locked);
+      }
+      if (statusEl) {
+        statusEl.textContent = detail.locked
+          ? 'lock: Pending · 배포 대기 중'
+          : 'lock: Published · 배포 대기 중';
+      }
+      applyFilter();
     }) as EventListener);
 
     body.addEventListener('click', (event) => {
@@ -550,8 +561,23 @@ const publicCount = posts.filter((post) => !post.data.locked).length;
       if (!to || !frame.contains(to)) showPreview(undefined);
     });
 
+    const applyPendingLocks = () => {
+      const owner = document.documentElement.getAttribute('data-owner-verified') === '1';
+      rows().forEach((row) => {
+        const path = pathFromLockHash(row.dataset.lock || '');
+        if (!path) return;
+        const bakedLocked = row.dataset.bakedLocked === '1';
+        const pending = reconcilePendingLock(path, bakedLocked);
+        if (pending && owner) applyLockUi(row, pending.locked);
+        else applyLockUi(row, bakedLocked);
+      });
+    };
+    applyPendingLocks();
     applyFilter();
-    document.addEventListener('blog:owner-session', applyFilter);
+    document.addEventListener('blog:owner-session', () => {
+      applyPendingLocks();
+      applyFilter();
+    });
     setActive(activeRow(), false);
   });
   };
