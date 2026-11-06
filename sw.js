@@ -2,10 +2,11 @@
  * SunJae.Log 서비스 워커.
  * HTML은 네트워크를 먼저 보고, 실패하면 이 기기에 남은 페이지를 보여 줍니다.
  * 검색·kubectl 색인 JSON과 RSS도 네트워크를 먼저 봅니다. 배포 직후 옛 색인이 남으면 안 됩니다.
+ * GoatCounter 조회수 API의 404(아직 집계 없음)는 0건으로 바꿔, 페이지 콘솔에 에러가 안 남게 합니다.
  * 캐시 이름을 바꾸면 다음 배포에서 이전 캐시가 지워집니다.
  * api.github.com 과 GitHub 파일 응답은 절대 캐시하지 않습니다. 잠긴 글 본문이 여기 남으면 안 됩니다.
  */
-const CACHE = 'sunjae-pwa-v3';
+const CACHE = 'sunjae-pwa-v4';
 
 const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png'];
 
@@ -78,6 +79,24 @@ async function networkFirst(request) {
   }
 }
 
+async function goatCounterCount(request) {
+  try {
+    const fresh = await fetch(request);
+    if (fresh.status === 404) {
+      return new Response(JSON.stringify({ count: '0' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return fresh;
+  } catch {
+    return new Response(JSON.stringify({ count: '0' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
@@ -101,6 +120,14 @@ self.addEventListener('fetch', (event) => {
   try {
     url = new URL(request.url);
   } catch {
+    return;
+  }
+
+  if (
+    url.hostname.endsWith('.goatcounter.com') &&
+    url.pathname.includes('/counter/')
+  ) {
+    event.respondWith(goatCounterCount(request));
     return;
   }
 
