@@ -157,8 +157,8 @@
 <li><strong>Blynk</strong> — iOS/Android 앱 UI로 Arduino·유사 보드를 인터넷으로 제어</li>
 </ul>
 <figure style="max-width: 22rem">
-  <a href="/images/smart-multitap/thingspeak-dashboard.jpg">
-    <img src="/images/smart-multitap/thingspeak-dashboard.jpg" alt="ThingSpeak 대시보드: Temperature, Humidity, Amount of electricity 차트와 Channel Location 지도" width="440" height="263" loading="lazy" decoding="async" />
+  <a href="/images/smart-multitap/thingspeak-dashboard.png">
+    <img style="background:transparent" src="/images/smart-multitap/thingspeak-dashboard.png" alt="ThingSpeak 대시보드: Temperature, Humidity, Amount of electricity 차트와 Channel Location 지도" width="440" height="263" loading="lazy" decoding="async" />
   </a>
   <figcaption>ThingSpeak 채널 화면 — 온도·습도·전력량 차트와 위치.</figcaption>
 </figure>
@@ -198,19 +198,19 @@
 <p>발표 자료(2022-04-07) 기준 구성은 <strong>WeMos D1R1(ESP8266)</strong>, <strong>ACS712</strong>, <strong>Relay</strong>, <strong>DHT11</strong>, GPS 모듈이다. 해커톤 쪽 기록에는 Arduino Uno·NodeMCU(ESP8266)·ACS712도 함께 적혀 있다.</p>
 <figure>
   <a href="/images/smart-multitap/hw-overview-slide.png">
-    <img src="/images/smart-multitap/hw-overview-slide.png" alt="구름 스마트 플러그 시제품·로고와 WeMos D1R1, ACS712, Relay, DHT11, 내부 회로 사진" loading="lazy" decoding="async" />
+    <img style="background:transparent" src="/images/smart-multitap/hw-overview-slide.png" alt="구름 스마트 플러그 시제품·로고와 WeMos D1R1, ACS712, Relay, DHT11, 내부 회로 사진" loading="lazy" decoding="async" />
   </a>
   <figcaption>시제품 외형·부품·내부 회로(2022-04-07 발표 슬라이드).</figcaption>
 </figure>
 <figure style="max-width: 18rem">
-  <a href="/images/smart-multitap/prototype-enclosure.jpg">
-    <img src="/images/smart-multitap/prototype-enclosure.jpg" alt="검은 아크릴 함체 위 구름 로고가 있는 스마트 플러그 시제품과 전원 플러그·소켓" width="480" height="336" loading="lazy" decoding="async" />
+  <a href="/images/smart-multitap/prototype-enclosure.png">
+    <img style="background:transparent" src="/images/smart-multitap/prototype-enclosure.png" alt="검은 아크릴 함체 위 구름 로고가 있는 스마트 플러그 시제품과 전원 플러그·소켓" width="963" height="672" loading="lazy" decoding="async" />
   </a>
   <figcaption>시제품 함체.</figcaption>
 </figure>
 <figure style="max-width: 22rem">
-  <a href="/images/smart-multitap/prototype-breadboard.jpg">
-    <img src="/images/smart-multitap/prototype-breadboard.jpg" alt="아크릴 케이스의 WeMos 보드와 브레드보드 위 Relay·DHT·전류 센서, 점퍼선 연결" width="480" height="360" loading="lazy" decoding="async" />
+  <a href="/images/smart-multitap/prototype-breadboard.png">
+    <img style="background:transparent" src="/images/smart-multitap/prototype-breadboard.png" alt="아크릴 케이스의 WeMos 보드와 브레드보드 위 Relay·DHT·전류 센서, 점퍼선 연결" width="1440" height="1081" loading="lazy" decoding="async" />
   </a>
   <figcaption>내부 회로(브레드보드 프로토타입).</figcaption>
 </figure>
@@ -218,14 +218,14 @@
 <p>전체 구성은 모듈(센서·릴레이·WeMos) → Wi-Fi 공유기 → ThingSpeak / Blynk → 웹·모바일 UI → 사용자다. ThingSpeak 쪽은 MATLAB 분석·Excel export, Blynk 쪽은 ON/OFF·Timer·Data·GPS UI를 맡는다.</p>
 <figure>
   <a href="/images/smart-multitap/system-architecture.png">
-    <img src="/images/smart-multitap/system-architecture.png" alt="Phase Smart Plug System Configuration: Module·WeMos·Wi-Fi에서 ThingSpeak·Blynk 클라우드를 거쳐 Web·App UI로 이어지는 구성도" loading="lazy" decoding="async" />
+    <img style="background:transparent" src="/images/smart-multitap/system-architecture.png" alt="Phase Smart Plug System Configuration: Module·WeMos·Wi-Fi에서 ThingSpeak·Blynk 클라우드를 거쳐 Web·App UI로 이어지는 구성도" loading="lazy" decoding="async" />
   </a>
   <figcaption>전체 시스템 구성도(발표 자료).</figcaption>
 </figure>
 <p>포스터의 시퀀스는 MQTT로 상태를 올리고 클라우드에서 제어한 뒤, 바뀐 상태를 다시 올리는 흐름이다. 문제 발생 시 Push 알림도 적어 두었다.</p>
 <figure style="max-width: 26rem">
-  <a href="/images/smart-multitap/sequence-diagram.jpg">
-    <img src="/images/smart-multitap/sequence-diagram.jpg" alt="Smart Plug·ESP8266·Cloud Server 사이 System Interrupt부터 MQTT 상태 전달·클라우드 제어·상태 갱신까지의 Sequence Diagram" width="657" height="367" loading="lazy" decoding="async" />
+  <a href="/images/smart-multitap/sequence-diagram.png">
+    <img style="background:transparent" src="/images/smart-multitap/sequence-diagram.png" alt="Smart Plug·ESP8266·Cloud Server 사이 System Interrupt부터 MQTT 상태 전달·클라우드 제어·상태 갱신까지의 Sequence Diagram" width="638" height="360" loading="lazy" decoding="async" />
   </a>
   <figcaption>Sequence Diagram (포스터) — ① System Interrupt → ② Wi-Fi 연결 → ③ MQTT로 상태 전달 → ④ 클라우드 제어 → ⑤ 수정 상태 전달 → ⑥ 문제 시 Push.</figcaption>
 </figure>
@@ -242,7 +242,7 @@
 </ol>
 <figure>
   <a href="/images/smart-multitap/cloud-8step-flow.png">
-    <img src="/images/smart-multitap/cloud-8step-flow.png" alt="Sensors·Hardware·ESP8266에서 Thingspeak.com·Blynk.io를 거쳐 Desktop·Smartphone UI로 가는 8단계 클라우드 서버 설명도" loading="lazy" decoding="async" />
+    <img style="background:transparent" src="/images/smart-multitap/cloud-8step-flow.png" alt="Sensors·Hardware·ESP8266에서 Thingspeak.com·Blynk.io를 거쳐 Desktop·Smartphone UI로 가는 8단계 클라우드 서버 설명도" loading="lazy" decoding="async" />
   </a>
   <figcaption>클라우드 서버 단계별 설명(발표 자료).</figcaption>
 </figure>
