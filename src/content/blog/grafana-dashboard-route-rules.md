@@ -13,7 +13,7 @@ tags:
 series: grafana-unified-auth
 seriesOrder: 2
 draft: false
-locked: true
+locked: false
 ---
 
 [Grafana 링크 일원화](/blog/grafana-unified-dashboard-routing/)에서 대시보드를 `https://console.example.com/v1/grafana/dashboards/<그룹>/<별칭>` 한 가지 모양으로 모았다. 이번 글은 그 경로를 실제로 만드는 Istio VirtualService 규칙이다.
