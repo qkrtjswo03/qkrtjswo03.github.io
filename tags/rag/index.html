@@ -1,4 +1,65 @@
-<!DOCTYPE html><html lang="ko" data-theme="dark"><head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DXqcZz58.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050b1f"><script>
+<!DOCTYPE html><html lang="ko" data-theme="dark"><head><script>
+  (function () {
+    try {
+      var KEY = 'sunjae-web-splash';
+      if (sessionStorage.getItem(KEY) === '1') return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
+      if (typeof navigator.standalone === 'boolean' && navigator.standalone) return;
+      var ua = navigator.userAgent || '';
+      if (/bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|linkedinbot|pinterest|redditbot|whatsapp|telegram|discordbot|applebot|googlebot|yandex|baidu|duckduck|semrush|ahrefs|mj12|bytespider/i.test(ua)) {
+        return;
+      }
+
+      sessionStorage.setItem(KEY, '1');
+
+      var css =
+        '#sunjae-web-splash{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;margin:0;padding:1.25rem;background:#050b1f;color:#e7eefc;opacity:1;transition:opacity .2s ease;pointer-events:none;}' +
+        '#sunjae-web-splash.is-done{opacity:0;}' +
+        '#sunjae-web-splash .ws-inner{display:flex;flex-direction:column;align-items:center;gap:.55rem;text-align:center;}' +
+        '#sunjae-web-splash .ws-mark{width:52px;height:52px;color:#60a5fa;filter:drop-shadow(0 0 18px rgba(34,211,238,.35));}' +
+        '#sunjae-web-splash .ws-title{margin:0;font:650 1.05rem/1.25 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.02em;}' +
+        '#sunjae-web-splash .ws-boot{margin:0;font:500 .78rem/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#93c5fd;}' +
+        '#sunjae-web-splash .ws-caret{display:inline-block;width:.55ch;height:1em;margin-left:.12em;background:#22d3ee;vertical-align:-.12em;animation:ws-blink 1s step-end infinite;}' +
+        '@keyframes ws-blink{50%{opacity:0}}';
+
+      var style = document.createElement('style');
+      style.id = 'sunjae-web-splash-style';
+      style.textContent = css;
+
+      var el = document.createElement('div');
+      el.id = 'sunjae-web-splash';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML =
+        '<div class="ws-inner">' +
+        '<svg class="ws-mark" viewBox="0 0 24 24" width="52" height="52" aria-hidden="true">' +
+        '<path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 7.5 12 4l8 3.5v9L12 20l-8-3.5v-9Z"/>' +
+        '<path fill="none" stroke="currentColor" stroke-width="1.7" d="M12 11.2V20M4.2 7.7 12 11.2l7.8-3.5"/>' +
+        '</svg>' +
+        '<p class="ws-title">SunJae.Log</p>' +
+        '<p class="ws-boot"><span class="ws-user">sunjae</span><span style="color:#67e8f9">@</span><span style="color:#a5b4fc">k8s</span><span style="color:#cbd5e1">:~</span><span style="color:#22d3ee">$</span><span class="ws-caret"></span></p>' +
+        '</div>';
+
+      var root = document.documentElement;
+      root.appendChild(style);
+      root.appendChild(el);
+
+      var gone = false;
+      function dismiss() {
+        if (gone) return;
+        gone = true;
+        el.classList.add('is-done');
+        setTimeout(function () {
+          if (el.parentNode) el.parentNode.removeChild(el);
+          if (style.parentNode) style.parentNode.removeChild(style);
+        }, 220);
+      }
+
+      setTimeout(dismiss, 720);
+      setTimeout(dismiss, 1000);
+    } catch (e) {}
+  })();
+</script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DXqcZz58.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050b1f"><script>
   (function () {
     try {
       // owner UI only after terminal login as repo owner (set by Terminal)
