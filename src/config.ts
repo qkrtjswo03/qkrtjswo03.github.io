@@ -69,7 +69,7 @@ export const site: SiteConfig = {
   // googleSiteVerification: '여기에_Google_Search_Console_content',
   // naverSiteVerification: '여기에_네이버_서치어드바이저_content',
   googleSiteVerification: '',
-  naverSiteVerification: '',
+  naverSiteVerification: '1852822c3eabd90417fed21892be241192d61531',
   giscus: {
     enabled: false,
     repo: '',
