@@ -1,26 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Cmd from '../../components/Cmd.astro';
-import { countTerms, getPosts, termUrl } from '../../lib/posts';
+import { getPosts, groupPostsByTag, tagPath } from '../../lib/posts';
 
-const terms = countTerms(await getPosts(), 'tags');
+const groups = groupPostsByTag(await getPosts());
 ---
 
 <BaseLayout title="태그" description="글에 붙인 태그 목록입니다." source="src/pages/tags/index.astro">
   <header class="page-intro">
     <Cmd command="kubectl get tags" />
     <h1>태그</h1>
-    <p>글의 frontmatter <code>tags</code>로 모입니다.</p>
+    <p>글의 frontmatter <code>tags</code>로 모입니다. 주소는 소문자로 통일합니다.</p>
   </header>
   {
-    terms.length === 0 ? (
+    groups.length === 0 ? (
       <p class="empty">아직 태그가 없습니다.</p>
     ) : (
       <ul class="term-index">
-        {terms.map(([term, count]) => (
+        {groups.map((group) => (
           <li>
-            <a class="tag-pill" href={termUrl('tags', term)}>
-              {term} <span class="count">{count}</span>
+            <a class="tag-pill" href={tagPath(group.slug)}>
+              {group.label} <span class="count">{group.count}</span>
             </a>
           </li>
         ))}

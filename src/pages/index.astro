@@ -40,17 +40,29 @@ const jsonLd = {
     },
   ],
 };
+const heroSrcset =
+  '/images/hero/hero-banner-960.webp 960w, /images/hero/hero-banner-1600.webp 1600w, /images/hero/hero-banner-2560.webp 2560w';
+const heroSizes = '(max-width: 860px) calc(100vw - 2rem), min(72rem, calc(100vw - 17rem))';
 ---
 
-<BaseLayout jsonLd={jsonLd} source="src/pages/index.astro">
+<BaseLayout
+  jsonLd={jsonLd}
+  source="src/pages/index.astro"
+  preloadHero={{
+    href: '/images/hero/hero-banner-960.webp',
+    imagesrcset: heroSrcset,
+    imagesizes: heroSizes,
+  }}
+>
   <section class="hero-banner" aria-label={site.title}>
     <div class="hero-stage">
       <img
-        src="/images/hero/hero-banner-1600.webp"
-        srcset="/images/hero/hero-banner-960.webp 960w, /images/hero/hero-banner-1600.webp 1600w, /images/hero/hero-banner-2560.webp 2560w"
-        sizes="(max-width: 860px) calc(100vw - 2rem), calc(100vw - 272px - 3.2rem)"
-        width="2560"
-        height="1440"
+        class="hero-photo"
+        src="/images/hero/hero-banner-960.webp"
+        srcset={heroSrcset}
+        sizes={heroSizes}
+        width="1280"
+        height="380"
         alt="클라우드와 서버, 차트가 이어진 배너 일러스트"
         loading="eager"
         fetchpriority="high"

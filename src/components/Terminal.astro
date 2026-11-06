@@ -509,7 +509,7 @@ const {
       ['guide [페이지]', '사이트 맵·페이지 안내 (봇처럼).'],
       ['whereami', '지금 보고 있는 페이지를 알려 줍니다.'],
       ['go <페이지>', '홈/글/프로젝트/소개 등으로 이동합니다.'],
-      ['login [token]', '토큰을 넣고 로그인합니다. 토큰을 생략하면 로그인 창으로 물어봅니다.'],
+      ['login [token], :login', '토큰을 넣고 로그인합니다. 토큰을 생략하면 로그인 창으로 물어봅니다.'],
       ['logout', '이 브라우저에 저장한 토큰을 지웁니다.'],
       ['reset', '사라진 작업 브랜치를 비우고 main 으로 돌아갑니다.'],
       ['whoami', '로그인한 계정과 저장소를 보여줍니다.'],
@@ -581,7 +581,7 @@ const {
     const parsed = parseCommand(raw);
     if (!parsed) return;
     const { cmd, args } = parsed;
-    printEcho(cmd === 'login' ? 'login' : raw.trim());
+    printEcho(cmd === 'login' || cmd === ':login' ? 'login' : raw.trim());
 
     try {
       switch (cmd) {
@@ -604,6 +604,7 @@ const {
         case 'clear':
           log.replaceChildren();
           break;
+        case ':login':
         case 'login': {
           const value =
             args[0] ??
@@ -1009,7 +1010,7 @@ draft: true
     void run(value);
   });
 
-  const COMMANDS = ['help', 'guide', 'map', 'man', 'whereami', 'go', 'open', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'lock', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
+  const COMMANDS = ['help', 'guide', 'map', 'man', 'whereami', 'go', 'open', 'clear', 'login', ':login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'lock', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
   const dirCache = new Map<string, Array<{ name: string; type: string }>>();
   const listDir = async (dir: string) => {
     const key = `${refOf()}:${dir}`;

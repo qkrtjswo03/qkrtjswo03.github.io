@@ -143,10 +143,11 @@ const jsonLd = [
         <div>
           <dt title="이름">Name</dt>
           <dd>
-            <h1>
-              {post.data.title}
+            <div class="post-title-row">
+              <h1>{post.data.title}</h1>
               <span
                 class:list={['post-lock-badge', post.data.locked ? 'is-locked' : 'is-open']}
+                role="status"
                 title={post.data.locked ? '잠긴 글' : '공개된 글'}
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
@@ -155,7 +156,7 @@ const jsonLd = [
                 </svg>
                 {post.data.locked ? '잠김' : '공개'}
               </span>
-            </h1>
+            </div>
           </dd>
         </div>
         <div>
@@ -249,7 +250,7 @@ const jsonLd = [
         )
       }
       {
-        !post.data.locked && post.data.heroImage && (
+        !post.data.locked && post.data.heroImage?.trim() && (
           <figure class="hero">
             <img
               src={post.data.heroImage}

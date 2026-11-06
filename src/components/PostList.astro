@@ -24,7 +24,12 @@ function primaryCategory(post: BlogPost) {
   return categories.length > 0 ? categories[0]! : '—';
 }
 
-const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const sorted = [...posts].sort((a, b) => {
+  const lockDiff = Number(Boolean(a.data.locked)) - Number(Boolean(b.data.locked));
+  if (lockDiff !== 0) return lockDiff;
+  return b.data.pubDate.getTime() - a.data.pubDate.getTime();
+});
+const publicCount = posts.filter((post) => !post.data.locked).length;
 ---
 
 {
@@ -46,7 +51,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
         <div class="k9s-top">
           <span class="k9s-pill">ctx sunjae-blog</span>
           <span>&lt;posts&gt;</span>
-          <span data-k9s-count>{posts.length} items</span>
+          <span data-k9s-count>{publicCount} items</span>
           <span class="k9s-keys" aria-label="단축키">
             <span><b>&lt;enter&gt;</b> open</span>
             <span><b>/</b> filter</span>
@@ -109,6 +114,7 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                       <span
                         class:list={['k9s-lock-status', post.data.locked && 'is-locked']}
                         data-lock-status
+                        role="img"
                         title={post.data.locked ? '잠긴 글' : '공개된 글'}
                         aria-label={post.data.locked ? '잠긴 글' : '공개된 글'}
                       >
@@ -236,6 +242,8 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     root.addEventListener('pointerdown', markCurrent);
 
     const rows = () => [...body.querySelectorAll<HTMLTableRowElement>('tr.k9s-row')];
+    const rowAllowed = (row: HTMLTableRowElement) =>
+      document.documentElement.getAttribute('data-owner-verified') === '1' || row.dataset.locked !== '1';
     const visibleRows = () => rows().filter((row) => !row.hidden);
 
     const preview = root.querySelector<HTMLElement>('[data-k9s-preview]');
@@ -275,14 +283,15 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
     const applyFilter = () => {
       const term = input.value.trim().toLowerCase();
       let visible = 0;
+      const total = rows().filter(rowAllowed).length;
       for (const row of rows()) {
         const hay = row.dataset.search ?? '';
-        const show = term.length === 0 || hay.includes(term);
+        const show = rowAllowed(row) && (term.length === 0 || hay.includes(term));
         row.hidden = !show;
         if (show) visible += 1;
       }
       if (countEl) {
-        countEl.textContent = term ? `${visible}/${rows().length} items` : `${rows().length} items`;
+        countEl.textContent = term ? `${visible}/${total} items` : `${visible} items`;
       }
       if (statusEl) {
         statusEl.textContent = term ? (visible ? `filter "${term}"` : 'no match') : 'Ready';
@@ -541,6 +550,8 @@ const sorted = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
       if (!to || !frame.contains(to)) showPreview(undefined);
     });
 
+    applyFilter();
+    document.addEventListener('blog:owner-session', applyFilter);
     setActive(activeRow(), false);
   });
   };

@@ -1,4 +1,4 @@
-import { rm } from 'node:fs/promises';
+import { copyFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
@@ -20,6 +20,7 @@ export default defineConfig({
       filter: (page) => {
         const path = new URL(page).pathname;
         if (path.includes('/404')) return false;
+        if (/\/tags\/.*[A-Z]/.test(path)) return false;
         return !hiddenPaths.has(path);
       },
     }),
@@ -31,6 +32,11 @@ export default defineConfig({
           const count = await writeOgAssets(out);
           console.log(`[og] ${count} post images`);
           if (!adsTxtBody()) await rm(join(out, 'ads.txt'), { force: true });
+          try {
+            await copyFile(join(out, 'sitemap-index.xml'), join(out, 'sitemap.xml'));
+          } catch {
+            /* sitemap-index가 없으면 건너뜁니다 */
+          }
         },
       },
     },

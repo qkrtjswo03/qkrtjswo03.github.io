@@ -241,9 +241,16 @@ const activities = [
         certifications.map((item) => (
           <li class={`record-card${item.image ? ' record-card--with-image' : ''}`}>
             {item.image && (
-              <span class="record-thumb">
-                <img src={item.image} alt={`${item.name} 자격증`} loading="lazy" decoding="async" />
-              </span>
+              <a class="record-thumb" href={item.image} title={`${item.name} 원본 보기`}>
+                <img
+                  src={item.image.replace(/\.png$/i, '.webp')}
+                  alt={`${item.name} 자격증`}
+                  width="226"
+                  height="170"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
             )}
             <span class="record-body">
               <span class="record-name">{item.name}</span>
@@ -298,7 +305,7 @@ const activities = [
       }
     </ul>
     <h2 id="activities">활동사항</h2>
-    <ul class="record-cards">
+    <ul class="record-cards activity-cards">
       {
         activities.map((item) => (
           <li class="record-card">

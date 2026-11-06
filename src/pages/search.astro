@@ -5,13 +5,14 @@ import PostList from '../components/PostList.astro';
 import { getPosts } from '../lib/posts';
 
 const posts = await getPosts();
+const publicCount = posts.filter((post) => !post.data.locked).length;
 ---
 
 <BaseLayout title="검색" description="제목, 본문, 주제, 태그로 글을 찾습니다." source="src/pages/search.astro">
   <header class="page-intro">
     <Cmd command="grep -i" />
     <h1>글 검색</h1>
-    <p id="search-count">{posts.length}개의 글에서 제목·본문·주제·태그로 찾습니다. 본문 색인은 처음 검색할 때 불러옵니다.</p>
+    <p id="search-count">{publicCount}개의 글에서 제목·본문·주제·태그로 찾습니다. 본문 색인은 처음 검색할 때 불러옵니다.</p>
   </header>
   <form class="search-form" role="search">
     <label class="sr-only" for="q">검색어</label>
@@ -64,14 +65,18 @@ const posts = await getPosts();
     return `${base} ${doc.body}`.toLowerCase();
   };
 
+  const isOwner = () => document.documentElement.getAttribute('data-owner-verified') === '1';
+  const itemAllowed = (item: HTMLElement) => isOwner() || item.dataset.locked !== '1';
+
   const apply = async () => {
     if (!input) return;
     const term = input.value.trim().toLowerCase();
     const docs = term ? await loadIndex() : bodyIndex;
     let visible = 0;
+    const catalog = items.filter(itemAllowed).length;
     for (const item of items) {
       const haystack = haystackOf(item, docs);
-      const show = term.length === 0 || haystack.includes(term);
+      const show = itemAllowed(item) && (term.length === 0 || haystack.includes(term));
       item.hidden = !show;
       if (show) visible += 1;
     }
@@ -79,7 +84,7 @@ const posts = await getPosts();
     if (count) {
       count.textContent = term
         ? `${visible}개가 일치합니다.`
-        : `${items.length}개의 글에서 제목·본문·주제·태그로 찾습니다. 본문 색인은 처음 검색할 때 불러옵니다.`;
+        : `${catalog}개의 글에서 제목·본문·주제·태그로 찾습니다. 본문 색인은 처음 검색할 때 불러옵니다.`;
     }
   };
 
@@ -103,4 +108,9 @@ const posts = await getPosts();
     event.preventDefault();
     apply();
   });
+
+  document.addEventListener('blog:owner-session', () => {
+    void apply();
+  });
+  void apply();
 </script>

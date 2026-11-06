@@ -2,9 +2,7 @@
 /** 글 본문·히어로 이미지 클릭 확대 / 다시 클릭 축소 */
 ---
 
-<dialog class="img-zoom" id="img-zoom" aria-label="이미지 확대" transition:persist="img-zoom">
-  <img alt="" />
-</dialog>
+<dialog class="img-zoom" id="img-zoom" aria-label="이미지 확대" transition:persist="img-zoom"></dialog>
 
 <style is:global>
   .prose img,
@@ -62,13 +60,15 @@
       event.preventDefault();
       if (dialog.open) dialog.close();
     });
+    dialog.addEventListener('close', () => {
+      dialog.querySelector('img')?.remove();
+    });
   };
   if (!window.__sunjaeZoom) {
     window.__sunjaeZoom = true;
     document.addEventListener('click', (event) => {
       const dialog = zoomDialog();
-      const preview = dialog?.querySelector('img');
-      if (!dialog || !(preview instanceof HTMLImageElement)) return;
+      if (!dialog) return;
       const target = event.target;
       if (!(target instanceof Element)) return;
       if (dialog.open) {
@@ -80,6 +80,11 @@
       if (!(img instanceof HTMLImageElement) || !img.src) return;
       event.preventDefault();
       event.stopPropagation();
+      let preview = dialog.querySelector('img');
+      if (!(preview instanceof HTMLImageElement)) {
+        preview = document.createElement('img');
+        dialog.appendChild(preview);
+      }
       preview.src = img.currentSrc || img.src;
       preview.alt = img.alt || '';
       dialog.showModal();
