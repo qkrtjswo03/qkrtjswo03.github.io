@@ -1,0 +1,394 @@
+<!DOCTYPE html><html lang="ko" data-theme="dark"><head><script>
+  (function () {
+    try {
+      var KEY = 'sunjae-web-splash';
+      if (sessionStorage.getItem(KEY) === '1') return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
+      if (typeof navigator.standalone === 'boolean' && navigator.standalone) return;
+      var ua = navigator.userAgent || '';
+      if (/bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|linkedinbot|pinterest|redditbot|whatsapp|telegram|discordbot|applebot|googlebot|yandex|baidu|duckduck|semrush|ahrefs|mj12|bytespider/i.test(ua)) {
+        return;
+      }
+
+      sessionStorage.setItem(KEY, '1');
+
+      var css =
+        '#sunjae-web-splash{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;margin:0;padding:1.25rem;background:#050b1f;color:#e7eefc;opacity:1;transition:opacity .2s ease;pointer-events:none;}' +
+        '#sunjae-web-splash.is-done{opacity:0;}' +
+        '#sunjae-web-splash .ws-inner{display:flex;flex-direction:column;align-items:center;gap:.55rem;text-align:center;}' +
+        '#sunjae-web-splash .ws-mark{width:52px;height:52px;color:#60a5fa;filter:drop-shadow(0 0 18px rgba(34,211,238,.35));}' +
+        '#sunjae-web-splash .ws-title{margin:0;font:650 1.05rem/1.25 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.02em;}' +
+        '#sunjae-web-splash .ws-boot{margin:0;font:500 .78rem/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#93c5fd;}' +
+        '#sunjae-web-splash .ws-caret{display:inline-block;width:.55ch;height:1em;margin-left:.12em;background:#22d3ee;vertical-align:-.12em;animation:ws-blink 1s step-end infinite;}' +
+        '@keyframes ws-blink{50%{opacity:0}}';
+
+      var style = document.createElement('style');
+      style.id = 'sunjae-web-splash-style';
+      style.textContent = css;
+
+      var el = document.createElement('div');
+      el.id = 'sunjae-web-splash';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML =
+        '<div class="ws-inner">' +
+        '<svg class="ws-mark" viewBox="0 0 24 24" width="52" height="52" aria-hidden="true">' +
+        '<path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 7.5 12 4l8 3.5v9L12 20l-8-3.5v-9Z"/>' +
+        '<path fill="none" stroke="currentColor" stroke-width="1.7" d="M12 11.2V20M4.2 7.7 12 11.2l7.8-3.5"/>' +
+        '</svg>' +
+        '<p class="ws-title">SunJae.Log</p>' +
+        '<p class="ws-boot"><span class="ws-user">sunjae</span><span style="color:#67e8f9">@</span><span style="color:#a5b4fc">k8s</span><span style="color:#cbd5e1">:~</span><span style="color:#22d3ee">$</span><span class="ws-caret"></span></p>' +
+        '</div>';
+
+      var root = document.documentElement;
+      root.appendChild(style);
+      root.appendChild(el);
+
+      var gone = false;
+      function dismiss() {
+        if (gone) return;
+        gone = true;
+        el.classList.add('is-done');
+        setTimeout(function () {
+          if (el.parentNode) el.parentNode.removeChild(el);
+          if (style.parentNode) style.parentNode.removeChild(style);
+        }, 220);
+      }
+
+      // 짧게 보여 주고, LCP(히어로 등)가 스플래시에 붙지 않도록 빨리 걷는다.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          setTimeout(dismiss, 500);
+        });
+      });
+      setTimeout(dismiss, 750);
+    } catch (e) {}
+  })();
+</script><style>html{scroll-behavior:smooth;color:#e7eefc;background:#050b1f;font-size:17px}@media (width>=720px){html{font-size:18px}}body{color:#e7eefc;background:#050b1f;min-height:100vh;margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.8}.skip{position:absolute;top:auto;left:-999px}.skip:focus{z-index:10000;color:#fff;background:#0b1b3f;padding:.4rem .7rem;top:1rem;left:1rem}.app-shell{min-height:100vh}.console{z-index:1;grid-template-columns:minmax(0,1fr);min-height:100vh;display:grid;position:relative}@media (width>=860px){.console{grid-template-columns:272px minmax(0,1fr)}}.console.has-status-rail{grid-template-columns:minmax(0,1fr)}@media (width>=1100px){.console.has-status-rail{grid-template-columns:272px minmax(0,1fr) 280px}}.rail{display:none}@media (width>=860px){.rail{background:#081028eb;border-right:1px solid #94a3b838;flex-direction:column;display:flex}}.page,.main-wrap,main#content{min-width:0}.hero-banner{aspect-ratio:16/5.2;background:#0a1433;border-radius:12px;position:relative;overflow:hidden}@media (width<=860px){.hero-banner{aspect-ratio:16/7.5}}.hero-photo{object-fit:cover;width:100%;height:100%;display:block}.k9s-table-wrap{overflow:auto}.term-dock{z-index:40;position:fixed;bottom:0;left:0;right:0}</style><link rel="preload" href="/_astro/fonts.DAK-W_wo.css" as="style"><link rel="stylesheet" href="/_astro/fonts.DAK-W_wo.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="/_astro/fonts.DAK-W_wo.css"></noscript><link rel="stylesheet" href="/_astro/global.2HRVnLni.css"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="swap"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.B5vfqcw4.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050b1f"><script>
+  (function () {
+    try {
+      // owner UI only after terminal login as repo owner (set by Terminal)
+      if (localStorage.getItem('owner-mode') === '1') {
+        document.documentElement.setAttribute('data-owner', '1');
+      } else {
+        document.documentElement.removeAttribute('data-owner');
+      }
+    } catch (e) {}
+    try {
+      localStorage.removeItem('theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', '#050b1f');
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script><title>Promtail에서 Grafana Alloy로 로그 수집 옮기기 · SunJae.Log</title><meta name="description" content="kube-prometheus-stack 계열 모니터링 Helm 패키지에서 Promtail 의존성을 끄고 Alloy chart v1.2.1·이미지 v1.10.1로 Pod 로그를 Loki에 보내는 구성을 정리했다."><meta name="author" content="qkrtjswo03"><meta name="copyright" content="© 2026 qkrtjswo03. All Rights Reserved."><meta name="license" content="All Rights Reserved"><link rel="canonical" href="https://qkrtjswo03.github.io/blog/promtail-to-alloy-migration/"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="SunJae.Log"><script>
+  function registerSunjaeSw() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+  }
+  registerSunjaeSw();
+  document.addEventListener('astro:page-load', registerSunjaeSw);
+</script><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.90.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.91.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="alternate" type="application/rss+xml" title="SunJae.Log RSS" href="https://qkrtjswo03.github.io/rss.xml"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="naver-site-verification" content="1852822c3eabd90417fed21892be241192d61531"><meta property="og:type" content="article"><meta property="og:site_name" content="SunJae.Log"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="Promtail에서 Grafana Alloy로 로그 수집 옮기기 · SunJae.Log"><meta property="og:description" content="kube-prometheus-stack 계열 모니터링 Helm 패키지에서 Promtail 의존성을 끄고 Alloy chart v1.2.1·이미지 v1.10.1로 Pod 로그를 Loki에 보내는 구성을 정리했다."><meta property="og:url" content="https://qkrtjswo03.github.io/blog/promtail-to-alloy-migration/"><meta property="og:image" content="https://qkrtjswo03.github.io/og/posts/promtail-to-alloy-migration.png?v=76be7da4"><meta property="og:image:alt" content="Promtail에서 Grafana Alloy로 로그 수집 옮기기"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Promtail에서 Grafana Alloy로 로그 수집 옮기기 · SunJae.Log"><meta name="twitter:description" content="kube-prometheus-stack 계열 모니터링 Helm 패키지에서 Promtail 의존성을 끄고 Alloy chart v1.2.1·이미지 v1.10.1로 Pod 로그를 Loki에 보내는 구성을 정리했다."><meta name="twitter:image" content="https://qkrtjswo03.github.io/og/posts/promtail-to-alloy-migration.png?v=76be7da4"><meta name="twitter:image:alt" content="Promtail에서 Grafana Alloy로 로그 수집 옮기기"><meta property="article:published_time" content="2026-11-06T14:52:00.000Z"><meta property="article:modified_time" content="2026-11-06T14:52:00.000Z"><meta property="article:author" content="qkrtjswo03"><meta property="article:tag" content="Alloy"><meta property="article:tag" content="Promtail"><meta property="article:tag" content="Loki"><meta property="article:tag" content="Helm"><meta property="article:tag" content="Grafana"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6293646207002542" crossorigin="anonymous"></script><script async data-goatcounter="https://sunjae.goatcounter.com/count" src="https://gc.zgo.at/count.js"></script><script type="application/ld+json">[{"@context":"https://schema.org","@type":"BlogPosting","headline":"Promtail에서 Grafana Alloy로 로그 수집 옮기기","description":"kube-prometheus-stack 계열 모니터링 Helm 패키지에서 Promtail 의존성을 끄고 Alloy chart v1.2.1·이미지 v1.10.1로 Pod 로그를 Loki에 보내는 구성을 정리했다.","datePublished":"2026-11-06T14:52:00.000Z","dateModified":"2026-11-06T14:52:00.000Z","inLanguage":"ko-KR","author":{"@type":"Person","name":"qkrtjswo03","url":"https://qkrtjswo03.github.io/about/"},"publisher":{"@type":"Person","name":"qkrtjswo03","url":"https://qkrtjswo03.github.io"},"mainEntityOfPage":"https://qkrtjswo03.github.io/blog/promtail-to-alloy-migration/","url":"https://qkrtjswo03.github.io/blog/promtail-to-alloy-migration/","image":"https://qkrtjswo03.github.io/og/posts/promtail-to-alloy-migration.png?v=76be7da4","isAccessibleForFree":true,"keywords":"Alloy, Promtail, Loki, Helm, Grafana"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://qkrtjswo03.github.io/"},{"@type":"ListItem","position":2,"name":"글","item":"https://qkrtjswo03.github.io/blog/"},{"@type":"ListItem","position":3,"name":"Promtail에서 Grafana Alloy로 로그 수집 옮기기","item":"https://qkrtjswo03.github.io/blog/promtail-to-alloy-migration/"}]}]</script><style>.astro-route-announcer{clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;width:1px;height:1px;position:absolute;top:0;left:0;overflow:hidden}@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media (prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),[data-astro-transition-scope]{animation:none!important}}
+.reading-progress[data-astro-cid-kw4rgypl]{top:var(--header-h,0px);z-index:40;pointer-events:none;background:0 0;height:2px;position:fixed;left:0;right:0}.reading-progress-fill[data-astro-cid-kw4rgypl]{background:linear-gradient(90deg, var(--accent), var(--accent-ink));height:100%;box-shadow:0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);transform-origin:0;transition:transform 90ms linear;display:block;transform:scaleX(0)}@media (prefers-reduced-motion:reduce){.reading-progress-fill[data-astro-cid-kw4rgypl]{transition:none}}.read-resume[data-astro-cid-wd5qxze7]{left:50%;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));z-index:55;border:1px solid color-mix(in srgb, var(--cyan) 45%, var(--line));max-width:min(36rem,100vw - 1.5rem);font-family:var(--mono);color:var(--ink-soft);backdrop-filter:blur(10px);background:#07101feb;border-radius:8px;align-items:center;gap:.55rem;padding:.45rem .55rem .45rem .75rem;font-size:.74rem;display:inline-flex;position:fixed;transform:translate(-50%);box-shadow:0 0 0 1px #22d3ee1f,0 12px 28px #02081873}.read-resume[data-astro-cid-wd5qxze7][hidden]{display:none!important}.read-resume-msg[data-astro-cid-wd5qxze7]{color:#e8f3ff;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.read-resume-msg[data-astro-cid-wd5qxze7]:before{content:"$ ";color:var(--cyan)}.read-resume-go[data-astro-cid-wd5qxze7],.read-resume-dismiss[data-astro-cid-wd5qxze7]{border:1px solid color-mix(in srgb, var(--cyan) 40%, var(--line));color:var(--cyan);font:inherit;cursor:pointer;background:#08142ab3;border-radius:5px;padding:.15rem .45rem}.read-resume-go[data-astro-cid-wd5qxze7]:hover,.read-resume-dismiss[data-astro-cid-wd5qxze7]:hover{filter:brightness(1.15)}.read-resume-dismiss[data-astro-cid-wd5qxze7]{min-width:1.5rem;color:var(--ink-soft);padding-inline:.35rem}[data-copy-guard]{-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none}html.copy-allowed [data-copy-guard],[data-copy-guard] input,[data-copy-guard] textarea,[data-copy-guard] select,[data-copy-guard] [contenteditable=true]{-webkit-user-select:text;user-select:text;-webkit-user-drag:auto;-webkit-touch-callout:default}html:not(.copy-allowed) [data-copy-guard] .copy-button,html:not(.copy-allowed) [data-copy-guard] button[data-copy],html:not(.copy-allowed) [data-copy-guard] button[aria-label=copy i],html:not(.copy-allowed) [data-copy-guard] button[aria-label=Copy],html:not(.copy-allowed) [data-copy-guard] button[aria-label=복사],html:not(.copy-allowed) [data-copy-guard] button[title=copy i],html:not(.copy-allowed) [data-copy-guard] button[title=Copy],html:not(.copy-allowed) [data-copy-guard] button[title=복사]{display:none!important}html:not(.copy-allowed) [data-copy-guard] .code-block .copy-button,html:not(.copy-allowed) [data-copy-guard] .code-block button[data-copy]{display:inline-block!important}[data-copy-guard] .ad-slot,[data-copy-guard] .ad-slot *{-webkit-user-select:auto;user-select:auto;-webkit-user-drag:auto;-webkit-touch-callout:default}.copy-toast{z-index:80;border:1px solid color-mix(in srgb, var(--cyan) 40%, var(--line));background:color-mix(in srgb, var(--bg-elev) 94%, transparent);color:var(--ink);pointer-events:none;border-radius:8px;margin:0;padding:.5rem .85rem;font-size:.82rem;line-height:1.4;position:fixed;bottom:3.6rem;left:50%;transform:translate(-50%);box-shadow:0 10px 28px #050b1f73}.copy-toast[hidden]{display:none!important}.prose img,.hero img{cursor:zoom-in}.img-zoom{width:100vw;max-width:none;height:100vh;max-height:none;color:inherit;background:#040a12e0;border:0;margin:0;padding:0}.img-zoom::backdrop{background:0 0}.img-zoom[open]{cursor:zoom-out;place-items:center;display:grid}.img-zoom img{object-fit:contain;border:1px solid var(--line,#334);background:var(--bg-muted,#0b1520);cursor:zoom-out;border-radius:4px;width:auto;max-width:min(96vw,1400px);height:auto;max-height:92vh;display:block;box-shadow:0 12px 48px #00000073}
+</style></head><body><script type="module" src="/_astro/ReadingMarks.astro_astro_type_script_index_0_lang.DuQl9lIq.js"></script><div class="boot" id="boot" hidden><p class="boot-line" data-boot-line hidden>sunjae@k8s:~$ boot</p><p class="boot-line" data-boot-line hidden>sync posts</p><p class="boot-line" data-boot-line hidden>mount k9s</p><p class="boot-line boot-line is-ready" data-boot-line hidden>Ready</p></div><canvas class="matrix-rain" id="matrix-rain" aria-hidden="true"></canvas><button type="button" class="to-top" id="to-top" hidden aria-label="맨 위로">↑</button><script type="module">var e=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,t=`sunjae-boot-seen`,n=()=>{document.documentElement.classList.remove(`is-booting`),document.dispatchEvent(new CustomEvent(`sunjae:boot-done`))},r=()=>{let r=document.getElementById(`boot`);if(!(r instanceof HTMLElement)){n();return}let i=!1;try{i=sessionStorage.getItem(t)===`1`}catch{}if(e||i){r.hidden=!0,n();return}try{sessionStorage.setItem(t,`1`)}catch{}document.documentElement.classList.add(`is-booting`),r.hidden=!1;let a=[...r.querySelectorAll(`[data-boot-line]`)],o=[];a.forEach((e,t)=>{o.push(window.setTimeout(()=>{e.hidden=!1},180+t*280))});let s=!1,c=()=>{s||(s=!0,o.forEach(e=>window.clearTimeout(e)),r.hidden=!0,n(),document.removeEventListener(`keydown`,l))},l=()=>c();r.addEventListener(`click`,c),document.addEventListener(`keydown`,l),o.push(window.setTimeout(c,1500))},i=t=>{if(t.dataset.typed===`1`)return;t.dataset.typed=`1`;let n=t.textContent??``;if(e||!document.documentElement.classList.contains(`motion`)){t.classList.add(`is-typed`);return}t.classList.add(`is-typing`);let r=document.createElement(`span`);r.className=`type-live`,r.setAttribute(`aria-hidden`,`true`);let i=document.createElement(`span`);i.className=`type-caret`,i.setAttribute(`aria-hidden`,`true`),t.append(r,i);let a=0,o=()=>{a+=1,r.textContent=n.slice(0,a),a<n.length?window.setTimeout(o,42):(i.remove(),t.classList.add(`is-typed`))};window.setTimeout(o,80)},a=()=>{document.querySelectorAll(`.k9s-row`).forEach((t,n)=>{t.dataset.entered!==`1`&&(t.dataset.entered=`1`,!e&&document.documentElement.classList.contains(`motion`)&&(t.classList.add(`enter`),t.style.setProperty(`--d`,`${Math.min(n,12)*36}ms`),requestAnimationFrame(()=>t.classList.add(`is-in`))))})},o=null,s=()=>{o?.disconnect();let t=document.querySelectorAll(`.prose p, .prose li, .prose img, .prose figure, .prose pre, .prose h2, .prose h3`);e||!document.documentElement.classList.contains(`motion`)||!(`IntersectionObserver`in window)?t.forEach(e=>e.classList.add(`reveal`,`is-in`)):(o=new IntersectionObserver(e=>{for(let t of e)t.isIntersecting&&(t.target.classList.add(`is-in`),o?.unobserve(t.target))},{rootMargin:`0px 0px -8% 0px`,threshold:.12}),t.forEach(e=>{e.classList.add(`reveal`);let t=e.getBoundingClientRect();t.top<window.innerHeight*.92&&t.bottom>0?e.classList.add(`is-in`):o?.observe(e)}))},c=()=>{document.querySelectorAll(`[data-typewrite]`).forEach(e=>i(e))},l=()=>{a(),c(),s()},u=!1,d=!1,f=()=>{u?d&&l():(u=!0,document.addEventListener(`sunjae:boot-done`,()=>{d=!0,l()},{once:!0}),r());let e=document.getElementById(`to-top`);e instanceof HTMLButtonElement&&(e.hidden=window.scrollY<480)};document.addEventListener(`click`,t=>{let n=t.target;n instanceof Element&&n.closest(`#to-top`)&&window.scrollTo({top:0,behavior:e?`auto`:`smooth`})}),window.addEventListener(`scroll`,()=>{let e=document.getElementById(`to-top`);e instanceof HTMLButtonElement&&(e.hidden=window.scrollY<480)},{passive:!0}),document.addEventListener(`visibilitychange`,()=>{document.documentElement.classList.toggle(`is-paused`,document.hidden)});var p=navigator.connection?.saveData,m=document.getElementById(`matrix-rain`);if(m instanceof HTMLCanvasElement&&!e&&!p){let e=m.getContext(`2d`);if(e){let t=[],n=()=>{m.width=document.documentElement.clientWidth,m.height=window.innerHeight;let e=Math.ceil(m.width/18);t=Array.from({length:Math.min(e,48)},()=>Math.random()*-20)};n(),window.addEventListener(`resize`,n);let r=0,i=n=>{requestAnimationFrame(i),document.hidden||n-r<90||(r=n,e.clearRect(0,0,m.width,m.height),e.fillStyle=`rgba(34, 211, 238, 0.55)`,e.font=`12px ui-monospace, monospace`,t.forEach((n,r)=>{let i=`01アイウエオカキクケコ<>/`[Math.floor(Math.random()*15)]??`0`;e.fillText(i,r*18,n*16),t[r]=n>m.height/16&&Math.random()>.975?0:n+1}))};requestAnimationFrame(i)}}document.addEventListener(`astro:page-load`,f),f();</script><script type="application/json" id="locked-post-hrefs" data-repo="qkrtjswo03/blog-src">[]</script><!-- Token copy is filled client-side so visitors/crawlers never see it in static HTML. --><dialog data-astro-transition-persist="lock-dialog" class="post-lock-dialog" id="owner-lock-dialog" aria-labelledby="owner-lock-title"></dialog><script type="module" src="/_astro/LockGate.astro_astro_type_script_index_0_lang.f9rXmGpf.js"></script><a class="skip" href="#content">본문으로 건너뛰기</a><div class="app-shell has-term-dock"><div class="console has-status-rail"><aside class="rail"><div class="rail-head"><a class="brand" href="/" aria-label="sunjae@k8s:~$ SunJae.Log 홈"><span class="ps1"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="caret" aria-hidden="true"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span><span class="sr-only">메뉴</span></button></div><div class="rail-body" id="site-nav"><div class="rail-intro"><p class="rail-title"><a href="/">SunJae.Log</a></p><p class="rail-lede">Cloud·<wbr>Infra·<wbr>Kubernetes·<wbr>Observability 오픈소스를 검증하고 연구하는 기술 블로그</p><a class="repo-link" href="https://github.com/qkrtjswo03?tab=repositories" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 7.5 12 4l8 3.5v9L12 20l-8-3.5v-9Z"></path><path fill="none" stroke="currentColor" stroke-width="1.7" d="M12 11.2V20M4.2 7.7 12 11.2l7.8-3.5"></path></svg>저장소</a></div><nav class="site-nav" aria-label="주요"><a href="/blog/" aria-current="page" title="글"><span class="nav-cmd">get posts</span><span class="nav-ko">글</span></a><a href="/projects/" title="프로젝트"><span class="nav-cmd">get projects</span><span class="nav-ko">프로젝트</span></a><a href="/archive/" title="아카이브"><span class="nav-cmd">get archive</span><span class="nav-ko">아카이브</span></a><a href="/about/" title="소개"><span class="nav-cmd">describe me</span><span class="nav-ko">소개</span></a></nav><ul class="topic-list rail-topics"><li><a href="/categories/%EA%B4%80%EC%B8%A1/">관측 <span class="count">7</span></a></li><li><a href="/categories/%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC/">네트워크 <span class="count">7</span></a></li><li><a href="/categories/%EB%B3%B4%EC%95%88/">보안 <span class="count">2</span></a></li><li><a href="/categories/%EC%95%B1/">앱 <span class="count">5</span></a></li><li><a href="/categories/%EC%97%A3%EC%A7%80/">엣지 <span class="count">9</span></a></li><li><a href="/categories/%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C/">운영체제 <span class="count">1</span></a></li><li><a href="/categories/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4/">쿠버네티스 <span class="count">17</span></a></li><li><a href="/categories/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85/">트러블슈팅 <span class="count">3</span></a></li><li><a href="/categories/AI/">AI <span class="count">1</span></a></li></ul><div class="rail-foot"><nav class="rail-links" aria-label="바닥"><a href="/about/">소개</a><a href="/license/">저작권</a><a href="/privacy/">개인정보처리방침</a><a href="/contact/">문의</a><a href="/rss.xml">RSS</a></nav><p class="rail-status"><span class="status-dot" aria-hidden="true"></span><span class="status-word">Ready</span><span class="dim">© 2026 qkrtjswo03 · All Rights Reserved</span></p></div></div></aside><main id="content" class="page"><div class="reading-progress" aria-hidden="true" data-astro-cid-kw4rgypl><span class="reading-progress-fill" data-astro-cid-kw4rgypl></span></div><script type="module">var e=new AbortController,t=()=>{e.abort(),e=new AbortController;let{signal:t}=e,n=document.querySelector(`.reading-progress-fill`),r=document.querySelector(`.post-main .prose`);if(!n||!r)return;let i=!1,a=()=>{i=!1;let e=r.getBoundingClientRect(),t=e.top+window.scrollY,a=e.height-window.innerHeight*.6,o=a>0?(window.scrollY-t+window.innerHeight*.3)/a:1;n.style.transform=`scaleX(${Math.min(1,Math.max(0,o))})`},o=()=>{i||(i=!0,requestAnimationFrame(a))};if(window.addEventListener(`scroll`,o,{passive:!0,signal:t}),window.addEventListener(`resize`,o,{signal:t}),a(),!window.matchMedia(`(prefers-reduced-motion: reduce)`).matches&&`IntersectionObserver`in window){let e=new IntersectionObserver(t=>{for(let n of t)n.isIntersecting&&(n.target.classList.add(`is-scanning`),e.unobserve(n.target))},{threshold:.5});document.querySelectorAll(`.prose figure`).forEach(t=>{t.querySelector(`img[src*="/images/blog/"][src$=".png"]`)&&(t.classList.add(`diagram-scan`),e.observe(t))})}};t(),document.addEventListener(`astro:page-load`,t);</script><div class="read-resume" data-read-resume hidden data-astro-cid-wd5qxze7><span class="read-resume-msg" data-read-resume-msg data-astro-cid-wd5qxze7>이전에 읽던 위치로 이동</span><button type="button" class="read-resume-go" data-read-resume-go data-astro-cid-wd5qxze7>이어 읽기</button><button type="button" class="read-resume-dismiss" data-read-resume-dismiss aria-label="닫기" title="esc" data-astro-cid-wd5qxze7>×</button></div><script type="module" src="/_astro/ReadingResume.astro_astro_type_script_index_0_lang.DQsaPcfq.js"></script><article class="post-layout" data-copy-guard><header class="post-header describe-panel"><div class="list-head"><p class="cmd"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="cmd-text">kubectl describe post/promtail-to-alloy-migration</span></p><div class="owner-actions" data-owner-post-actions hidden></div><script type="module">var e=()=>{let e=document.querySelectorAll(`[data-owner-post-actions]`);if(!e.length)return;let t=document.documentElement.getAttribute(`data-owner-verified`)===`1`,n=document.querySelector(`[data-post-lock-body]`)?.getAttribute(`data-path`)||``;e.forEach(e=>{if(e.replaceChildren(),!t||!n){e.hidden=!0;return}let r=encodeURIComponent(n),i=(e,t)=>{let n=document.createElement(`a`);return n.href=e,n.textContent=t,n};e.append(i(`#term-edit-${r}`,`edit`),i(`#term-delete-${r}`,`delete`)),e.hidden=!1})};e(),document.addEventListener(`astro:page-load`,e),document.addEventListener(`blog:owner-session`,e);</script></div><dl class="describe-list"><div><dt title="이름">Name</dt><dd><div class="post-title-row"><h1>Promtail에서 Grafana Alloy로 로그 수집 옮기기</h1><span class="post-lock-badge is-open" role="status" title="공개된 글"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0"></path></svg>공개</span></div></dd></div><div><dt title="주제">Categories</dt><dd><span class="chip-row"><a class="tag-pill" href="/categories/%EA%B4%80%EC%B8%A1/">관측</a></span></dd></div><div><dt title="태그">Labels</dt><dd><span class="chip-row"><a class="tag-pill" href="/tags/alloy/">Alloy</a><a class="tag-pill" href="/tags/promtail/">Promtail</a><a class="tag-pill" href="/tags/loki/">Loki</a><a class="tag-pill" href="/tags/helm/">Helm</a><a class="tag-pill" href="/tags/grafana/">Grafana</a></span></dd></div><div><dt title="작성일">Created</dt><dd><time class="meta-mono" datetime="2026-11-06T14:52:00.000Z">2026.11.06</time></dd></div><div><dt title="읽기 시간">Reading</dt><dd><span class="meta-mono">10분</span></dd></div><div data-gc-path="/blog/promtail-to-alloy-migration/" hidden><dt title="조회수">Views</dt><dd><span class="meta-mono">조회 <span data-gc-count>—</span></span></dd></div></dl><p class="lede">kube-prometheus-stack 계열 모니터링 Helm 패키지에서 Promtail 의존성을 끄고 Alloy chart v1.2.1·이미지 v1.10.1로 Pod 로그를 Loki에 보내는 구성을 정리했다.</p><nav class="toc toc-preview" data-post-toc data-toc-variant="preview" aria-label="Sections"><p>Sections</p><ol><li><a href="#1-alloy-helm-chart-받기" data-toc-link data-toc-slug="1-alloy-helm-chart-받기">1. Alloy Helm chart 받기</a></li><li><a href="#2-루트-values에서-promtail-끄고-alloy-켜기" data-toc-link data-toc-slug="2-루트-values에서-promtail-끄고-alloy-켜기">2. 루트 values에서 Promtail 끄고 Alloy 켜기</a></li><li><a href="#3-chartyaml--chartlock" data-toc-link data-toc-slug="3-chartyaml--chartlock">3. Chart.yaml · Chart.lock</a></li><li><a href="#4-alloy-river-설정" data-toc-link data-toc-slug="4-alloy-river-설정">4. Alloy river 설정</a></li><li><a href="#5-configmap-템플릿서브차트-values" data-toc-link data-toc-slug="5-configmap-템플릿서브차트-values">5. ConfigMap 템플릿·서브차트 values</a></li><li><a href="#6-최종-구조" data-toc-link data-toc-slug="6-최종-구조">6. 최종 구조</a></li><li><a href="#7-적용" data-toc-link data-toc-slug="7-적용">7. 적용</a></li><li><a href="#8-정리" data-toc-link data-toc-slug="8-정리">8. 정리</a></li></ol></nav><script type="module">var e=null,t=()=>{let e=getComputedStyle(document.documentElement).getPropertyValue(`--header-h`).trim(),t=Number.parseFloat(e);return(Number.isFinite(t)?t:56)+14},n=()=>window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,r=e=>{e.classList.add(`is-toc-flash`),window.setTimeout(()=>e.classList.remove(`is-toc-flash`),1100)},i=(e,{push:i=!0}={})=>{let a=document.getElementById(e);if(!a)return!1;let o=a.getBoundingClientRect().top+window.scrollY-t();if(window.scrollTo({top:Math.max(0,o),behavior:n()?`auto`:`smooth`}),i){let t=`${location.pathname}${location.search}#${e}`;history.pushState(null,``,t)}return r(a),document.querySelectorAll(`[data-toc-link]`).forEach(t=>{t.classList.toggle(`is-active`,t.dataset.tocSlug===e)}),!0},a=()=>{e?.abort(),e=new AbortController;let{signal:n}=e,r=[...document.querySelectorAll(`[data-toc-link]`)];if(r.length===0)return;document.addEventListener(`click`,e=>{let t=e.target?.closest?.(`[data-toc-link]`);if(!t)return;let n=t.dataset.tocSlug;n&&(e.preventDefault(),i(n))},{signal:n});let a=[...new Set(r.map(e=>e.dataset.tocSlug).filter(Boolean))].map(e=>document.getElementById(e)).filter(e=>!!e),o=``,s=e=>{e!==o&&(o=e,r.forEach(t=>t.classList.toggle(`is-active`,t.dataset.tocSlug===e)))};if(`IntersectionObserver`in window&&a.length){let e=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top)[0]?.target;t?.id&&s(t.id)},{rootMargin:`-${t()}px 0px -55% 0px`,threshold:[0,.1,1]});a.forEach(t=>e.observe(t)),n.addEventListener(`abort`,()=>e.disconnect())}let c=decodeURIComponent(location.hash.replace(/^#/,``));c&&document.getElementById(c)?window.requestAnimationFrame(()=>i(c,{push:!1})):a[0]&&s(a[0].id)};a(),document.addEventListener(`astro:page-load`,a);</script></header><div class="post-main"><p class="post-lock-pending" data-locked-pending hidden>잠긴 글입니다. 저장소 주인만 본문을 볼 수 있습니다.</p><p class="post-lock-deploy" data-lock-deploy hidden></p><div class="post-lock-body" data-post-lock-body data-baked-locked="0" data-path="src/content/blog/promtail-to-alloy-migration.md"><aside class="verify-box" aria-label="검증 조건"><p class="verify-box-kicker">검증 조건</p><dl class="verify-box-grid"><div><dt>테스트 버전</dt><dd><ul class="verify-box-versions"><li>grafana/alloy chart 1.2.1</li><li>Alloy image v1.10.1</li><li>loki-distributed chart 0.80.2</li></ul></dd></div><div><dt>환경</dt><dd>Kubernetes, Grafana Helm charts, Loki Distributed gateway</dd></div><div><dt>검증 시점</dt><dd><time datetime="2026-01">2026-01</time></dd></div><div class="verify-box-conclusion"><dt>핵심 결론</dt><dd>Promtail dependency를 주석 처리하고 Alloy DaemonSet + river 설정으로 /var/log/pods 로그를 Loki push API에 보내면 된다.</dd></div></dl></aside><div class="prose" data-locked-prose><p>로그 수집기를 <strong>Promtail</strong> 에서 <strong>Grafana Alloy</strong> 로 바꿀 때, Helm 패키지 안에서 dependency·values·ConfigMap 기본 설정을 같이 손봐야 한다. Alloy chart를 받아 넣고, DaemonSet으로 Pod 로그를 모아 Loki gateway로 보내는 구성을 정리한다.</p>
+<blockquote>
+<p>이미지 레지스트리 호스트·패키지 경로는 예시로 일반화했다. <code>registry.example.internal:50000</code> 자리와 release/차트 경로는 환경에 맞게 바꾼다.</p>
+</blockquote>
+<h2 id="1-alloy-helm-chart-받기">1. Alloy Helm chart 받기</h2>
+<p>작업 위치는 모니터링 패키지 루트(예: <code>monitoring-pack/</code>)를 기준으로 한다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">helm</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> repo</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> add</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> grafana</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> https://grafana.github.io/helm-charts</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">helm</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> repo</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> update</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">helm</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> pull</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> grafana/alloy</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> --version</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> 1.2.1</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> --untar</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> -d</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> charts/</span></span></code></pre>
+<ul>
+<li>Grafana Helm 저장소 추가</li>
+<li>Alloy chart <strong>v1.2.1</strong> 다운로드</li>
+<li><code>charts/alloy</code> 경로에 압축 해제</li>
+</ul>
+<h2 id="2-루트-values에서-promtail-끄고-alloy-켜기">2. 루트 values에서 Promtail 끄고 Alloy 켜기</h2>
+<p>경로 예: <code>monitoring-pack/values.yaml</code></p>
+<p>기존 Promtail 블록은 주석으로 남기고, Alloy를 켠다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D"># promtail:</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#   image:</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#     registry: registry.example.internal:50000</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#     repository: prometheus-stack/grafana/promtail</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#     tag: "3.0.0"</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#   config:</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#     clients:</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">#     - url: http://prometheus-stack-loki-distributed-gateway.monitoring.svc.cluster.local/loki/api/v1/push</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">alloy</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  enabled</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">true</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  image</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    registry</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">registry.example.internal:50000</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    repository</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">prometheus-stack/grafana/alloy</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    tag</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"v1.10.1"</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  configReloader</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    enabled</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">false</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  rbac</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    create</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">true</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  serviceAccount</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    create</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">true</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  mounts</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    varlog</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">true</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    dockercontainers</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">false</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  controller</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    daemonset</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      tolerations</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">        - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">key</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">node-role.kubernetes.io/control-plane</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">          operator</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">Exists</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">          effect</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">NoSchedule</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">        - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">key</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">node-role.kubernetes.io/master</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">          operator</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">Exists</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">          effect</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">NoSchedule</span></span></code></pre>
+<ul>
+<li>DaemonSet으로 노드마다 로그 수집</li>
+<li>control-plane 노드에도 스케줄 허용</li>
+<li><code>/var/log</code> 마운트 활성화</li>
+</ul>
+<h2 id="3-chartyaml--chartlock">3. Chart.yaml · Chart.lock</h2>
+<p>경로 예: <code>monitoring-pack/Chart.yaml</code></p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">apiVersion</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">v2</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">monitoring-pack</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">description</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">A Helm chart for Kubernetes</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">type</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">application</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">version</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">3.0.4</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">appVersion</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"3.0.4"</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">dependencies</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">seaweedfs</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    version</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">4.0.405</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    repository</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">file://charts/seaweedfs</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    condition</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">seaweedfs.enabled</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">kube-prometheus-stack</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    version</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">66.4.0</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    repository</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">file://charts/kube-prometheus-stack</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">  # - name: promtail</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">  #   version: 6.16.6</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">  #   repository: file://charts/promtail</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">alloy</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    version</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">1.2.1</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    repository</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">file://charts/alloy</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">loki-distributed</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    version</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">0.80.2</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    repository</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">file://charts/loki-distributed</span></span></code></pre>
+<p><code>Chart.lock</code>에는 Alloy 1.2.1과 loki-distributed 0.80.2 등이 잡힌다. Promtail dependency는 제거(또는 주석)한다.</p>
+<h2 id="4-alloy-river-설정">4. Alloy river 설정</h2>
+<p>경로 예: <code>monitoring-pack/charts/alloy/config/river.alloy</code> (신규)</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>loki.write "loki" {</span></span>
+<span class="line"><span>  endpoint {</span></span>
+<span class="line"><span>    url         = "http://prometheus-stack-loki-distributed-gateway.monitoring.svc.cluster.local/loki/api/v1/push"</span></span>
+<span class="line"><span>    batch_wait  = "1s"</span></span>
+<span class="line"><span>    batch_size  = "1MiB"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>discovery.kubernetes "pods" {</span></span>
+<span class="line"><span>  role = "pod"</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>discovery.relabel "pod_logs" {</span></span>
+<span class="line"><span>  targets = discovery.kubernetes.pods.targets</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rule {</span></span>
+<span class="line"><span>    source_labels = ["__meta_kubernetes_namespace"]</span></span>
+<span class="line"><span>    action        = "replace"</span></span>
+<span class="line"><span>    target_label  = "namespace"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rule {</span></span>
+<span class="line"><span>    source_labels = ["__meta_kubernetes_pod_name"]</span></span>
+<span class="line"><span>    action        = "replace"</span></span>
+<span class="line"><span>    target_label  = "pod"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rule {</span></span>
+<span class="line"><span>    source_labels = ["__meta_kubernetes_pod_container_name"]</span></span>
+<span class="line"><span>    action        = "replace"</span></span>
+<span class="line"><span>    target_label  = "container"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rule {</span></span>
+<span class="line"><span>    source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]</span></span>
+<span class="line"><span>    action        = "replace"</span></span>
+<span class="line"><span>    target_label  = "app"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rule {</span></span>
+<span class="line"><span>    source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]</span></span>
+<span class="line"><span>    action        = "replace"</span></span>
+<span class="line"><span>    target_label  = "job"</span></span>
+<span class="line"><span>    separator     = "/"</span></span>
+<span class="line"><span>    replacement   = "$1"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rule {</span></span>
+<span class="line"><span>    source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]</span></span>
+<span class="line"><span>    action        = "replace"</span></span>
+<span class="line"><span>    target_label  = "__path__"</span></span>
+<span class="line"><span>    separator     = "/"</span></span>
+<span class="line"><span>    replacement   = "/var/log/pods/*$1/*.log"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>loki.source.kubernetes "pod_logs" {</span></span>
+<span class="line"><span>  targets    = discovery.relabel.pod_logs.output</span></span>
+<span class="line"><span>  forward_to = [loki.process.pod_logs.receiver]</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>loki.process "pod_logs" {</span></span>
+<span class="line"><span>  stage.json {</span></span>
+<span class="line"><span>    expressions = { level = "level" }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  stage.regex {</span></span>
+<span class="line"><span>    expression = "(?i)(?P&lt;level&gt;error|warn|warning|info|debug|trace)"</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  stage.labels {</span></span>
+<span class="line"><span>    values = { level = "level" }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  stage.static_labels {</span></span>
+<span class="line"><span>    values = {</span></span>
+<span class="line"><span>      job    = "kubernetes",</span></span>
+<span class="line"><span>      stream = "stdout",</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  forward_to = [loki.write.loki.receiver]</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<ul>
+<li>Kubernetes Pod 자동 탐색</li>
+<li><code>/var/log/pods</code> 경로 기반 수집</li>
+<li>level 라벨 추출</li>
+<li>Loki gateway로 push</li>
+</ul>
+<h2 id="5-configmap-템플릿서브차트-values">5. ConfigMap 템플릿·서브차트 values</h2>
+<p>경로 예: <code>monitoring-pack/charts/alloy/templates/configmap.yaml</code></p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">data</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  {{- </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">if $values.configMap.content</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8"> }}</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  config.alloy</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583">|-</span><span style="--shiki-light:#B31D28;--shiki-light-font-style:italic;--shiki-dark:#FDAEB7;--shiki-dark-font-style:italic"> {{- (tpl  $values.configMap.content .) | nindent 4 }}</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">  {{- else }}</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">  config.alloy: |- {{- .Files.Get "config/river.alloy" | trim | nindent 4 }}</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">  {{- end }}</span></span></code></pre>
+<p>values에 별도 <code>configMap.content</code>가 없으면 <code>config/river.alloy</code>를 기본으로 쓴다.</p>
+<p>경로 예: <code>monitoring-pack/charts/alloy/values.yaml</code></p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">mounts</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">  # Mount /var/log from the host into the container for log collection.</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  varlog</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">true</span></span></code></pre>
+<h2 id="6-최종-구조">6. 최종 구조</h2>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>monitoring-pack/</span></span>
+<span class="line"><span> ├── Chart.yaml</span></span>
+<span class="line"><span> ├── Chart.lock</span></span>
+<span class="line"><span> ├── values.yaml</span></span>
+<span class="line"><span> └── charts/</span></span>
+<span class="line"><span>     └── alloy/</span></span>
+<span class="line"><span>         ├── config/</span></span>
+<span class="line"><span>         │   └── river.alloy</span></span>
+<span class="line"><span>         ├── templates/</span></span>
+<span class="line"><span>         │   └── configmap.yaml</span></span>
+<span class="line"><span>         └── values.yaml</span></span></code></pre>
+<h2 id="7-적용">7. 적용</h2>
+<aside class="tech-callout tech-callout-impact" role="note"><p class="tech-callout-label">영향 범위</p><p>모니터링 release가 업그레이드되며 Alloy DaemonSet이 배포·재시작되고, Promtail을 제거했다면 기존 Promtail Pod는 내려간다. 전환 순간 로그 수집이 잠시 비거나 중복될 수 있다.</p></aside>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="bash" data-meta="warn=&quot;모니터링 Helm release 업그레이드&quot;"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">helm</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> dependency</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> update</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">helm</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> upgrade</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> --install</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> prometheus-stack</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> .</span></span></code></pre>
+<h2 id="8-정리">8. 정리</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chart</td>
+<td><code>grafana/alloy</code> 1.2.1</td>
+</tr>
+<tr>
+<td>Image</td>
+<td><code>…/grafana/alloy:v1.10.1</code></td>
+</tr>
+<tr>
+<td>수집</td>
+<td>DaemonSet + <code>/var/log</code></td>
+</tr>
+<tr>
+<td>전송</td>
+<td>Loki Distributed gateway <code>/loki/api/v1/push</code></td>
+</tr>
+<tr>
+<td>교체</td>
+<td>Promtail dependency·values 주석 처리</td>
+</tr>
+</tbody>
+</table>
+</div><ul class="tag-row"><li><a class="tag-pill" href="/tags/alloy/">Alloy</a></li><li><a class="tag-pill" href="/tags/promtail/">Promtail</a></li><li><a class="tag-pill" href="/tags/loki/">Loki</a></li><li><a class="tag-pill" href="/tags/helm/">Helm</a></li><li><a class="tag-pill" href="/tags/grafana/">Grafana</a></li></ul><nav class="pager" aria-label="다른 글"><a href="/blog/seaweedfs-s3-velero-backup/"><span>이전 글</span><strong>SeaweedFS를 S3로 올리고 Velero 백업 저장소에 붙이기</strong></a></nav></div></div><aside class="post-side"><nav class="toc" data-post-toc data-toc-variant="side" aria-label="목차"><p>목차</p><ol><li><a href="#1-alloy-helm-chart-받기" data-toc-link data-toc-slug="1-alloy-helm-chart-받기">1. Alloy Helm chart 받기</a></li><li><a href="#2-루트-values에서-promtail-끄고-alloy-켜기" data-toc-link data-toc-slug="2-루트-values에서-promtail-끄고-alloy-켜기">2. 루트 values에서 Promtail 끄고 Alloy 켜기</a></li><li><a href="#3-chartyaml--chartlock" data-toc-link data-toc-slug="3-chartyaml--chartlock">3. Chart.yaml · Chart.lock</a></li><li><a href="#4-alloy-river-설정" data-toc-link data-toc-slug="4-alloy-river-설정">4. Alloy river 설정</a></li><li><a href="#5-configmap-템플릿서브차트-values" data-toc-link data-toc-slug="5-configmap-템플릿서브차트-values">5. ConfigMap 템플릿·서브차트 values</a></li><li><a href="#6-최종-구조" data-toc-link data-toc-slug="6-최종-구조">6. 최종 구조</a></li><li><a href="#7-적용" data-toc-link data-toc-slug="7-적용">7. 적용</a></li><li><a href="#8-정리" data-toc-link data-toc-slug="8-정리">8. 정리</a></li></ol></nav></aside></article><script>
+    (function () {
+      var article = document.querySelector('[data-post-lock-body][data-baked-locked="1"]');
+      if (!article) return;
+      article.setAttribute('hidden', '');
+      if (document.documentElement.getAttribute('data-owner-verified') === '1') return;
+      var prose = article.querySelector('[data-locked-prose]');
+      if (prose) prose.replaceChildren();
+    })();
+  </script><p class="copy-toast" data-copy-toast role="status" aria-live="polite" hidden>복사가 허용되지 않은 글입니다.</p><script type="module" src="/_astro/CopyGuard.astro_astro_type_script_index_0_lang.rVzkombd.js"></script><dialog data-astro-transition-persist="img-zoom" class="img-zoom" id="img-zoom" aria-label="이미지 확대"></dialog><script type="module">var e=()=>{let e=document.getElementById(`img-zoom`);return e instanceof HTMLDialogElement?e:null},t=()=>{let t=e();t&&t.dataset.zoomBound!==`1`&&(t.dataset.zoomBound=`1`,t.addEventListener(`cancel`,e=>{e.preventDefault(),t.open&&t.close()}),t.addEventListener(`close`,()=>{t.querySelector(`img`)?.remove()}))};window.__sunjaeZoom||(window.__sunjaeZoom=!0,document.addEventListener(`click`,t=>{let n=e();if(!n)return;let r=t.target;if(!(r instanceof Element))return;if(n.open){t.preventDefault(),n.close();return}let i=r.closest(`.prose img, .hero img`);if(!(i instanceof HTMLImageElement)||!i.src)return;t.preventDefault(),t.stopPropagation();let a=n.querySelector(`img`);a instanceof HTMLImageElement||(a=document.createElement(`img`),n.appendChild(a)),a.src=i.currentSrc||i.src,a.alt=i.alt||``,n.showModal()})),t(),document.addEventListener(`astro:page-load`,t);</script><script type="module">var e=null,t=e=>{if(!e)return{};let t=e.replaceAll(`&quot;`,`"`).replaceAll(`&#39;`,`'`).replaceAll(`&amp;`,`&`),n={},r=/(\w+)=(?:"([^"]*)"|'([^']*)'|(\S+))/g,i;for(;i=r.exec(t);){let e=i[1],t=i[2]??i[3]??i[4]??``;(e===`title`||e===`cwd`||e===`warn`)&&(n[e]=t)}return n},n=e=>[`bash`,`sh`,`shell`,`zsh`,`console`,`shellsession`].includes(e),r=e=>[`text`,`output`,`log`,`plaintext`].includes(e),i=(e,t)=>{let n=(e.querySelector(`code`)??e).textContent||``;if(t===`all`)return n.replace(/\n$/,``);let r=n.split(`
+`),i=[];for(let e of r)/^\s*[$#]\s+/.test(e)&&i.push(e.replace(/^\s*[$#]\s+/,``));return i.join(`
+`)},a=(e,t)=>{if(r(t)){e.dataset.codeKind=`output`;return}if(!n(t))return;let i=e.querySelector(`code`);if(!i)return;let a=i.textContent||``;if(!a.split(`
+`).some(e=>/^\s*[$#]\s+/.test(e))){e.dataset.codeKind=`script`;return}e.dataset.codeKind=`session`,i.innerHTML;let o=a.split(`
+`);o.length&&o[o.length-1]===``&&o.pop(),i.innerHTML=o.map(e=>`<span class="${/^\s*[$#]\s+/.test(e)?`code-line is-cmd`:`code-line is-out`}">${e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`)||` `}</span>`).join(`
+`)},o=e=>{if(e.dataset.codeEnhanced===`1`)return;e.dataset.codeEnhanced=`1`;let n=(e.getAttribute(`data-language`)||e.dataset.language||``).toLowerCase(),o=t(e.getAttribute(`data-meta`));a(e,n);let s=document.createElement(`div`);s.className=`code-block`,e.dataset.codeKind&&(s.dataset.codeKind=e.dataset.codeKind),e.parentNode?.insertBefore(s,e),s.appendChild(e);let c=document.createElement(`div`);c.className=`code-head`;let l=document.createElement(`div`);l.className=`code-head-meta`;let u=e.dataset.codeKind||``;if(u===`output`||r(n)){let e=document.createElement(`span`);e.className=`code-pill is-output`,e.textContent=`OUTPUT`,l.appendChild(e)}else if(n){let e=document.createElement(`span`);e.className=`code-pill`,e.textContent=n,l.appendChild(e)}if(o.title){let e=document.createElement(`span`);e.className=`code-title`,e.textContent=o.title,l.appendChild(e)}if(o.cwd){let e=document.createElement(`span`);e.className=`code-cwd`,e.textContent=o.cwd,l.appendChild(e)}if(o.warn){let e=document.createElement(`span`);e.className=`code-warn`,e.textContent=`⚠ ${o.warn}`,l.appendChild(e)}c.appendChild(l);let d=u===`session`?`commands`:`all`,f=document.createElement(`button`);f.type=`button`,f.className=`copy-button`,f.dataset.copy=`1`,f.textContent=d===`commands`?`copy cmds`:`copy`,f.title=d===`commands`?`프롬프트 제외한 명령만 복사`:`전체 복사`,f.addEventListener(`click`,async()=>{document.documentElement.classList.contains(`copy-allowed`);try{let t=i(e,d);await navigator.clipboard.writeText(t),f.textContent=`copied`,window.setTimeout(()=>{f.textContent=d===`commands`?`copy cmds`:`copy`},1200)}catch{f.textContent=`fail`,window.setTimeout(()=>{f.textContent=d===`commands`?`copy cmds`:`copy`},1200)}}),c.appendChild(f),s.insertBefore(c,e)},s=()=>{e?.abort(),e=new AbortController,document.querySelectorAll(`.prose pre.astro-code`).forEach(o)};s(),document.addEventListener(`astro:page-load`,s);</script><script type="module">var e=()=>{let e=document.querySelector(`[data-owner-sample]`);if(!e)return;if(e.replaceChildren(),document.documentElement.getAttribute(`data-owner-verified`)!==`1`){e.hidden=!0;return}let t=e.dataset.sampleSlug||``,n=document.createElement(`strong`);n.textContent=`예시 글입니다.`,e.append(n,document.createTextNode(` 지울 때는 `));let r=document.createElement(`code`);r.textContent=`src/content/blog/${t}.md`,e.append(r,document.createTextNode(` 파일을 삭제하세요. 내용은 남기고 이 안내만 없애려면 frontmatter의 `));let i=document.createElement(`code`);i.textContent=`sample`,e.append(i,document.createTextNode(`을 `));let a=document.createElement(`code`);a.textContent=`false`,e.append(a,document.createTextNode(`로 바꾸면 됩니다.`)),e.hidden=!1};e(),document.addEventListener(`astro:page-load`,e),document.addEventListener(`blog:owner-session`,e);</script><script type="module">document.addEventListener(`keydown`,e=>{if(e.key!==`Backspace`||e.metaKey||e.ctrlKey||e.altKey)return;let t=e.target;t instanceof HTMLElement&&([`INPUT`,`TEXTAREA`,`SELECT`].includes(t.tagName)||t.isContentEditable||t.closest(`.term-shell`))||(e.preventDefault(),history.length>1&&history.back())});</script><p class="page-source owner-only" data-page-source-mount data-source-path="src/content/blog/promtail-to-alloy-migration.md" hidden></p></main><aside class="status-rail" aria-label="클러스터 상태"><div class="status-block"><div class="status-head"><span class="k9s-pill">ctx sunjae-blog</span><span class="status-ready"><span class="status-dot" aria-hidden="true"></span>Ready</span></div><dl class="status-metrics"><div><dt>POSTS</dt><dd>46</dd></div><div><dt>NS</dt><dd>9</dd></div><div><dt>LATEST</dt><dd>2026-11-06</dd></div><div data-gc-path="TOTAL" hidden title="사이트 전체 방문(GoatCounter)"><dt>VIEWS</dt><dd data-gc-count>—</dd></div><div title="서울 현재 시각 (KST)"><dt>KST</dt><dd data-kst-clock>--:--:--</dd></div></dl><p class="status-live" aria-hidden="true"><span>CPU <b data-live-cpu>12%</b></span><span>PODS <b data-live-pods>46</b></span></p><ul class="status-ns"><li><span class="ns-name">관측</span><span class="ns-count">7</span></li><li><span class="ns-name">네트워크</span><span class="ns-count">7</span></li><li><span class="ns-name">보안</span><span class="ns-count">2</span></li><li><span class="ns-name">앱</span><span class="ns-count">5</span></li><li><span class="ns-name">엣지</span><span class="ns-count">9</span></li><li><span class="ns-name">운영체제</span><span class="ns-count">1</span></li><li><span class="ns-name">쿠버네티스</span><span class="ns-count">17</span></li><li><span class="ns-name">트러블슈팅</span><span class="ns-count">3</span></li><li><span class="ns-name">AI</span><span class="ns-count">1</span></li></ul></div><div class="status-block"><p class="status-label">$ get projects</p><ul class="mini-projects"><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 205"><img src="/logos/kubeedge.svg" alt="KubeEdge 엣지 클라우드 동작 검증 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">KubeEdge 엣지 클라우드 동작 검증</span><span class="mini-kind">엣지 · 국방 연구과제</span></span></a></li><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 158"><img src="/logos/grafana.svg" alt="멀티 클러스터 관측 스택 통합 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">멀티 클러스터 관측 스택 통합</span><span class="mini-kind">관측 · PaaS</span></span></a></li><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 285"><img src="/logos/keycloak.svg" alt="통합 대시보드 접근과 중앙 인증 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">통합 대시보드 접근과 중앙 인증</span><span class="mini-kind">보안 · 인증</span></span></a></li></ul><a class="status-more" href="/projects/">전체 프로젝트 →</a></div><div class="status-block"><p class="status-label">$ get certs</p><ul class="mini-certs"><li><a class="mini-cert" href="/about/#certs" title="CKAD"><img src="/certs/ckad.webp" alt="" width="113" height="85" loading="lazy" decoding="async"><span>CKAD</span></a></li><li><a class="mini-cert" href="/about/#certs" title="CKA"><img src="/certs/cka.webp" alt="" width="113" height="85" loading="lazy" decoding="async"><span>CKA</span></a></li><li><a class="mini-cert" href="/about/#certs" title="NCP"><img src="/certs/ncp.webp" alt="" width="113" height="85" loading="lazy" decoding="async"><span>NCP</span></a></li><li><a class="mini-cert" href="/about/#certs" title="NCA"><img src="/certs/nca.webp" alt="" width="113" height="85" loading="lazy" decoding="async"><span>NCA</span></a></li></ul></div></aside><script type="module">var e=new Intl.DateTimeFormat(`en-GB`,{timeZone:`Asia/Seoul`,hour:`2-digit`,minute:`2-digit`,second:`2-digit`,hour12:!1}),t=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,n=12,r=Number(document.querySelector(`[data-live-pods]`)?.textContent)||36,i=()=>{let i=e.format(new Date);if(document.querySelectorAll(`[data-kst-clock]`).forEach(e=>{e.textContent=i}),t||document.hidden)return;n=Math.min(22,Math.max(6,n+(Math.random()>.5?1:-1)));let a=r+(Math.random()>.7?1:Math.random()>.45?0:-1);document.querySelectorAll(`[data-live-cpu]`).forEach(e=>{e.textContent=`${n}%`}),document.querySelectorAll(`[data-live-pods]`).forEach(e=>{e.textContent=String(a)})};window.__sunjaeStatus||(window.__sunjaeStatus=!0,i(),setInterval(i,1600));</script></div><aside data-astro-transition-persist="vim-dock" class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true"><div class="term-dock-resize" id="term-dock-resize" role="separator" aria-orientation="horizontal" aria-label="터미널 높이 조절" title="드래그해서 높이 조절"></div><div class="term-dock-head"><span class="term-dock-title">$ vim</span><div class="term-dock-actions"><button type="button" class="term-dock-lock" id="term-dock-lock" aria-pressed="false" aria-label="터미널 고정 해제됨" title="고정 (호버 없이 펼침 유지)"><svg class="term-dock-lock-icon term-dock-lock-icon--unlocked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 7.5-1.9"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><svg class="term-dock-lock-icon term-dock-lock-icon--locked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" hidden><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 8 0v3"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><span class="term-dock-lock-label">고정</span></button><a class="owner-only" href="#term-new-post">new post</a><a class="owner-login-quiet" href="#term-login" title="저장소 주인 로그인 (:login)">login</a><a href="/terminal/">전체 화면</a></div></div><section class="term-shell term-shell--panel" data-repo="qkrtjswo03/blog-src" data-base="main" data-variant="panel"><div class="term-titlebar" aria-hidden="true"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">sunjae@github — qkrtjswo03/blog-src</span><span class="term-branch" id="term-branch">main</span></div><div class="term-log" id="term-log" role="log" aria-live="polite" tabindex="0"></div><form class="term-line" id="term-form" autocomplete="off"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">github</span><span class="ps1-path" id="term-cwd">:~</span><span class="ps1-sigil">$</span></span><label class="sr-only" for="term-input">명령</label><input id="term-input" name="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send" placeholder="help"></form><div class="term-editor" id="term-editor" hidden><div class="term-editor-bar"><span id="term-editor-path">-</span><span class="term-editor-state" id="term-editor-state"></span></div><textarea id="term-editor-text" spellcheck="false" aria-label="파일 내용"></textarea><div class="term-editor-actions"><button type="button" class="term-btn" id="term-editor-save">임시 저장 (<span id="term-editor-lines">0</span>줄)</button><button type="button" class="term-btn" id="term-editor-commit">커밋</button><button type="button" class="term-btn" id="term-editor-pr">커밋 후 PR</button><button type="button" class="term-btn term-btn-ghost" id="term-editor-cancel">닫기</button></div></div></section><script type="module" src="/_astro/Terminal.astro_astro_type_script_index_0_lang.ORjzhFyA.js"></script></aside></div><script type="module">var e=()=>{document.querySelectorAll(`[data-page-source-mount]`).forEach(e=>{e.replaceChildren();let t=document.documentElement.getAttribute(`data-owner-verified`)===`1`,n=e.dataset.sourcePath||``;if(!t||!n){e.hidden=!0;return}let r=n.includes(`src/content/blog/`);e.append(document.createTextNode(r?`이 글은 `:`이 페이지는 `));let i=document.createElement(`code`);i.textContent=n,e.append(i,document.createTextNode(`에서 고칩니다.`)),e.hidden=!1})};e(),document.addEventListener(`astro:page-load`,e),document.addEventListener(`blog:owner-session`,e);</script><script type="module" src="/_astro/Header.astro_astro_type_script_index_1_lang.DdOpbAN-.js"></script><script>
+          (function () {
+            function push() {
+              var nodes = document.querySelectorAll('ins.adsbygoogle');
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].getAttribute('data-adsbygoogle-status')) continue;
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+              }
+            }
+            if (!window.__sunjaeAds) {
+              window.__sunjaeAds = true;
+              document.addEventListener('astro:page-load', push);
+            }
+            if (document.readyState === 'complete') push();
+            else window.addEventListener('load', push);
+          })();
+        </script><script>(function(){const code = "sunjae";
+
+    (function () {
+      var base = 'https://' + code + '.goatcounter.com/counter/';
+      var mem = {};
+      function get(path) {
+        if (mem[path]) return mem[path];
+        var key = 'gc:' + path, hit;
+        try { hit = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+        if (hit && Date.now() - hit.t < 300000) return (mem[path] = Promise.resolve(hit.c));
+        var url = base + encodeURIComponent(path) + '.json';
+        return (mem[path] = fetch(url, { credentials: 'omit', mode: 'cors' })
+          .then(function (r) {
+            if (r.status === 404) return '0';
+            if (!r.ok) return Promise.reject(0);
+            return r.json().then(function (j) {
+              return j && j.count != null ? String(j.count) : '0';
+            });
+          })
+          .then(function (c) { try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), c: c })); } catch (e) {} return c; })
+          .catch(function () { return '0'; }));
+      }
+      function run() {
+        document.querySelectorAll('[data-gc-path]').forEach(function (el) {
+          var out = el.querySelector('[data-gc-count]') || el;
+          get(el.getAttribute('data-gc-path')).then(function (c) {
+            out.textContent = String(c).trim(); el.hidden = false;
+          }, function () { out.textContent = '—'; });
+        });
+      }
+      var boot = function () { run(); };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+      document.addEventListener('astro:page-load', run);
+    })();
+  })();</script></body></html>
