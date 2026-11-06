@@ -29,7 +29,7 @@ description: ""
 pubDate: ${new Intl.DateTimeFormat(`en-CA`,{timeZone:`Asia/Seoul`}).format(new Date)}
 # 주제. 예: 관측, 네트워크, 쿠버네티스
 categories:
-  - 관측
+- 관측
 # 태그. 예: [cilium, prometheus]
 tags: []
 # true면 목록에 안 나옵니다. 공개할 때 false 로 바꾸세요
