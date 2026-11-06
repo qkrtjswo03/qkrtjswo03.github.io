@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="ko" data-theme="dark"><head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DXqcZz58.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050b1f"><script>
+  (function () {
+    try {
+      // owner UI only after terminal login as repo owner (set by Terminal)
+      if (localStorage.getItem('owner-mode') === '1') {
+        document.documentElement.setAttribute('data-owner', '1');
+      } else {
+        document.documentElement.removeAttribute('data-owner');
+      }
+    } catch (e) {}
+    try {
+      localStorage.removeItem('theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', '#050b1f');
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script><title>PathRAG: 그래프에서 경로만 골라내는 RAG · SunJae.Log</title><meta name="description" content="GraphRAG·LightRAG가 가져오는 노이즈를 줄이기 위해, 관계 경로(relational path)와 흐름 기반 가지치기로 질문에 필요한 경로만 고르는 PathRAG의 아이디어·파이프라인·비교·한계를 정리했다."><meta name="author" content="qkrtjswo03"><meta name="copyright" content="© 2026 qkrtjswo03. All Rights Reserved."><meta name="license" content="All Rights Reserved"><link rel="canonical" href="https://qkrtjswo03.github.io/blog/pathrag-guide/"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="SunJae.Log"><script>
+  function registerSunjaeSw() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+  }
+  registerSunjaeSw();
+  document.addEventListener('astro:page-load', registerSunjaeSw);
+</script><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.90.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.91.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="alternate" type="application/rss+xml" title="SunJae.Log RSS" href="https://qkrtjswo03.github.io/rss.xml"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="naver-site-verification" content="1852822c3eabd90417fed21892be241192d61531"><meta property="og:type" content="article"><meta property="og:site_name" content="SunJae.Log"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="PathRAG: 그래프에서 경로만 골라내는 RAG · SunJae.Log"><meta property="og:description" content="GraphRAG·LightRAG가 가져오는 노이즈를 줄이기 위해, 관계 경로(relational path)와 흐름 기반 가지치기로 질문에 필요한 경로만 고르는 PathRAG의 아이디어·파이프라인·비교·한계를 정리했다."><meta property="og:url" content="https://qkrtjswo03.github.io/blog/pathrag-guide/"><meta property="og:image" content="https://qkrtjswo03.github.io/og/posts/pathrag-guide.png"><meta property="og:image:alt" content="PathRAG: 그래프에서 경로만 골라내는 RAG"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="PathRAG: 그래프에서 경로만 골라내는 RAG · SunJae.Log"><meta name="twitter:description" content="GraphRAG·LightRAG가 가져오는 노이즈를 줄이기 위해, 관계 경로(relational path)와 흐름 기반 가지치기로 질문에 필요한 경로만 고르는 PathRAG의 아이디어·파이프라인·비교·한계를 정리했다."><meta name="twitter:image" content="https://qkrtjswo03.github.io/og/posts/pathrag-guide.png"><meta name="twitter:image:alt" content="PathRAG: 그래프에서 경로만 골라내는 RAG"><meta property="article:published_time" content="2026-11-06T07:00:00.000Z"><meta property="article:modified_time" content="2026-11-06T07:00:00.000Z"><meta property="article:author" content="qkrtjswo03"><meta property="article:tag" content="PathRAG"><meta property="article:tag" content="RAG"><meta property="article:tag" content="GraphRAG"><meta property="article:tag" content="LightRAG"><meta property="article:tag" content="LLM"><meta property="article:tag" content="Knowledge Graph"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6293646207002542" crossorigin="anonymous"></script><script async data-goatcounter="https://sunjae.goatcounter.com/count" src="https://gc.zgo.at/count.js"></script><script type="application/ld+json">[{"@context":"https://schema.org","@type":"BlogPosting","headline":"PathRAG: 그래프에서 경로만 골라내는 RAG","description":"GraphRAG·LightRAG가 가져오는 노이즈를 줄이기 위해, 관계 경로(relational path)와 흐름 기반 가지치기로 질문에 필요한 경로만 고르는 PathRAG의 아이디어·파이프라인·비교·한계를 정리했다.","datePublished":"2026-11-06T07:00:00.000Z","dateModified":"2026-11-06T07:00:00.000Z","inLanguage":"ko-KR","author":{"@type":"Person","name":"qkrtjswo03","url":"https://qkrtjswo03.github.io/about/"},"publisher":{"@type":"Person","name":"qkrtjswo03","url":"https://qkrtjswo03.github.io"},"mainEntityOfPage":"https://qkrtjswo03.github.io/blog/pathrag-guide/","url":"https://qkrtjswo03.github.io/blog/pathrag-guide/","image":"https://qkrtjswo03.github.io/og/posts/pathrag-guide.png","isAccessibleForFree":true,"keywords":"PathRAG, RAG, GraphRAG, LightRAG, LLM, Knowledge Graph"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://qkrtjswo03.github.io/"},{"@type":"ListItem","position":2,"name":"글","item":"https://qkrtjswo03.github.io/blog/"},{"@type":"ListItem","position":3,"name":"PathRAG: 그래프에서 경로만 골라내는 RAG","item":"https://qkrtjswo03.github.io/blog/pathrag-guide/"}]}]</script><link rel="stylesheet" href="/_astro/Cmd.C3ev2i9l.css"><style>.reading-progress[data-astro-cid-kw4rgypl]{top:var(--header-h,0px);z-index:40;pointer-events:none;background:0 0;height:2px;position:fixed;left:0;right:0}.reading-progress-fill[data-astro-cid-kw4rgypl]{background:linear-gradient(90deg, var(--accent), var(--accent-ink));height:100%;box-shadow:0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);transform-origin:0;transition:transform 90ms linear;display:block;transform:scaleX(0)}@media (prefers-reduced-motion:reduce){.reading-progress-fill[data-astro-cid-kw4rgypl]{transition:none}}[data-copy-guard]{-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none}html.copy-allowed [data-copy-guard],[data-copy-guard] input,[data-copy-guard] textarea,[data-copy-guard] select,[data-copy-guard] [contenteditable=true]{-webkit-user-select:text;user-select:text;-webkit-user-drag:auto;-webkit-touch-callout:default}html:not(.copy-allowed) [data-copy-guard] .copy-button,html:not(.copy-allowed) [data-copy-guard] button[data-copy],html:not(.copy-allowed) [data-copy-guard] button[aria-label=copy i],html:not(.copy-allowed) [data-copy-guard] button[aria-label=Copy],html:not(.copy-allowed) [data-copy-guard] button[aria-label=복사],html:not(.copy-allowed) [data-copy-guard] button[title=copy i],html:not(.copy-allowed) [data-copy-guard] button[title=Copy],html:not(.copy-allowed) [data-copy-guard] button[title=복사]{display:none!important}[data-copy-guard] .ad-slot,[data-copy-guard] .ad-slot *{-webkit-user-select:auto;user-select:auto;-webkit-user-drag:auto;-webkit-touch-callout:default}.copy-toast{z-index:80;border:1px solid color-mix(in srgb, var(--cyan) 40%, var(--line));background:color-mix(in srgb, var(--bg-elev) 94%, transparent);color:var(--ink);pointer-events:none;border-radius:8px;margin:0;padding:.5rem .85rem;font-size:.82rem;line-height:1.4;position:fixed;bottom:3.6rem;left:50%;transform:translate(-50%);box-shadow:0 10px 28px #050b1f73}.copy-toast[hidden]{display:none!important}.prose img,.hero img{cursor:zoom-in}.img-zoom{width:100vw;max-width:none;height:100vh;max-height:none;color:inherit;background:#040a12e0;border:0;margin:0;padding:0}.img-zoom::backdrop{background:0 0}.img-zoom[open]{cursor:zoom-out;place-items:center;display:grid}.img-zoom img{object-fit:contain;border:1px solid var(--line,#334);background:var(--bg-muted,#0b1520);cursor:zoom-out;border-radius:4px;width:auto;max-width:min(96vw,1400px);height:auto;max-height:92vh;display:block;box-shadow:0 12px 48px #00000073}
+</style></head><body><div class="boot" id="boot" hidden><p class="boot-line" data-boot-line hidden>sunjae@k8s:~$ boot</p><p class="boot-line" data-boot-line hidden>sync posts</p><p class="boot-line" data-boot-line hidden>mount k9s</p><p class="boot-line boot-line is-ready" data-boot-line hidden>Ready</p></div><canvas class="matrix-rain" id="matrix-rain" aria-hidden="true"></canvas><button type="button" class="to-top" id="to-top" hidden aria-label="맨 위로">↑</button><script type="module">var e=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,t=`sunjae-boot-seen`,n=()=>{document.documentElement.classList.remove(`is-booting`),document.dispatchEvent(new CustomEvent(`sunjae:boot-done`))},r=()=>{let r=document.getElementById(`boot`);if(!(r instanceof HTMLElement)){n();return}let i=!1;try{i=sessionStorage.getItem(t)===`1`}catch{}if(e||i){r.hidden=!0,n();return}try{sessionStorage.setItem(t,`1`)}catch{}document.documentElement.classList.add(`is-booting`),r.hidden=!1;let a=[...r.querySelectorAll(`[data-boot-line]`)],o=[];a.forEach((e,t)=>{o.push(window.setTimeout(()=>{e.hidden=!1},180+t*280))});let s=!1,c=()=>{s||(s=!0,o.forEach(e=>window.clearTimeout(e)),r.hidden=!0,n(),document.removeEventListener(`keydown`,l))},l=()=>c();r.addEventListener(`click`,c),document.addEventListener(`keydown`,l),o.push(window.setTimeout(c,1500))},i=t=>{if(t.dataset.typed===`1`)return;t.dataset.typed=`1`;let n=t.textContent??``;if(e||!document.documentElement.classList.contains(`motion`)){t.classList.add(`is-typed`);return}t.classList.add(`is-typing`);let r=document.createElement(`span`);r.className=`type-live`,r.setAttribute(`aria-hidden`,`true`);let i=document.createElement(`span`);i.className=`type-caret`,i.setAttribute(`aria-hidden`,`true`),t.append(r,i);let a=0,o=()=>{a+=1,r.textContent=n.slice(0,a),a<n.length?window.setTimeout(o,42):(i.remove(),t.classList.add(`is-typed`))};window.setTimeout(o,80)},a=()=>{document.querySelectorAll(`.k9s-row`).forEach((t,n)=>{t.dataset.entered!==`1`&&(t.dataset.entered=`1`,!e&&document.documentElement.classList.contains(`motion`)&&(t.classList.add(`enter`),t.style.setProperty(`--d`,`${Math.min(n,12)*36}ms`),requestAnimationFrame(()=>t.classList.add(`is-in`))))})},o=null,s=()=>{o?.disconnect();let t=document.querySelectorAll(`.prose p, .prose li, .prose img, .prose figure, .prose pre, .prose h2, .prose h3`);e||!document.documentElement.classList.contains(`motion`)||!(`IntersectionObserver`in window)?t.forEach(e=>e.classList.add(`reveal`,`is-in`)):(o=new IntersectionObserver(e=>{for(let t of e)t.isIntersecting&&(t.target.classList.add(`is-in`),o?.unobserve(t.target))},{rootMargin:`0px 0px -8% 0px`,threshold:.12}),t.forEach(e=>{e.classList.add(`reveal`);let t=e.getBoundingClientRect();t.top<window.innerHeight*.92&&t.bottom>0?e.classList.add(`is-in`):o?.observe(e)}))},c=()=>{document.querySelectorAll(`[data-typewrite]`).forEach(e=>i(e))},l=()=>{a(),c(),s()},u=!1,d=!1,f=()=>{u?d&&l():(u=!0,document.addEventListener(`sunjae:boot-done`,()=>{d=!0,l()},{once:!0}),r());let e=document.getElementById(`to-top`);e instanceof HTMLButtonElement&&(e.hidden=window.scrollY<480)};document.addEventListener(`click`,t=>{let n=t.target;n instanceof Element&&n.closest(`#to-top`)&&window.scrollTo({top:0,behavior:e?`auto`:`smooth`})}),window.addEventListener(`scroll`,()=>{let e=document.getElementById(`to-top`);e instanceof HTMLButtonElement&&(e.hidden=window.scrollY<480)},{passive:!0}),document.addEventListener(`visibilitychange`,()=>{document.documentElement.classList.toggle(`is-paused`,document.hidden)});var p=navigator.connection?.saveData,m=document.getElementById(`matrix-rain`);if(m instanceof HTMLCanvasElement&&!e&&!p){let e=m.getContext(`2d`);if(e){let t=[],n=()=>{m.width=document.documentElement.clientWidth,m.height=window.innerHeight;let e=Math.ceil(m.width/18);t=Array.from({length:Math.min(e,48)},()=>Math.random()*-20)};n(),window.addEventListener(`resize`,n);let r=0,i=n=>{requestAnimationFrame(i),document.hidden||n-r<90||(r=n,e.clearRect(0,0,m.width,m.height),e.fillStyle=`rgba(34, 211, 238, 0.55)`,e.font=`12px ui-monospace, monospace`,t.forEach((n,r)=>{let i=`01アイウエオカキクケコ<>/`[Math.floor(Math.random()*15)]??`0`;e.fillText(i,r*18,n*16),t[r]=n>m.height/16&&Math.random()>.975?0:n+1}))};requestAnimationFrame(i)}}document.addEventListener(`astro:page-load`,f),f();</script><script type="application/json" id="locked-post-hrefs" data-repo="qkrtjswo03/blog-src">[]</script><dialog data-astro-transition-persist="lock-dialog" class="post-lock-dialog" id="owner-lock-dialog" aria-labelledby="owner-lock-title"><div class="post-lock-panel"><div class="post-lock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></div><p class="post-lock-heading" id="owner-lock-title">잠긴 글입니다</p><p>이 글은 저장소 주인만 볼 수 있습니다. 주인 GitHub 토큰으로 인증하면 엽니다.</p><form class="post-lock-form" data-owner-lock-form><label class="sr-only" for="owner-lock-token">GitHub 토큰</label><input id="owner-lock-token" class="post-lock-input" type="password" name="token" autocomplete="off" spellcheck="false" placeholder="GitHub 토큰" required><button type="submit" class="post-lock-btn">인증 후 열기</button><button type="button" class="post-lock-btn is-ghost" data-owner-lock-close>닫기</button></form><p class="post-lock-error" data-owner-lock-error hidden>토큰이 올바르지 않거나 저장소 주인이 아닙니다.</p></div></dialog><script type="module" src="/_astro/LockGate.astro_astro_type_script_index_0_lang.BqK3t9wu.js"></script><a class="skip" href="#content">본문으로 건너뛰기</a><div class="app-shell has-term-dock"><div class="console has-status-rail"><aside class="rail"><div class="rail-head"><a class="brand" href="/" aria-label="SunJae.Log 홈"><span class="ps1"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="caret" aria-hidden="true"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span><span class="sr-only">메뉴</span></button></div><div class="rail-body" id="site-nav"><div class="rail-intro"><p class="rail-title"><a href="/">SunJae.Log</a></p><p class="rail-lede">클라우드, 인프라, Kubernetes·관측성·장애 원인 분석을 기록합니다.</p><a class="repo-link" href="https://github.com/qkrtjswo03?tab=repositories" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 7.5 12 4l8 3.5v9L12 20l-8-3.5v-9Z"></path><path fill="none" stroke="currentColor" stroke-width="1.7" d="M12 11.2V20M4.2 7.7 12 11.2l7.8-3.5"></path></svg>저장소</a></div><nav class="site-nav" aria-label="주요"><a href="/blog/" aria-current="page" title="글"><span class="nav-cmd">get posts</span><span class="nav-ko">글</span></a><a href="/projects/" title="프로젝트"><span class="nav-cmd">get projects</span><span class="nav-ko">프로젝트</span></a><a href="/archive/" title="아카이브"><span class="nav-cmd">get archive</span><span class="nav-ko">아카이브</span></a><a href="/about/" title="소개"><span class="nav-cmd">describe me</span><span class="nav-ko">소개</span></a></nav><ul class="topic-list rail-topics"><li><a href="/categories/%EA%B4%80%EC%B8%A1/">관측 <span class="count">6</span></a></li><li><a href="/categories/%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC/">네트워크 <span class="count">7</span></a></li><li><a href="/categories/%EB%B3%B4%EC%95%88/">보안 <span class="count">2</span></a></li><li><a href="/categories/%EC%95%B1/">앱 <span class="count">5</span></a></li><li><a href="/categories/%EC%97%A3%EC%A7%80/">엣지 <span class="count">9</span></a></li><li><a href="/categories/%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C/">운영체제 <span class="count">1</span></a></li><li><a href="/categories/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4/">쿠버네티스 <span class="count">15</span></a></li><li><a href="/categories/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85/">트러블슈팅 <span class="count">3</span></a></li><li><a href="/categories/AI/">AI <span class="count">1</span></a></li></ul><div class="rail-foot"><nav class="rail-links" aria-label="바닥"><a href="/about/">소개</a><a href="/license/">저작권</a><a href="/privacy/">개인정보처리방침</a><a href="/contact/">문의</a><a href="/rss.xml">RSS</a></nav><p class="rail-status"><span class="status-dot" aria-hidden="true"></span><span class="status-word">Ready</span><span class="dim">© 2026 qkrtjswo03 · All Rights Reserved</span></p></div></div></aside><main id="content" class="page"><div class="reading-progress" aria-hidden="true" data-astro-cid-kw4rgypl><span class="reading-progress-fill" data-astro-cid-kw4rgypl></span></div><script type="module">var e=new AbortController,t=()=>{e.abort(),e=new AbortController;let{signal:t}=e,n=document.querySelector(`.reading-progress-fill`),r=document.querySelector(`.post-main .prose`);if(!n||!r)return;let i=!1,a=()=>{i=!1;let e=r.getBoundingClientRect(),t=e.top+window.scrollY,a=e.height-window.innerHeight*.6,o=a>0?(window.scrollY-t+window.innerHeight*.3)/a:1;n.style.transform=`scaleX(${Math.min(1,Math.max(0,o))})`},o=()=>{i||(i=!0,requestAnimationFrame(a))};if(window.addEventListener(`scroll`,o,{passive:!0,signal:t}),window.addEventListener(`resize`,o,{signal:t}),a(),!window.matchMedia(`(prefers-reduced-motion: reduce)`).matches&&`IntersectionObserver`in window){let e=new IntersectionObserver(t=>{for(let n of t)n.isIntersecting&&(n.target.classList.add(`is-scanning`),e.unobserve(n.target))},{threshold:.5});document.querySelectorAll(`.prose figure`).forEach(t=>{t.querySelector(`img[src*="/images/blog/"][src$=".png"]`)&&(t.classList.add(`diagram-scan`),e.observe(t))})}};t(),document.addEventListener(`astro:page-load`,t);</script><article class="post-layout" data-copy-guard><header class="post-header describe-panel"><div class="list-head"><p class="cmd"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="cmd-text">kubectl describe post/pathrag-guide</span></p><div class="owner-actions"><a href="#term-edit-src%2Fcontent%2Fblog%2Fpathrag-guide.md">edit</a><a href="#term-delete-src%2Fcontent%2Fblog%2Fpathrag-guide.md">delete</a></div></div><dl class="describe-list"><div><dt title="이름">Name</dt><dd><div class="post-title-row"><h1>PathRAG: 그래프에서 경로만 골라내는 RAG</h1><span class="post-lock-badge is-open" role="status" title="공개된 글"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0"></path></svg>공개</span></div></dd></div><div><dt title="주제">Categories</dt><dd><span class="chip-row"><a class="tag-pill" href="/categories/AI/">AI</a></span></dd></div><div><dt title="태그">Labels</dt><dd><span class="chip-row"><a class="tag-pill" href="/tags/pathrag/">PathRAG</a><a class="tag-pill" href="/tags/rag/">RAG</a><a class="tag-pill" href="/tags/graphrag/">GraphRAG</a><a class="tag-pill" href="/tags/lightrag/">LightRAG</a><a class="tag-pill" href="/tags/llm/">LLM</a><a class="tag-pill" href="/tags/knowledge%20graph/">Knowledge Graph</a></span></dd></div><div><dt title="작성일">Created</dt><dd><time class="meta-mono" datetime="2026-11-06T07:00:00.000Z">2026.11.06</time></dd></div><div><dt title="읽기 시간">Reading</dt><dd><span class="meta-mono">8분</span></dd></div><div data-gc-path="/blog/pathrag-guide/" hidden><dt title="조회수">Views</dt><dd><span class="meta-mono">조회 <span data-gc-count>—</span></span></dd></div></dl><p class="lede">GraphRAG·LightRAG가 가져오는 노이즈를 줄이기 위해, 관계 경로(relational path)와 흐름 기반 가지치기로 질문에 필요한 경로만 고르는 PathRAG의 아이디어·파이프라인·비교·한계를 정리했다.</p></header><div class="post-main"><p class="post-lock-pending" data-locked-pending hidden>잠긴 글입니다. 저장소 주인만 본문을 볼 수 있습니다.<button type="button" class="post-lock-btn" data-locked-open>주인 인증</button></p><p class="post-lock-deploy" data-lock-deploy hidden></p><div class="post-lock-body" data-post-lock-body data-baked-locked="0" data-path="src/content/blog/pathrag-guide.md"><aside class="verify-box" aria-label="검증 조건"><p class="verify-box-kicker">검증 조건</p><dl class="verify-box-grid"><div class="verify-box-conclusion"><dt>핵심 결론</dt><dd>검색의 병목은 정보 부족이 아니라 과잉이다. PathRAG는 관계 경로만 골라 더 적은 토큰으로 논리적인 답변을 만든다.</dd></div></dl></aside><div class="prose" data-locked-prose><p>GraphRAG는 커뮤니티를 통째로 넣고, LightRAG는 개체의 이웃을 넓게 가져온다. 둘 다 “혹시 필요할까 봐” 넉넉히 넣는 전략이다. 그런데 LLM 컨텍스트에 질문과 무관한 정보가 끼어들면, 중요한 근거가 중간에 묻히는 <a href="https://arxiv.org/abs/2307.03172">Lost in the Middle</a> 현상과 맞닿는다.</p>
+<p>2025년 2월 BUPT GAMMA Lab 등이 낸 <strong>PathRAG</strong>는 검색 단위를 <strong>관계 경로(relational path)</strong> 로 바꾸고, <strong>흐름 기반 가지치기(flow-based pruning)</strong> 로 노이즈를 줄인다. 이 글은 코어닷투데이의 PathRAG 가이드와 논문·저장소를 읽고, 블로그용으로 다시 정리한 것이다.</p>
+<h2 id="pathrag가-무엇이고-어디에-놓이는가">PathRAG가 무엇이고 어디에 놓이는가</h2>
+<p>그래프 기반 RAG는 “무엇을 가져와 LLM에 넣느냐”가 세대를 갈랐다.</p>
+<table>
+<thead>
+<tr>
+<th>세대</th>
+<th>검색 단위</th>
+<th>잘 푸는 점</th>
+<th>남는 점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Naive RAG</td>
+<td>텍스트 청크</td>
+<td>구현이 단순</td>
+<td>관계·멀티홉이 약함</td>
+</tr>
+<tr>
+<td>GraphRAG</td>
+<td>커뮤니티 요약·전체</td>
+<td>전체 조망</td>
+<td>토큰·비용이 큼</td>
+</tr>
+<tr>
+<td>LightRAG</td>
+<td>개체 + 1-hop 이웃</td>
+<td>비용 절감</td>
+<td>이웃 전부가 노이즈가 될 수 있음</td>
+</tr>
+<tr>
+<td>PathRAG</td>
+<td>개체 간 <strong>경로</strong></td>
+<td>노이즈↓, 추론 구조 명시</td>
+<td>커뮤니티급 조망은 약함</td>
+</tr>
+</tbody>
+</table>
+<p>비유하면 GraphRAG는 “동네 전체”, LightRAG는 “건물과 옆 건물”, PathRAG는 <strong>건물 사이를 잇는 도로만</strong> 가져온다. 도로만으로도 관계는 읽히고, 옆 건물 내부 사정까지 넣지 않아도 된다.</p>
+<p>논문 제목은 <em>PathRAG: Pruning Graph-based Retrieval Augmented Generation with Relational Paths</em> (arXiv:2502.14902)이다. 공동 저자 중 Zirui Guo는 LightRAG 1저자이기도 해서, LightRAG의 다음 단계로 읽히기도 한다.</p>
+<h2 id="왜-경로인가">왜 “경로”인가</h2>
+<p>질문 예: “심장 질환의 위험 인자와 예방적 치료법의 관계는?”</p>
+<p>사람은 수천 개 사실 중 <strong>고혈압 → 심장 질환 ← ACE 억제제</strong>처럼 답에 필요한 사슬만 고른다. “심장은 분당 약 72회 뛴다” 같은 사실은 자연스럽게 빠진다. PathRAG는 이 선택을 알고리즘으로 따라가려 한다.</p>
+<h2 id="동작-파이프라인">동작 파이프라인</h2>
+<p>큰 흐름은 세 단계다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>질문</span></span>
+<span class="line"><span>  → ① 노드 검색 (키워드·임베딩으로 관련 개체)</span></span>
+<span class="line"><span>  → ② 경로 검색 (흐름 기반 가지치기 → 상위 K개 경로)</span></span>
+<span class="line"><span>  → ③ 경로 기반 프롬프팅 (신뢰도 낮은 경로 → 높은 경로 순)</span></span>
+<span class="line"><span>  → 답변</span></span></code></pre>
+<h3 id="-노드-검색">① 노드 검색</h3>
+<p>질문에서 키워드를 뽑고, 지식 그래프 개체와 벡터로 맞춘 뒤 상위 <strong>N</strong>개(기본 40)를 고른다. 이 부분은 LightRAG와 비슷한 출발점이다.</p>
+<h3 id="-경로-검색--흐름-기반-가지치기">② 경로 검색 — 흐름 기반 가지치기</h3>
+<p>핵심이다. N개 노드 사이 경로는 많으니, 네트워크 흐름에서 온 <strong>자원 전파(resource propagation)</strong> 로 점수 매긴다.</p>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>초기화</td>
+<td>시작 노드에 자원 1.0</td>
+</tr>
+<tr>
+<td>전파</td>
+<td>이웃으로 자원을 나누되, 홉마다 감쇠율 <strong>α</strong>(기본 0.8)를 곱함</td>
+</tr>
+<tr>
+<td>가지치기</td>
+<td>자원이 임계값 <strong>θ</strong> 이하면 더 퍼뜨리지 않음</td>
+</tr>
+<tr>
+<td>경로 점수</td>
+<td>경로 위 노드 자원의 평균 등으로 신뢰도 산출</td>
+</tr>
+<tr>
+<td>선택</td>
+<td>노드 쌍들에서 상위 <strong>K</strong>개(기본 15)</td>
+</tr>
+</tbody>
+</table>
+<p>α 때문에 먼 경로는 자연히 점수가 낮다. 2-hop은 0.8², 3-hop은 0.8³…처럼 멀수록 약해진다. 허브를 지나면 자원이 많이 갈라져 점수가 내려가고, 좁고 촘촘한 관계는 상대적으로 남기 쉽다. Personalized PageRank와 결이 비슷하지만, <strong>특정 노드 쌍 사이에서 결정적으로 전파</strong>한다는 점이 다르다.</p>
+<p>같은 질문에서 LightRAG가 “심장 질환”의 진단·합병증 이웃까지 넓게 넣는 반면, PathRAG는 위험 인자·치료와 이어지는 <strong>경로만</strong> 남기는 쪽에 가깝다.</p>
+<h3 id="-경로-기반-프롬프팅">③ 경로 기반 프롬프팅</h3>
+<p>선택된 경로는 <strong>신뢰도가 낮은 것 → 높은 것</strong> 순으로 넣고, 가장 강한 경로를 프롬프트 <strong>끝</strong>에 둔다. Lost in the Middle 연구에서 LLM이 시작·끝(특히 끝)에 더 민감하다는 점을 이용한 배치다. 경로 형태(<code>A → B → C</code>) 자체가 “A가 B를 거쳐 C와 연결된다”는 추론 뼈대를 준다.</p>
+<h2 id="숫자로-본-경향-논문가이드-인용">숫자로 본 경향 (논문·가이드 인용)</h2>
+<p>벤치마크는 UltraDomain(대학 교과서 기반) 6개 도메인에서, GPT-4o-mini를 판정자로 두고 포괄성·다양성·논리성·관련성·일관성 등 차원의 <strong>승률</strong>을 본다. LLM-as-judge이므로 <strong>절대 점수보다 상대 경향</strong>으로 보는 편이 안전하다. 아래 수치는 논문·코어닷투데이 가이드에 보고된 값을 옮긴 것이다.</p>
+<table>
+<thead>
+<tr>
+<th>비교 대상</th>
+<th>PathRAG 평균 승률 (가이드 인용)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vs Naive RAG</td>
+<td>64.5%</td>
+</tr>
+<tr>
+<td>vs HyDE</td>
+<td>62.3%</td>
+</tr>
+<tr>
+<td>vs GraphRAG</td>
+<td>60.4%</td>
+</tr>
+<tr>
+<td>vs LightRAG</td>
+<td>58.5%</td>
+</tr>
+</tbody>
+</table>
+<p>도메인별로 vs LightRAG 승률은 법률 65.5%, 역사 60.1%처럼 <strong>관계·멀티홉이 많은 쪽</strong>에서 격차가 크고, 혼합 도메인 52.7%처럼 관계 밀도가 낮은 쪽에서는 차이가 줄어든다고 한다.</p>
+<p>토큰 쪽(가이드 인용, 질문당 평균):</p>
+<table>
+<thead>
+<tr>
+<th>방식</th>
+<th>대략 토큰</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LightRAG</td>
+<td>15,837</td>
+<td>이웃 네트워크</td>
+</tr>
+<tr>
+<td>PathRAG</td>
+<td>13,318</td>
+<td>약 16% 절감</td>
+</tr>
+<tr>
+<td>PathRAG-light (N=20, K=5)</td>
+<td>8,869</td>
+<td>약 44% 절감, 승률 약 50.69%로 품질 동등 수준</td>
+</tr>
+</tbody>
+</table>
+<p>Ablation(가이드 인용): 랜덤 경로 −3.25%, 짧은 홉 우선 −1.67%, 경로 형식을 뺀 평면 텍스트 −1.86%. 흐름 기반 선택과 경로 형식이 모두 기여한다.</p>
+<p>하이퍼파라미터 기본값(논문·가이드): <strong>N=40</strong>, <strong>K=15</strong>, <strong>α=0.8</strong>. α=0.6은 먼 경로를 너무 버리고, α=1.0은 거리 신호를 잃기 쉽다고 한다.</p>
+<h2 id="graphrag--lightrag--pathrag-한눈에">GraphRAG · LightRAG · PathRAG 한눈에</h2>
+<table>
+<thead>
+<tr>
+<th>차원</th>
+<th>GraphRAG</th>
+<th>LightRAG</th>
+<th>PathRAG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>검색 단위</td>
+<td>커뮤니티</td>
+<td>개체+이웃</td>
+<td>관계 경로</td>
+</tr>
+<tr>
+<td>생성 컨텍스트 규모</td>
+<td>매우 큼</td>
+<td>중간(이웃)</td>
+<td>상대적으로 작음(경로)</td>
+</tr>
+<tr>
+<td>글로벌 요약형 질문</td>
+<td>강함</td>
+<td>부분 지원</td>
+<td>약함</td>
+</tr>
+<tr>
+<td>멀티홉·관계 추론</td>
+<td>커뮤니티 안</td>
+<td>1-hop 중심</td>
+<td>경로 자체가 멀티홉</td>
+</tr>
+<tr>
+<td>노이즈</td>
+<td>높음</td>
+<td>중간</td>
+<td>낮음</td>
+</tr>
+<tr>
+<td>인덱싱</td>
+<td>비쌈·재구축 부담</td>
+<td>상대적으로 가벼움</td>
+<td>LightRAG와 같은 그래프면 검색 모듈 교체 가능(가이드)</td>
+</tr>
+</tbody>
+</table>
+<p>선택 감각만 짧게:</p>
+<table>
+<thead>
+<tr>
+<th>질문 성격</th>
+<th>더 나은 쪽</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“이 자료의 핵심 주제 다섯 가지”</td>
+<td>GraphRAG</td>
+</tr>
+<tr>
+<td>“A와 B의 관계·영향 경로”</td>
+<td>PathRAG</td>
+</tr>
+<tr>
+<td>비용 우선 + 관계도 어느 정도</td>
+<td>LightRAG</td>
+</tr>
+<tr>
+<td>단순 사실 / FAQ / 관계 밀도 낮음</td>
+<td>Advanced·Naive RAG</td>
+</tr>
+</tbody>
+</table>
+<h2 id="한계와-쓸-때-주의">한계와 쓸 때 주의</h2>
+<ul>
+<li><strong>조망형 질문</strong>에는 경로만으로 부족하다. 커뮤니티 요약이 맞는 경우가 많다.</li>
+<li><strong>1단계 노드 검색이 틀리면</strong> 이후 경로도 같이 빗나간다. 빠뜨린 노드를 지나는 경로는 아예 안 나온다.</li>
+<li><strong>α·θ를 세게 주면</strong> 중요하지만 조금 먼 멀티홉이 잘릴 수 있다.</li>
+<li>평가가 LLM-as-judge라 위치·길이 편향을 염두에 둔다.</li>
+</ul>
+<p>공식 구현(BUPT-GAMMA/PathRAG)은 FastAPI·React·D3 시각화, PDF/DOCX/Markdown 등 입력, OpenAI·Ollama·vLLM 등 모델, NanoVectorDB+NetworkX 기본 저장을 묶은 풀스택 형태다. 프로덕션에서는 벡터·그래프 저장소를 교체하는 전제가 있다.</p>
+<h2 id="정리">정리</h2>
+<p>PathRAG가 밀어붙이는 문장은 단순하다. <strong>문제는 정보가 부족한 게 아니라 너무 많은 것</strong>이다. 질문에 답하는 경로만 남기면 토큰은 줄고, 답의 논리 뼈대는 더 분명해질 수 있다. 다만 전체 주제 요약이나 관계 없는 FAQ에는 다른 RAG가 낫다. “A가 Y에 미친 영향의 사슬은?”, “이 의존성에서 실패가 어디까지 전파되나?”처럼 <strong>관계 추론</strong>이 중심일 때 PathRAG를 후보로 두는 게 맞다.</p>
+<h2 id="출처--참고">출처 · 참고</h2>
+<ul>
+<li><a href="https://core.today/blog/pathrag-guide">PathRAG: 그래프에서 '경로'만 골라내면 답변이 달라진다</a> — 코어닷투데이 (이 글의 주요 정리 원문)</li>
+<li>Chen, B., et al. (2025). <a href="https://arxiv.org/abs/2502.14902">PathRAG: Pruning Graph-based Retrieval Augmented Generation with Relational Paths</a>. arXiv:2502.14902</li>
+<li><a href="https://github.com/BUPT-GAMMA/PathRAG">BUPT-GAMMA/PathRAG</a> — 공식 구현</li>
+<li>Guo, Z., et al. (2024). LightRAG: Simple and Fast Retrieval-Augmented Generation</li>
+<li>Edge, D., et al. (2024). From Local to Global: A Graph RAG Approach to Query-Focused Summarization</li>
+<li>Liu, N., et al. (2024). Lost in the Middle: How Language Models Use Long Contexts</li>
+</ul>
+</div><ul class="tag-row"><li><a class="tag-pill" href="/tags/pathrag/">PathRAG</a></li><li><a class="tag-pill" href="/tags/rag/">RAG</a></li><li><a class="tag-pill" href="/tags/graphrag/">GraphRAG</a></li><li><a class="tag-pill" href="/tags/lightrag/">LightRAG</a></li><li><a class="tag-pill" href="/tags/llm/">LLM</a></li><li><a class="tag-pill" href="/tags/knowledge%20graph/">Knowledge Graph</a></li></ul><nav class="pager" aria-label="다른 글"><a href="/blog/grafana-oauth2-keycloak-auth/"><span>이전 글</span><strong>OAuth2 Proxy와 Keycloak으로 Grafana 앞단 인증 붙이기</strong></a></nav></div></div><aside class="post-side"><nav class="toc" aria-label="목차"><p>목차</p><ol><li><a href="#pathrag가-무엇이고-어디에-놓이는가">PathRAG가 무엇이고 어디에 놓이는가</a></li><li><a href="#왜-경로인가">왜 “경로”인가</a></li><li><a href="#동작-파이프라인">동작 파이프라인</a></li><li class="toc-sub"><a href="#-노드-검색">① 노드 검색</a></li><li class="toc-sub"><a href="#-경로-검색--흐름-기반-가지치기">② 경로 검색 — 흐름 기반 가지치기</a></li><li class="toc-sub"><a href="#-경로-기반-프롬프팅">③ 경로 기반 프롬프팅</a></li><li><a href="#숫자로-본-경향-논문가이드-인용">숫자로 본 경향 (논문·가이드 인용)</a></li><li><a href="#graphrag--lightrag--pathrag-한눈에">GraphRAG · LightRAG · PathRAG 한눈에</a></li><li><a href="#한계와-쓸-때-주의">한계와 쓸 때 주의</a></li><li><a href="#정리">정리</a></li><li><a href="#출처--참고">출처 · 참고</a></li></ol></nav></aside></article><script>
+    (function () {
+      var article = document.querySelector('[data-post-lock-body][data-baked-locked="1"]');
+      if (!article) return;
+      article.setAttribute('hidden', '');
+      if (document.documentElement.getAttribute('data-owner-verified') === '1') return;
+      var prose = article.querySelector('[data-locked-prose]');
+      if (prose) prose.replaceChildren();
+    })();
+  </script><p class="copy-toast" data-copy-toast role="status" aria-live="polite" hidden>복사가 허용되지 않은 글입니다.</p><script type="module" src="/_astro/CopyGuard.astro_astro_type_script_index_0_lang.NXk18E_D.js"></script><dialog data-astro-transition-persist="img-zoom" class="img-zoom" id="img-zoom" aria-label="이미지 확대"></dialog><script type="module">var e=()=>{let e=document.getElementById(`img-zoom`);return e instanceof HTMLDialogElement?e:null},t=()=>{let t=e();t&&t.dataset.zoomBound!==`1`&&(t.dataset.zoomBound=`1`,t.addEventListener(`cancel`,e=>{e.preventDefault(),t.open&&t.close()}),t.addEventListener(`close`,()=>{t.querySelector(`img`)?.remove()}))};window.__sunjaeZoom||(window.__sunjaeZoom=!0,document.addEventListener(`click`,t=>{let n=e();if(!n)return;let r=t.target;if(!(r instanceof Element))return;if(n.open){t.preventDefault(),n.close();return}let i=r.closest(`.prose img, .hero img`);if(!(i instanceof HTMLImageElement)||!i.src)return;t.preventDefault(),t.stopPropagation();let a=n.querySelector(`img`);a instanceof HTMLImageElement||(a=document.createElement(`img`),n.appendChild(a)),a.src=i.currentSrc||i.src,a.alt=i.alt||``,n.showModal()})),t(),document.addEventListener(`astro:page-load`,t);</script><script type="module">document.addEventListener(`keydown`,e=>{if(e.key!==`Backspace`||e.metaKey||e.ctrlKey||e.altKey)return;let t=e.target;t instanceof HTMLElement&&([`INPUT`,`TEXTAREA`,`SELECT`].includes(t.tagName)||t.isContentEditable||t.closest(`.term-shell`))||(e.preventDefault(),history.length>1&&history.back())});</script><p class="page-source owner-only">이 글은 <code>src/content/blog/pathrag-guide.md</code>에서 고칩니다.</p></main><aside class="status-rail" aria-label="클러스터 상태"><div class="status-block"><div class="status-head"><span class="k9s-pill">ctx sunjae-blog</span><span class="status-ready"><span class="status-dot" aria-hidden="true"></span>Ready</span></div><dl class="status-metrics"><div><dt>POSTS</dt><dd>43</dd></div><div><dt>NS</dt><dd>9</dd></div><div><dt>LATEST</dt><dd>2026-11-06</dd></div><div data-gc-path="TOTAL" hidden title="사이트 전체 방문(GoatCounter)"><dt>VIEWS</dt><dd data-gc-count>—</dd></div><div title="서울 현재 시각 (KST)"><dt>KST</dt><dd data-kst-clock>--:--:--</dd></div></dl><p class="status-live" aria-hidden="true"><span>CPU <b data-live-cpu>12%</b></span><span>PODS <b data-live-pods>43</b></span></p><ul class="status-ns"><li><span class="ns-name">관측</span><span class="ns-count">6</span></li><li><span class="ns-name">네트워크</span><span class="ns-count">7</span></li><li><span class="ns-name">보안</span><span class="ns-count">2</span></li><li><span class="ns-name">앱</span><span class="ns-count">5</span></li><li><span class="ns-name">엣지</span><span class="ns-count">9</span></li><li><span class="ns-name">운영체제</span><span class="ns-count">1</span></li><li><span class="ns-name">쿠버네티스</span><span class="ns-count">15</span></li><li><span class="ns-name">트러블슈팅</span><span class="ns-count">3</span></li><li><span class="ns-name">AI</span><span class="ns-count">1</span></li></ul></div><div class="status-block"><p class="status-label">$ get projects</p><ul class="mini-projects"><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 205"><img src="/logos/kubeedge.svg" alt="KubeEdge 엣지 클라우드 동작 검증 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">KubeEdge 엣지 클라우드 동작 검증</span><span class="mini-kind">엣지 · 국방 연구과제</span></span></a></li><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 158"><img src="/logos/grafana.svg" alt="멀티 클러스터 관측 스택 통합 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">멀티 클러스터 관측 스택 통합</span><span class="mini-kind">관측 · PaaS</span></span></a></li><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 285"><img src="/logos/keycloak.svg" alt="통합 대시보드 접근과 중앙 인증 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">통합 대시보드 접근과 중앙 인증</span><span class="mini-kind">보안 · 인증</span></span></a></li></ul><a class="status-more" href="/projects/">전체 프로젝트 →</a></div><div class="status-block"><p class="status-label">$ get certs</p><ul class="mini-certs"><li><a class="mini-cert" href="/about/#certs" title="CKAD"><img src="/certs/ckad.webp" alt="CKAD" width="113" height="85" loading="lazy" decoding="async"><span>CKAD</span></a></li><li><a class="mini-cert" href="/about/#certs" title="CKA"><img src="/certs/cka.webp" alt="CKA" width="113" height="85" loading="lazy" decoding="async"><span>CKA</span></a></li><li><a class="mini-cert" href="/about/#certs" title="NCP"><img src="/certs/ncp.webp" alt="NCP" width="113" height="85" loading="lazy" decoding="async"><span>NCP</span></a></li><li><a class="mini-cert" href="/about/#certs" title="NCA"><img src="/certs/nca.webp" alt="NCA" width="113" height="85" loading="lazy" decoding="async"><span>NCA</span></a></li></ul></div></aside><script type="module">var e=new Intl.DateTimeFormat(`en-GB`,{timeZone:`Asia/Seoul`,hour:`2-digit`,minute:`2-digit`,second:`2-digit`,hour12:!1}),t=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,n=12,r=Number(document.querySelector(`[data-live-pods]`)?.textContent)||36,i=()=>{let i=e.format(new Date);if(document.querySelectorAll(`[data-kst-clock]`).forEach(e=>{e.textContent=i}),t||document.hidden)return;n=Math.min(22,Math.max(6,n+(Math.random()>.5?1:-1)));let a=r+(Math.random()>.7?1:Math.random()>.45?0:-1);document.querySelectorAll(`[data-live-cpu]`).forEach(e=>{e.textContent=`${n}%`}),document.querySelectorAll(`[data-live-pods]`).forEach(e=>{e.textContent=String(a)})};window.__sunjaeStatus||(window.__sunjaeStatus=!0,i(),setInterval(i,1600));</script></div><aside data-astro-transition-persist="vim-dock" class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true"><div class="term-dock-resize" id="term-dock-resize" role="separator" aria-orientation="horizontal" aria-label="터미널 높이 조절" title="드래그해서 높이 조절"></div><div class="term-dock-head"><span class="term-dock-title">$ vim</span><div class="term-dock-actions"><button type="button" class="term-dock-lock" id="term-dock-lock" aria-pressed="false" aria-label="터미널 고정 해제됨" title="고정 (호버 없이 펼침 유지)"><svg class="term-dock-lock-icon term-dock-lock-icon--unlocked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 7.5-1.9"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><svg class="term-dock-lock-icon term-dock-lock-icon--locked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" hidden><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 8 0v3"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><span class="term-dock-lock-label">고정</span></button><a class="owner-only" href="#term-new-post">new post</a><a class="owner-login-quiet" href="#term-login" title="저장소 주인 로그인 (:login)">login</a><a href="/terminal/">전체 화면</a></div></div><section class="term-shell term-shell--panel" data-repo="qkrtjswo03/blog-src" data-base="main" data-variant="panel"><div class="term-titlebar" aria-hidden="true"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">sunjae@github — qkrtjswo03/blog-src</span><span class="term-branch" id="term-branch">main</span></div><div class="term-log" id="term-log" role="log" aria-live="polite" tabindex="0"></div><form class="term-line" id="term-form" autocomplete="off"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">github</span><span class="ps1-path" id="term-cwd">:~</span><span class="ps1-sigil">$</span></span><label class="sr-only" for="term-input">명령</label><input id="term-input" name="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send" placeholder="help"></form><div class="term-editor" id="term-editor" hidden><div class="term-editor-bar"><span id="term-editor-path">-</span><span class="term-editor-state" id="term-editor-state"></span></div><textarea id="term-editor-text" spellcheck="false" aria-label="파일 내용"></textarea><div class="term-editor-actions"><button type="button" class="term-btn" id="term-editor-save">임시 저장 (<span id="term-editor-lines">0</span>줄)</button><button type="button" class="term-btn" id="term-editor-commit">커밋</button><button type="button" class="term-btn" id="term-editor-pr">커밋 후 PR</button><button type="button" class="term-btn term-btn-ghost" id="term-editor-cancel">닫기</button></div></div></section><script type="module" src="/_astro/Terminal.astro_astro_type_script_index_0_lang.BEIlC0Vj.js"></script></aside></div><script type="module">var e=(e=!1)=>{let t=document.querySelector(`.rail`),n=document.querySelector(`.nav-toggle`);t?.classList.remove(`is-open`),document.documentElement.classList.remove(`nav-open`),n?.setAttribute(`aria-expanded`,`false`),e&&n?.focus()};window.__sunjaeChrome||(window.__sunjaeChrome=!0,document.addEventListener(`keydown`,t=>{t.key===`Escape`&&document.querySelector(`.rail`)?.classList.contains(`is-open`)&&e(!0)}),document.addEventListener(`click`,t=>{let n=document.querySelector(`.rail`);if(!n?.classList.contains(`is-open`))return;let r=t.target;r instanceof Node&&!n.contains(r)&&e()}));var t=()=>{let t=document.querySelector(`.nav-toggle`),n=document.querySelector(`.rail`),r=document.getElementById(`site-nav`);t&&t.dataset.navBound!==`1`&&(t.dataset.navBound=`1`,t.addEventListener(`click`,()=>{let e=n?.classList.toggle(`is-open`)??!1;document.documentElement.classList.toggle(`nav-open`,e),t.setAttribute(`aria-expanded`,e?`true`:`false`)})),r?.querySelectorAll(`a`).forEach(t=>{t.dataset.navBound!==`1`&&(t.dataset.navBound=`1`,t.addEventListener(`click`,()=>e()))}),n?.classList.contains(`is-open`)||document.documentElement.classList.remove(`nav-open`);let i=document.getElementById(`term-dock`),a=document.getElementById(`term-dock-lock`),o=document.getElementById(`term-dock-resize`),s=`blog-term-dock-locked`,c=`blog-term-dock-h`,l=document.querySelector(`.app-shell.has-term-dock`),u=()=>Math.max(200,Math.floor(window.innerHeight*.72)),d=e=>{if(!l)return;let t=Math.min(u(),Math.max(160,Math.round(e)));return l.style.setProperty(`--term-dock-expanded-h`,`${t}px`),t};if(l){let e=Number(localStorage.getItem(c));Number.isFinite(e)&&e>=160&&d(e)}if(i&&i.dataset.dockBound!==`1`){i.dataset.dockBound=`1`;let e=localStorage.getItem(s)===`1`,t=()=>{let e=document.activeElement;return e instanceof Node&&i.contains(e)},n=()=>window.matchMedia(`(max-width: 860px)`).matches;if(n()&&!e){let e=document.activeElement;e instanceof HTMLElement&&i.contains(e)&&e.blur()}i.querySelector(`.term-dock-head`)?.addEventListener(`click`,e=>{if(!n())return;let t=e.target;if(t instanceof Element){if(t.closest(`a, button`))i.dataset.userOpen=`1`;else if(i.dataset.userOpen=i.dataset.userOpen===`1`?`0`:`1`,i.dataset.userOpen!==`1`){let e=document.activeElement;e instanceof HTMLElement&&i.contains(e)&&e.blur()}r()}});let r=()=>{let r=e||i.classList.contains(`is-resizing`)||(n()?i.dataset.userOpen===`1`:i.matches(`:hover`)||t());if(i.classList.toggle(`is-open`,r),i.classList.toggle(`is-locked`,e),i.dataset.collapsed=r?`false`:`true`,a){a.setAttribute(`aria-pressed`,e?`true`:`false`),a.setAttribute(`aria-label`,e?`터미널 고정됨`:`터미널 고정 해제됨`),a.title=e?`고정 해제`:`고정 (호버 없이 펼침 유지)`;let t=a.querySelector(`.term-dock-lock-icon--unlocked`),n=a.querySelector(`.term-dock-lock-icon--locked`);t?.toggleAttribute(`hidden`,e),n?.toggleAttribute(`hidden`,!e)}};a?.addEventListener(`click`,t=>{t.preventDefault(),e=!e,localStorage.setItem(s,e?`1`:`0`),r()}),i.addEventListener(`mouseenter`,r),i.addEventListener(`mouseleave`,r),i.addEventListener(`focusin`,r),i.addEventListener(`focusout`,()=>{window.setTimeout(r,0)}),o&&l&&o.addEventListener(`pointerdown`,t=>{t.preventDefault();let n=t.pointerId;o.setPointerCapture(n),i.classList.add(`is-resizing`),document.body.classList.add(`is-term-resizing`),e=!0,localStorage.setItem(s,`1`),r();let a=e=>{let t=window.innerHeight-e.clientY;d(t)},u=()=>{o.releasePointerCapture(n),o.removeEventListener(`pointermove`,a),o.removeEventListener(`pointerup`,u),o.removeEventListener(`pointercancel`,u),i.classList.remove(`is-resizing`),document.body.classList.remove(`is-term-resizing`);let e=getComputedStyle(l).getPropertyValue(`--term-dock-expanded-h`).trim(),t=Number.parseFloat(e);Number.isFinite(t)&&localStorage.setItem(c,String(Math.round(t))),r()};o.addEventListener(`pointermove`,a),o.addEventListener(`pointerup`,u),o.addEventListener(`pointercancel`,u)}),r()}};t(),document.addEventListener(`astro:page-load`,t);</script><script>
+          (function () {
+            function push() {
+              var nodes = document.querySelectorAll('ins.adsbygoogle');
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].getAttribute('data-adsbygoogle-status')) continue;
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+              }
+            }
+            if (!window.__sunjaeAds) {
+              window.__sunjaeAds = true;
+              document.addEventListener('astro:page-load', push);
+            }
+            if (document.readyState === 'complete') push();
+            else window.addEventListener('load', push);
+          })();
+        </script><script>(function(){const code = "sunjae";
+
+    (function () {
+      var base = 'https://' + code + '.goatcounter.com/counter/';
+      var mem = {};
+      function get(path) {
+        if (mem[path]) return mem[path];
+        var key = 'gc:' + path, hit;
+        try { hit = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+        if (hit && Date.now() - hit.t < 300000) return (mem[path] = Promise.resolve(hit.c));
+        var url = base + encodeURIComponent(path) + '.json';
+        return (mem[path] = fetch(url, { credentials: 'omit', mode: 'cors' })
+          .then(function (r) {
+            return r.json().then(function (j) {
+              var n = j && j.count != null ? j.count : '0';
+              return r.ok || r.status === 404 ? n : Promise.reject(0);
+            }).catch(function () { return r.status === 404 ? '0' : Promise.reject(0); });
+          })
+          .then(function (c) { try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), c: c })); } catch (e) {} return c; })
+          .catch(function () { return '0'; }));
+      }
+      function run() {
+        document.querySelectorAll('[data-gc-path]').forEach(function (el) {
+          var out = el.querySelector('[data-gc-count]') || el;
+          get(el.getAttribute('data-gc-path')).then(function (c) {
+            out.textContent = String(c).trim(); el.hidden = false;
+          }, function () { out.textContent = '—'; });
+        });
+      }
+      var boot = function () { run(); };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+      document.addEventListener('astro:page-load', run);
+    })();
+  })();</script></body></html>
