@@ -143,10 +143,11 @@ const jsonLd = [
         <div>
           <dt title="이름">Name</dt>
           <dd>
-            <h1>
-              {post.data.title}
+            <div class="post-title-row">
+              <h1>{post.data.title}</h1>
               <span
                 class:list={['post-lock-badge', post.data.locked ? 'is-locked' : 'is-open']}
+                role="status"
                 title={post.data.locked ? '잠긴 글' : '공개된 글'}
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
@@ -155,7 +156,7 @@ const jsonLd = [
                 </svg>
                 {post.data.locked ? '잠김' : '공개'}
               </span>
-            </h1>
+            </div>
           </dd>
         </div>
         <div>
@@ -226,17 +227,17 @@ const jsonLd = [
       <p class="lede">{description}</p>
     </header>
     <div class="post-main">
-      {post.data.locked && (
-        <p class="post-lock-pending" data-locked-pending>
-          잠긴 글입니다. 저장소 주인만 본문을 볼 수 있습니다.
-          <button type="button" class="post-lock-btn" data-locked-open>주인 인증</button>
-        </p>
-      )}
+      <p class="post-lock-pending" data-locked-pending hidden={!post.data.locked}>
+        잠긴 글입니다. 저장소 주인만 본문을 볼 수 있습니다.
+        <button type="button" class="post-lock-btn" data-locked-open>주인 인증</button>
+      </p>
+      <p class="post-lock-deploy" data-lock-deploy hidden></p>
       <div
         class="post-lock-body"
         data-post-lock-body
         data-locked-article={post.data.locked ? '' : undefined}
-        data-path={post.data.locked ? blogFilePath(post) : undefined}
+        data-baked-locked={post.data.locked ? '1' : '0'}
+        data-path={blogFilePath(post)}
         hidden={post.data.locked}
       >
       {
@@ -249,7 +250,7 @@ const jsonLd = [
         )
       }
       {
-        !post.data.locked && post.data.heroImage && (
+        !post.data.locked && post.data.heroImage?.trim() && (
           <figure class="hero">
             <img
               src={post.data.heroImage}
@@ -260,7 +261,7 @@ const jsonLd = [
           </figure>
         )
       }
-      <div class="prose" data-locked-prose={post.data.locked ? '' : undefined}>
+      <div class="prose" data-locked-prose>
         {!post.data.locked && <slot />}
       </div>
       <AdSlot hidden={post.data.locked === true} />
@@ -317,6 +318,16 @@ const jsonLd = [
       }
     </aside>
   </article>
+  <script is:inline>
+    (function () {
+      var article = document.querySelector('[data-post-lock-body][data-baked-locked="1"]');
+      if (!article) return;
+      article.setAttribute('hidden', '');
+      if (document.documentElement.getAttribute('data-owner-verified') === '1') return;
+      var prose = article.querySelector('[data-locked-prose]');
+      if (prose) prose.replaceChildren();
+    })();
+  </script>
   <CopyGuard />
   <ImageZoom />
   <script>

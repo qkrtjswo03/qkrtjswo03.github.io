@@ -1,5 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { formatDateISO, yearInZone } from './dates';
+import { tagPath, tagSlug } from './tags';
 
 export { formatDate, formatDateISO } from './dates';
 
@@ -14,10 +15,11 @@ export function postUrl(post: BlogPost): string {
 }
 
 export function termUrl(kind: 'categories' | 'tags', value: string): string {
-  const segment =
-    kind === 'tags' ? value.split('/').map((part) => encodeURIComponent(part)).join('/') : encodeURIComponent(value);
-  return `/${kind}/${segment}/`;
+  if (kind === 'tags') return tagPath(tagSlug(value));
+  return `/${kind}/${encodeURIComponent(value)}/`;
 }
+
+export { groupPostsByTag, tagPath, tagSlug } from './tags';
 
 export function plainText(markdown: string): string {
   return markdown

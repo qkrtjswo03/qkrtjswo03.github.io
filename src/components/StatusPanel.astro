@@ -10,7 +10,8 @@ interface Props {
 
 const { posts } = Astro.props;
 const topics = countTerms(posts, 'categories');
-const latest = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())[0];
+const dated = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const latest = dated.find((post) => !post.data.locked) ?? dated[0];
 const spotlight = careerProjects.slice(0, 3);
 const certifications = [
   { name: 'CKAD', image: '/certs/ckad.png' },
@@ -95,7 +96,7 @@ const certifications = [
         certifications.map((item) => (
           <li>
             <a class="mini-cert" href="/about/#certs" title={item.name}>
-              <img src={item.image} alt={item.name} loading="lazy" decoding="async" />
+              <img src={item.image.replace(/\.png$/i, '.webp')} alt={item.name} width="113" height="85" loading="lazy" decoding="async" />
               <span>{item.name}</span>
             </a>
           </li>

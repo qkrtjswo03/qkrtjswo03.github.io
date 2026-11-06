@@ -85,6 +85,13 @@ const {
     resolveFsPath,
     type HistoryState,
   } from '../lib/term-shell';
+  import {
+    frontmatterSaysLocked,
+    isBlogMarkdownPath,
+    normalizeBlogPath,
+    toggleLockedFrontmatter,
+    writePendingLock,
+  } from '../lib/post-lock';
 
   type TreeEntry = { path: string; type: string };
 
@@ -509,7 +516,7 @@ const {
       ['guide [페이지]', '사이트 맵·페이지 안내 (봇처럼).'],
       ['whereami', '지금 보고 있는 페이지를 알려 줍니다.'],
       ['go <페이지>', '홈/글/프로젝트/소개 등으로 이동합니다.'],
-      ['login [token]', '토큰을 넣고 로그인합니다. 토큰을 생략하면 로그인 창으로 물어봅니다.'],
+      ['login [token], :login', '토큰을 넣고 로그인합니다. 토큰을 생략하면 로그인 창으로 물어봅니다.'],
       ['logout', '이 브라우저에 저장한 토큰을 지웁니다.'],
       ['reset', '사라진 작업 브랜치를 비우고 main 으로 돌아갑니다.'],
       ['whoami', '로그인한 계정과 저장소를 보여줍니다.'],
@@ -550,7 +557,8 @@ const {
   const loadPosts = async () => bakedPosts;
   const lockedFiles = new Set(bakedPosts.filter((row) => row.locked).map((row) => row.path));
   const denyLockedFile = async (path: string) => {
-    if (!lockedFiles.has(path)) return false;
+    const normalized = normalizeBlogPath(path);
+    if (!lockedFiles.has(normalized) && !lockedFiles.has(path)) return false;
     const check = await ensureOwner(repoOwner());
     if (check.ok) {
       token = check.token || token;
@@ -581,7 +589,7 @@ const {
     const parsed = parseCommand(raw);
     if (!parsed) return;
     const { cmd, args } = parsed;
-    printEcho(cmd === 'login' ? 'login' : raw.trim());
+    printEcho(cmd === 'login' || cmd === ':login' ? 'login' : raw.trim());
 
     try {
       switch (cmd) {
@@ -604,6 +612,7 @@ const {
         case 'clear':
           log.replaceChildren();
           break;
+        case ':login':
         case 'login': {
           const value =
             args[0] ??
@@ -722,9 +731,13 @@ const {
           break;
         }
         case 'cat': {
-          const path = await pathArg(args[0]);
+          const path = normalizeBlogPath(await pathArg(args[0]));
           if (await denyLockedFile(path)) break;
           const file = await readFile(path);
+          if (isBlogMarkdownPath(path) && frontmatterSaysLocked(file.content) && !(await ensureOwner(repoOwner())).ok) {
+            print('잠긴 글입니다. 저장소 주인으로 login 한 뒤에만 볼 수 있습니다.', 'warn');
+            break;
+          }
           print(`--- ${path} (${file.content.split('\n').length}줄) ---`, 'dim');
           print(file.content.replace(/^\n/, '').replace(/\n$/, ''));
           break;
@@ -739,29 +752,11 @@ const {
             );
             break;
           }
-          const path = await pathArg(args[0]);
-          if (!path.startsWith('src/content/blog/') || !path.endsWith('.md')) {
+          const path = normalizeBlogPath(await pathArg(args[0]));
+          if (!isBlogMarkdownPath(path)) {
             print('blog 마크다운만 lock 할 수 있습니다.', 'warn');
             break;
           }
-
-          const toggleLocked = (content: string) => {
-            let next = content;
-            let nextLocked = true;
-            if (/^locked:\s*true\b/m.test(next)) {
-              next = next.replace(/^locked:\s*true\b/m, 'locked: false');
-              nextLocked = false;
-            } else if (/^locked:\s*false\b/m.test(next)) {
-              next = next.replace(/^locked:\s*false\b/m, 'locked: true');
-              nextLocked = true;
-            } else if (/^---\n[\s\S]*?\n---/.test(next)) {
-              next = next.replace(/^(---\n[\s\S]*?)(\n---)/, `$1\nlocked: true$2`);
-              nextLocked = true;
-            } else {
-              throw new Error('frontmatter를 찾지 못했습니다.');
-            }
-            return { content: next, nextLocked };
-          };
 
           const putWithSha = async (branchName: string, content: string, sha: string, message: string) =>
             api(`/repos/${REPO}/contents/${path}`, {
@@ -774,52 +769,105 @@ const {
               }),
             });
 
-          let target = await freshBranchFromMain();
-          let file = await readFileOn(path, target);
-          let attempt = { ...toggleLocked(file.content), sha: file.sha };
+          const file = await readFileOn(path, BASE);
+          const attempt = toggleLockedFrontmatter(file.content);
           const msg = attempt.nextLocked
             ? `Lock post ${path.split('/').pop()}`
             : `Unlock post ${path.split('/').pop()}`;
 
+          const announce = (merged: boolean) => {
+            writePendingLock(path, attempt.nextLocked);
+            dirty.delete(path);
+            tree = null;
+            document.dispatchEvent(
+              new CustomEvent('blog:post-lock', {
+                detail: { path, locked: attempt.nextLocked, ok: true },
+              }),
+            );
+            print(`${path} → locked: ${attempt.nextLocked}. ${merged ? 'main에 커밋했습니다.' : '커밋했습니다.'}`, 'ok');
+            print(
+              attempt.nextLocked
+                ? '잠금 배포 대기 중입니다. Pages가 끝나면 방문자에게 본문이 숨겨집니다. 그 전에 새로고침해도 이 탭에서는 잠금으로 보입니다.'
+                : '공개 배포 대기 중입니다. Pages가 끝나기 전에 새로고침해도 이 탭에서는 공개로 유지됩니다.',
+              'ok',
+            );
+          };
+
           try {
-            await putWithSha(target, attempt.content, attempt.sha, msg);
+            await putWithSha(BASE, attempt.content, file.sha, msg);
+            setBranch('');
+            announce(true);
           } catch (error) {
             const messageText = error instanceof Error ? error.message : String(error);
-            if (!/^409\b/.test(messageText)) throw error;
-            print('충돌(409) — main에서 브랜치를 다시 만들어 재시도합니다…', 'warn');
-            target = await freshBranchFromMain();
-            file = await readFileOn(path, target);
-            const expected = parseConflictSha(messageText);
-            attempt = { ...toggleLocked(file.content), sha: expected || file.sha };
-            const retryMsg = attempt.nextLocked
-              ? `Lock post ${path.split('/').pop()}`
-              : `Unlock post ${path.split('/').pop()}`;
+            print(`main에 바로 쓰지 못했습니다 (${messageText}). 브랜치와 PR로 재시도합니다…`, 'warn');
+            let target = await freshBranchFromMain();
+            let branchFile = await readFileOn(path, target);
+            let branchAttempt = toggleLockedFrontmatter(branchFile.content);
             try {
-              await putWithSha(target, attempt.content, attempt.sha, retryMsg);
+              await putWithSha(target, branchAttempt.content, branchFile.sha, msg);
             } catch (error2) {
               const messageText2 = error2 instanceof Error ? error2.message : String(error2);
               if (!/^409\b/.test(messageText2)) throw error2;
-              const expected2 = parseConflictSha(messageText2) || file.sha;
-              file = await readFileOn(path, target);
-              attempt = { ...toggleLocked(file.content), sha: expected2 };
-              await putWithSha(target, attempt.content, attempt.sha, retryMsg);
+              print('충돌(409) — main에서 브랜치를 다시 만들어 재시도합니다…', 'warn');
+              target = await freshBranchFromMain();
+              branchFile = await readFileOn(path, target);
+              const expected = parseConflictSha(messageText2);
+              branchAttempt = toggleLockedFrontmatter(branchFile.content);
+              await putWithSha(target, branchAttempt.content, expected || branchFile.sha, msg);
             }
+            try {
+              const pr = (await api(`/repos/${REPO}/pulls`, {
+                method: 'POST',
+                body: JSON.stringify({
+                  title: msg,
+                  head: target,
+                  base: BASE,
+                  body: '웹에서 글 잠금을 토글했습니다.',
+                }),
+              })) as { html_url?: string; number?: number };
+              if (!pr?.number) throw new Error('PR을 만들지 못했습니다.');
+              printHint(`PR #${pr.number}:`, pr.html_url || '');
+              const ownerName = REPO.split('/')[0] || '';
+              const openPrs = (await api(
+                `/repos/${REPO}/pulls?state=open&head=${encodeURIComponent(`${ownerName}:${target}`)}&base=${encodeURIComponent(BASE)}`,
+              )) as Array<{ number: number; head: { sha: string } }>;
+              const open = openPrs[0];
+              if (!open) throw new Error('만든 PR을 찾지 못했습니다.');
+              await api(`/repos/${REPO}/pulls/${open.number}/merge`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                  merge_method: 'squash',
+                  commit_title: `${msg} (#${open.number})`,
+                  sha: open.head.sha,
+                }),
+              });
+              print(`머지했습니다: PR #${open.number}`, 'ok');
+              setBranch('');
+            } catch (mergeError) {
+              document.dispatchEvent(
+                new CustomEvent('blog:post-lock', {
+                  detail: { path, locked: attempt.nextLocked, ok: false },
+                }),
+              );
+              print(
+                mergeError instanceof Error
+                  ? `PR/머지에 실패했습니다. 잠금 변경이 main에 아직 없습니다: ${mergeError.message}`
+                  : 'PR/머지에 실패했습니다. 잠금 변경이 main에 아직 없습니다.',
+                'warn',
+              );
+              break;
+            }
+            writePendingLock(path, branchAttempt.nextLocked);
+            dirty.delete(path);
+            tree = null;
+            document.dispatchEvent(
+              new CustomEvent('blog:post-lock', {
+                detail: { path, locked: branchAttempt.nextLocked, ok: true },
+              }),
+            );
+            print(`${path} → locked: ${branchAttempt.nextLocked}. PR을 main에 머지했습니다.`, 'ok');
+            print('잠금 배포 대기 중입니다. Pages 배포가 끝나기 전에 새로고침해도 이 탭의 상태는 유지됩니다.', 'ok');
           }
-          dirty.delete(path);
-          tree = null;
-          print(`${path} → locked: ${attempt.nextLocked}. 커밋했습니다.`, 'ok');
-          document.dispatchEvent(
-            new CustomEvent('blog:post-lock', {
-              detail: { path, locked: attempt.nextLocked, ok: true },
-            }),
-          );
-          try {
-            await run('pr');
-          } catch (e) {
-            /* PR이 이미 있으면 merge만 시도 */
-          }
-          await run('merge');
-          print('잠금 상태가 main에 반영됩니다. Pages 배포 후 새로고침하면 유지됩니다.', 'ok');
           break;
         }
 
@@ -1009,7 +1057,7 @@ draft: true
     void run(value);
   });
 
-  const COMMANDS = ['help', 'guide', 'map', 'man', 'whereami', 'go', 'open', 'clear', 'login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'lock', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
+  const COMMANDS = ['help', 'guide', 'map', 'man', 'whereami', 'go', 'open', 'clear', 'login', ':login', 'logout', 'reset', 'whoami', 'posts', 'grep', 'ls', 'cd', 'cat', 'edit', 'lock', 'new', 'save', 'status', 'rm', 'pr', 'merge', 'find'];
   const dirCache = new Map<string, Array<{ name: string; type: string }>>();
   const listDir = async (dir: string) => {
     const key = `${refOf()}:${dir}`;

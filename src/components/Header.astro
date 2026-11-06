@@ -113,7 +113,7 @@ const commands: Record<string, string> = {
     <slot />
     {
       source && (
-        <p class="page-source">
+        <p class="page-source owner-only">
           {source.includes('src/content/blog/') ? '이 글은' : '이 페이지는'}{' '}
           <code>{source}</code>에서 고칩니다.
         </p>
@@ -138,7 +138,7 @@ const commands: Record<string, string> = {
         <div class="term-dock-actions">
           <button
             type="button"
-            class="term-dock-lock"
+            class="term-dock-lock owner-only"
             id="term-dock-lock"
             aria-pressed="false"
             aria-label="터미널 고정 해제됨"
@@ -156,8 +156,8 @@ const commands: Record<string, string> = {
             </svg>
             <span class="term-dock-lock-label">잠금</span>
           </button>
-          <a href="#term-new-post">new post</a>
-          <a href="#term-login">login</a>
+          <a class="owner-only" href="#term-new-post">new post</a>
+          <a class="owner-login-quiet" href="#term-login" title="저장소 주인 로그인 (:login)">login</a>
           <a href="/terminal/">전체 화면</a>
         </div>
       </div>

@@ -21,9 +21,10 @@ interface Props {
   noindex?: boolean;
   jsonLd?: unknown;
   source?: string;
+  preloadHero?: { href: string; imagesrcset?: string; imagesizes?: string };
 }
 
-const { title = site.title, description = site.description, source, ...rest } = Astro.props;
+const { title = site.title, description = site.description, source, preloadHero, ...rest } = Astro.props;
 const documentTitle = title === site.title ? site.title : `${title} · ${site.title}`;
 const showAds = Boolean(adsensePublisherId());
 ---
@@ -32,7 +33,7 @@ const showAds = Boolean(adsensePublisherId());
 <html lang={site.lang} data-theme="dark">
   <head>
     <ClientRouter />
-    <BaseHead title={documentTitle} description={description} {...rest} />
+    <BaseHead title={documentTitle} description={description} preloadHero={preloadHero} {...rest} />
   </head>
   <body>
     <Motion />
