@@ -60,7 +60,7 @@ export const site: SiteConfig = {
   lang: 'ko',
   locale: 'ko_KR',
   // 여기에 AdSense에서 받은 ca-pub- 로 시작하는 게시자 ID만 넣습니다. 비어 있으면 광고를 넣지 않습니다.
-  adsensePublisherId: '',
+  adsensePublisherId: 'ca-pub-6293646207002542',
   adsenseInArticleSlot: '',
   adsenseSidebarSlot: '',
   ga4MeasurementId: '',
