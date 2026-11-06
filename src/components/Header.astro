@@ -138,7 +138,7 @@ const commands: Record<string, string> = {
         <div class="term-dock-actions">
           <button
             type="button"
-            class="term-dock-lock owner-only"
+            class="term-dock-lock"
             id="term-dock-lock"
             aria-pressed="false"
             aria-label="터미널 고정 해제됨"
@@ -154,7 +154,7 @@ const commands: Record<string, string> = {
               <rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
               <circle cx="12" cy="16" r="1.2" fill="currentColor"></circle>
             </svg>
-            <span class="term-dock-lock-label">잠금</span>
+            <span class="term-dock-lock-label">고정</span>
           </button>
           <a class="owner-only" href="#term-new-post">new post</a>
           <a class="owner-login-quiet" href="#term-login" title="저장소 주인 로그인 (:login)">login</a>
@@ -232,7 +232,7 @@ const commands: Record<string, string> = {
     if (Number.isFinite(saved) && saved >= MIN_H) applyDockHeight(saved);
   }
 
-  if (dock && lockBtn && dock.dataset.dockBound !== '1') {
+  if (dock && dock.dataset.dockBound !== '1') {
     dock.dataset.dockBound = '1';
     let locked = localStorage.getItem(LOCK_KEY) === '1';
 
@@ -269,16 +269,18 @@ const commands: Record<string, string> = {
       dock.classList.toggle('is-open', open);
       dock.classList.toggle('is-locked', locked);
       dock.dataset.collapsed = open ? 'false' : 'true';
-      lockBtn.setAttribute('aria-pressed', locked ? 'true' : 'false');
-      lockBtn.setAttribute('aria-label', locked ? '터미널 고정됨' : '터미널 고정 해제됨');
-      lockBtn.title = locked ? '고정 해제' : '고정 (호버 없이 펼침 유지)';
-      const unlocked = lockBtn.querySelector('.term-dock-lock-icon--unlocked');
-      const lockedIcon = lockBtn.querySelector('.term-dock-lock-icon--locked');
-      unlocked?.toggleAttribute('hidden', locked);
-      lockedIcon?.toggleAttribute('hidden', !locked);
+      if (lockBtn) {
+        lockBtn.setAttribute('aria-pressed', locked ? 'true' : 'false');
+        lockBtn.setAttribute('aria-label', locked ? '터미널 고정됨' : '터미널 고정 해제됨');
+        lockBtn.title = locked ? '고정 해제' : '고정 (호버 없이 펼침 유지)';
+        const unlocked = lockBtn.querySelector('.term-dock-lock-icon--unlocked');
+        const lockedIcon = lockBtn.querySelector('.term-dock-lock-icon--locked');
+        unlocked?.toggleAttribute('hidden', locked);
+        lockedIcon?.toggleAttribute('hidden', !locked);
+      }
     };
 
-    lockBtn.addEventListener('click', (event) => {
+    lockBtn?.addEventListener('click', (event) => {
       event.preventDefault();
       locked = !locked;
       localStorage.setItem(LOCK_KEY, locked ? '1' : '0');
