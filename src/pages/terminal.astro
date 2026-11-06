@@ -2,9 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cmd from '../components/Cmd.astro';
 import Terminal from '../components/Terminal.astro';
-import { getPosts, terminalPostIndex } from '../lib/posts';
-
-const postIndex = terminalPostIndex(await getPosts());
 ---
 
 <BaseLayout title="터미널" description="브라우저에서 저장소 글을 고치는 터미널입니다." noindex source="src/pages/terminal.astro">
@@ -18,7 +15,7 @@ const postIndex = terminalPostIndex(await getPosts());
     </p>
   </header>
 
-  <Terminal posts={postIndex} variant="page" />
+  <Terminal variant="page" />
 
   <p class="term-note">
     만든 토큰은 <code>repo</code>(classic) 또는 Contents·Pull requests read/write(fine-grained) 권한이 필요합니다.
