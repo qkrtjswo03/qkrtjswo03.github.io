@@ -52,8 +52,8 @@ export interface SiteConfig {
 export const site: SiteConfig = {
   title: 'SunJae.Log',
   description:
-    'Kubernetes, 관측 가능성, 장애 원인 분석, LLM 운영을 다루는 한국어 기술 블로그입니다.',
-  tagline: '클라우드, 인프라, AI 운영을 기록합니다.',
+    'Kubernetes·관측 가능성·장애 원인 분석 중심의 한국어 기술 블로그입니다.',
+  tagline: '클라우드, 인프라, Kubernetes·관측성·장애 원인 분석을 기록합니다.',
   url: 'https://qkrtjswo03.github.io',
   author: 'qkrtjswo03',
   email: ['xodids0341@gmail.com', 'qkrtjswo03@naver.com'],

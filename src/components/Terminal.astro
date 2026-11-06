@@ -1,15 +1,5 @@
 ---
-interface PostIndexItem {
-  path: string;
-  title: string;
-  date: string;
-  body: string;
-  locked?: boolean;
-}
-
-
 interface Props {
-  posts: PostIndexItem[];
   repo?: string;
   base?: string;
   /** page = 전체 페이지, panel = 오른쪽 사이드 패널 */
@@ -17,14 +7,12 @@ interface Props {
 }
 
 const {
-  posts,
   repo = 'qkrtjswo03/qkrtjswo03.github.io',
   base = 'main',
   variant = 'page',
 } = Astro.props;
 ---
 
-<script type="application/json" id="term-posts" set:html={JSON.stringify(posts)} />
 <section class:list={['term-shell', variant === 'panel' && 'term-shell--panel']} data-repo={repo} data-base={base} data-variant={variant}>
   <div class="term-titlebar" aria-hidden="true">
     <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
@@ -545,18 +533,32 @@ const {
 
   type PostRow = { path: string; title: string; date: string; body: string; locked?: boolean };
 
-  const bakedPosts: PostRow[] = (() => {
-    const node = document.getElementById('term-posts');
-    try {
-      return JSON.parse(node?.textContent || '[]') as PostRow[];
-    } catch {
-      return [];
-    }
-  })();
+  let cachedPosts: PostRow[] | null = null;
+  let postsPromise: Promise<PostRow[]> | null = null;
+  const lockedFiles = new Set<string>();
 
-  const loadPosts = async () => bakedPosts;
-  const lockedFiles = new Set(bakedPosts.filter((row) => row.locked).map((row) => row.path));
+  const loadPosts = async () => {
+    if (cachedPosts) return cachedPosts;
+    if (!postsPromise) {
+      postsPromise = fetch('/posts-index.json')
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data: PostRow[]) => {
+          cachedPosts = Array.isArray(data) ? data : [];
+          lockedFiles.clear();
+          for (const row of cachedPosts) {
+            if (row.locked) lockedFiles.add(row.path);
+          }
+          return cachedPosts;
+        })
+        .catch(() => {
+          cachedPosts = [];
+          return cachedPosts;
+        });
+    }
+    return postsPromise;
+  };
   const denyLockedFile = async (path: string) => {
+    await loadPosts();
     const normalized = normalizeBlogPath(path);
     if (!lockedFiles.has(normalized) && !lockedFiles.has(path)) return false;
     const check = await ensureOwner(repoOwner());
@@ -1286,7 +1288,7 @@ draft: true
     } else {
       setOwnerUi(false);
     }
-    print(`블로그 저장소 터미널입니다. 글 ${bakedPosts.length}개가 이 페이지에 들어 있습니다.`, 'dim');
+    print('블로그 저장소 터미널입니다. 글 목록은 posts·grep·edit 할 때 불러옵니다.', 'dim');
     print('UI: new post / edit / delete / 커밋 버튼 · 또는 posts, edit, save 명령.', 'dim');
     print('잠긴 글은 저장소 주인 토큰으로만 열립니다.', 'dim');
     if (!token) print('조회는 토큰 없이 됩니다. 저장하려면 login(또는 독의 login)으로 토큰을 넣어주세요.', 'dim');
