@@ -6,7 +6,7 @@
  * 캐시 이름을 바꾸면 다음 배포에서 이전 캐시가 지워집니다.
  * api.github.com 과 GitHub 파일 응답은 절대 캐시하지 않습니다. 잠긴 글 본문이 여기 남으면 안 됩니다.
  */
-const CACHE = 'sunjae-pwa-v15';
+const CACHE = 'sunjae-pwa-v16';
 
 const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png'];
 
