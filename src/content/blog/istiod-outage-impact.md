@@ -14,7 +14,7 @@ tags:
 series: istio-control-plane
 seriesOrder: 2
 draft: false
-locked: true
+locked: false
 ---
 
 [앞 글](/blog/istio-paas-architecture/)에서 본 것처럼 istiod는 트래픽 경로 위에 있지 않다. 설정(xDS), 인증서, 사이드카 주입을 맡을 뿐이다. 그렇다면 **istiod가 있다가 없어지면** 데이터 플레인은 어떻게 될까. 사내 Kubernetes PaaS에서 istiod를 내린 상태로 확인했다.
