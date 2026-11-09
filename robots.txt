@@ -3,6 +3,8 @@
 
 User-agent: *
 Disallow: /terminal/
+Disallow: /blog/osi-7-layers/
+Disallow: /blog/osi-ip-packet-mtu/
 Allow: /
 
 User-agent: GPTBot
