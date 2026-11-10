@@ -3,6 +3,8 @@
 
 User-agent: *
 Disallow: /terminal/
+Disallow: /blog/kubeedge-devicetwin-mqtt-test/
+Disallow: /blog/kubeedge-dil-validation/
 Disallow: /blog/osi-7-layers/
 Disallow: /blog/osi-ip-packet-mtu/
 Allow: /
