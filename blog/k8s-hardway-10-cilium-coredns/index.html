@@ -452,10 +452,6 @@
 <span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">        image:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "coredns/coredns:1.6.5"</span></span>
 <span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">        imagePullPolicy:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> IfNotPresent</span></span>
 <span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">        resources:</span></span>
-<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">          # TODO: Set memory limits when we've profiled the container for large</span></span>
-<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">          # clusters, then set request = limit to keep this container in</span></span>
-<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">          # guaranteed class. Currently, this container falls into the</span></span>
-<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">          # "burstable" category so the kubelet doesn't backoff from restarting it.</span></span>
 <span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">          limits:</span></span>
 <span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">            memory:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> 170Mi</span></span>
 <span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">          requests:</span></span>
