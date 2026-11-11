@@ -80,6 +80,14 @@
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('motion');
       }
+      // ClientRouter 이동 때 <html> 속성이 새 문서 것으로 바뀌어 motion 이 빠지므로, 교체 전에 새 문서에도 같은 규칙으로 붙인다.
+      if (!window.__sunjaeMotionSwap) {
+        window.__sunjaeMotionSwap = true;
+        document.addEventListener('astro:before-swap', function (event) {
+          var next = event.newDocument && event.newDocument.documentElement;
+          if (next && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) next.classList.add('motion');
+        });
+      }
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute('content', '#050b1f');
     } catch (e) {
