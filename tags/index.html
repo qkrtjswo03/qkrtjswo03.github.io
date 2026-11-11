@@ -80,12 +80,24 @@
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('motion');
       }
-      // ClientRouter 이동 때 <html> 속성이 새 문서 것으로 바뀌어 motion 이 빠지므로, 교체 전에 새 문서에도 같은 규칙으로 붙인다.
+      // ClientRouter 이동 때 <html> 속성이 새 문서 것으로 바뀌어 motion·주인 표시가 빠지므로, 교체 전에 새 문서에도 같은 규칙으로 붙인다.
       if (!window.__sunjaeMotionSwap) {
         window.__sunjaeMotionSwap = true;
         document.addEventListener('astro:before-swap', function (event) {
           var next = event.newDocument && event.newDocument.documentElement;
-          if (next && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) next.classList.add('motion');
+          if (!next) return;
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) next.classList.add('motion');
+          try {
+            // 위 data-owner 규칙과 같음: owner-mode 깃발이 있을 때만. 로그아웃하면 깃발이 지워져 붙지 않는다.
+            if (localStorage.getItem('owner-mode') === '1') {
+              next.setAttribute('data-owner', '1');
+              // 확인 표시는 지금 페이지에서 이미 확인된 경우에만 그대로 넘긴다 (로그아웃·확인 실패 시 지금 페이지에서 먼저 지워짐).
+              if (document.documentElement.getAttribute('data-owner-verified') === '1') next.setAttribute('data-owner-verified', '1');
+            } else {
+              next.removeAttribute('data-owner');
+              next.removeAttribute('data-owner-verified');
+            }
+          } catch (e) {}
         });
       }
       var meta = document.querySelector('meta[name="theme-color"]');
