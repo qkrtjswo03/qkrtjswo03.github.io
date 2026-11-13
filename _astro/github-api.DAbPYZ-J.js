@@ -1,0 +1,20 @@
+var e=0;function t(t){return typeof document>`u`?Promise.resolve(null):new Promise(n=>{e+=1;let r=document.createElement(`div`);r.className=`term-modal`,r.setAttribute(`role`,`dialog`),r.setAttribute(`aria-modal`,`true`),r.setAttribute(`aria-labelledby`,`term-modal-title-${e}`),r.innerHTML=`
+      <button type="button" class="term-modal-backdrop" data-term-modal-cancel aria-label="닫기"></button>
+      <form class="term-modal-card" autocomplete="off">
+        <p class="term-modal-kicker">sunjae@k8s:~$</p>
+        <h2 class="term-modal-title" id="${`term-modal-title-${e}`}"></h2>
+        <p class="term-modal-desc"></p>
+        <label class="sr-only" for="term-modal-input-${e}"></label>
+        <input
+          id="term-modal-input-${e}"
+          class="term-modal-input"
+          spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
+        />
+        <div class="term-modal-actions">
+          <button type="submit" class="term-btn" data-term-modal-ok></button>
+          <button type="button" class="term-btn term-btn-ghost" data-term-modal-cancel></button>
+        </div>
+      </form>
+    `;let i=r.querySelector(`.term-modal-title`),a=r.querySelector(`.term-modal-desc`),o=r.querySelector(`label`),s=r.querySelector(`input`),c=r.querySelector(`[data-term-modal-ok]`),l=r.querySelector(`form`);i&&(i.textContent=t.title),a&&(a.textContent=t.message),o&&(o.textContent=t.title),c&&(c.textContent=t.confirmLabel??`확인`),r.querySelectorAll(`[data-term-modal-cancel]`).forEach(e=>{e instanceof HTMLButtonElement&&e.dataset.termModalCancel!==void 0&&e.type!==`submit`&&e.classList.contains(`term-btn`)&&(e.textContent=t.cancelLabel??`취소`)}),r.querySelectorAll(`.term-btn[data-term-modal-cancel]`).forEach(e=>{e.textContent=t.cancelLabel??`취소`}),t.confirmOnly&&s&&(s.hidden=!0,s.tabIndex=-1),t.danger&&c&&c.classList.add(`term-btn-danger`),s&&(s.type=t.inputType??`text`,s.value=t.defaultValue??``,s.placeholder=t.placeholder??``,s.autocomplete=`off`);let u=e=>{document.removeEventListener(`keydown`,d,!0),r.remove(),n(e)},d=e=>{e.key===`Escape`&&(e.preventDefault(),e.stopPropagation(),u(null))};l?.addEventListener(`submit`,e=>{e.preventDefault(),u(s?.value??``)}),r.querySelectorAll(`[data-term-modal-cancel]`).forEach(e=>{e.addEventListener(`click`,e=>{e.preventDefault(),u(null)})}),document.addEventListener(`keydown`,d,!0),document.body.appendChild(r),window.setTimeout(()=>(t.confirmOnly?c:s)?.focus(),0)})}async function n(e){return await t({...e,confirmOnly:!0})!==null}function r(e){let t=new TextEncoder().encode(e),n=``;for(let e of t)n+=String.fromCharCode(e);return btoa(n)}function i(e){let t=atob(e.replace(/\s/g,``)),n=Uint8Array.from(t,e=>e.charCodeAt(0));return new TextDecoder().decode(n)}function a(e){return e.match(/does not match ([a-f0-9]{40})/i)?.[1]}function o(e=new Date){return`webedit/${[e.getFullYear(),String(e.getMonth()+1).padStart(2,`0`),String(e.getDate()).padStart(2,`0`),`-`,String(e.getHours()).padStart(2,`0`),String(e.getMinutes()).padStart(2,`0`),String(e.getSeconds()).padStart(2,`0`)].join(``)}`}function s(e,t,n){let r=t.split(`/`).filter(Boolean).map(e=>encodeURIComponent(e)).join(`/`);return`/repos/${e}/contents${r?`/${r}`:``}${n?`?ref=${encodeURIComponent(n)}`:``}`}async function c(e,t,n={}){let r=(n.method??`GET`).toUpperCase();if(!e&&r!==`GET`)throw Error(`저장하려면 login 으로 토큰을 넣어야 합니다.`);let i=new Headers(n.headers);i.set(`Accept`,`application/vnd.github+json`),e&&i.set(`Authorization`,`Bearer ${e}`),i.set(`X-GitHub-Api-Version`,`2022-11-28`),n.body&&i.set(`Content-Type`,`application/json`);let a;try{a=await fetch(`https://api.github.com${t}`,{...n,headers:i,cache:`no-store`})}catch(e){let t=e instanceof Error?e.message:String(e);throw Error(`GitHub API 연결 실패 · ${t}`)}if(!a.ok){let e=`${a.status}`;try{let t=await a.json();t.message&&(e=`${a.status} · ${t.message}`)}catch{}throw Error(e)}return a.status===204?null:await a.json()}export{a,t as c,c as i,r as n,o,s as r,n as s,i as t};
