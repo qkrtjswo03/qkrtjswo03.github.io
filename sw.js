@@ -8,7 +8,7 @@
  * 캐시 이름에는 빌드 때 배포마다 다른 값이 들어가며(astro.config.ts), 새 워커가 켜지면 이전 캐시를 지웁니다.
  * api.github.com 과 GitHub 파일 응답은 절대 캐시하지 않습니다. 잠긴 글 본문이 여기 남으면 안 됩니다.
  */
-const BUILD = '4b416bed58a9';
+const BUILD = 'fb249b835720';
 const CACHE = 'sunjae-pwa-v19-' + BUILD;
 
 const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png'];
