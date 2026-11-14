@@ -8,8 +8,8 @@
  * 캐시 이름에는 빌드 때 배포마다 다른 값이 들어가며(astro.config.ts), 새 워커가 켜지면 이전 캐시를 지웁니다.
  * api.github.com 과 GitHub 파일 응답은 절대 캐시하지 않습니다. 잠긴 글 본문이 여기 남으면 안 됩니다.
  */
-const BUILD = 'a37ae3340134';
-const CACHE = 'sunjae-pwa-v19-' + BUILD;
+const BUILD = '9a985bd638c7';
+const CACHE = 'sunjae-pwa-v20-' + BUILD;
 
 const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png'];
 
@@ -71,6 +71,47 @@ async function networkFirst(request) {
     }
     return fresh;
   } catch {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    const offline = await caches.match('/offline');
+    if (offline) return offline;
+    return new Response(OFFLINE_HTML, {
+      status: 503,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
+  }
+}
+
+/**
+ * 페이지(HTML)는 네트워크 먼저. 다만 같은 주소를 60초 안에 이미 받아 둔 사본(링크 hover·터치 때 미리 받은 것,
+ * 또는 방금 본 페이지)이 있으면 그것을 바로 돌려줘 이동이 네트워크를 기다리지 않게 한다.
+ * 사본에는 받은 시각(x-sw-fetched)을 붙인다. 오프라인이면 시각과 상관없이 저장본을 쓴다.
+ */
+const HTML_FRESH_MS = 60 * 1000;
+async function htmlFirst(request) {
+  const cache = await caches.open(CACHE);
+  const key = request.url;
+  const hit = await cache.match(key, { ignoreVary: true });
+  if (hit) {
+    const at = Number(hit.headers.get('x-sw-fetched') || 0);
+    if (at && Date.now() - at < HTML_FRESH_MS && !hit.redirected) return hit;
+  }
+  try {
+    const fresh = await fetch(request, { cache: 'no-store' });
+    if (fresh && fresh.ok && fresh.type === 'basic' && !fresh.redirected) {
+      const copy = fresh.clone();
+      copy
+        .blob()
+        .then((blob) => {
+          const headers = new Headers(copy.headers);
+          headers.set('x-sw-fetched', String(Date.now()));
+          return cache.put(key, new Response(blob, { status: copy.status, statusText: copy.statusText, headers }));
+        })
+        .catch(() => {});
+    }
+    return fresh;
+  } catch {
+    if (hit) return hit;
     const cached = await caches.match(request);
     if (cached) return cached;
     const offline = await caches.match('/offline');
@@ -175,6 +216,11 @@ self.addEventListener('fetch', (event) => {
   // 이미지·글꼴·영상은 저장본을 바로 보여 주고 뒤에서 새로 받아 다음에 반영합니다.
   if (/\.(?:png|jpe?g|webp|avif|gif|svg|ico|woff2?|ttf|otf|mp4|webm|pdf)$/i.test(url.pathname)) {
     event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+  // 페이지(HTML): 네트워크 먼저, 60초 안에 미리 받아 둔 사본이 있으면 그것을 바로 쓴다.
+  if (request.mode === 'navigate' || request.destination === 'document' || /\/$|\.html$/.test(url.pathname)) {
+    event.respondWith(htmlFirst(request));
     return;
   }
   // 그 밖의 모든 요청(페이지 이동, ClientRouter 의 페이지 fetch, 색인 JSON, RSS 등)은 네트워크 먼저.

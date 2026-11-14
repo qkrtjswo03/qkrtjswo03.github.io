@@ -1,0 +1,1 @@
+function e(e,t=160){return Math.max(t+40,Math.floor(e*.72))}function t(t,n,r=160){return Math.min(e(n,r),Math.max(r,Math.round(t)))}function n(e,t){let n=e.trim();if(!n)return null;let r=Number.parseFloat(n);return Number.isFinite(r)?/rem$/i.test(n)?r*t:r:null}export{n,t};
