@@ -1,0 +1,484 @@
+<!DOCTYPE html><html lang="ko" data-theme="dark"><head><style>
+  /* 스플래시 스크립트보다 먼저 칠해, 본문이 한 프레임도 비치지 않게 한다. 사이트 기본 배경과 같다. */
+  html { background: #050b1f; }
+</style><script>
+  (function () {
+    try {
+      var KEY = 'sunjae-web-splash';
+      if (sessionStorage.getItem(KEY) === '1') return;
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
+      if (typeof navigator.standalone === 'boolean' && navigator.standalone) return;
+      var ua = navigator.userAgent || '';
+      if (/bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|linkedinbot|pinterest|redditbot|whatsapp|telegram|discordbot|applebot|googlebot|yandex|baidu|duckduck|semrush|ahrefs|mj12|bytespider/i.test(ua)) {
+        return;
+      }
+
+      sessionStorage.setItem(KEY, '1');
+
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var MIN_VISIBLE_MS = 1100;
+      var FADE_MS = 280;
+      var FORCE_MS = 1500;
+
+      var css =
+        '#sunjae-web-splash{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;margin:0;padding:1.25rem;background:#050b1f;color:#e7eefc;opacity:1;pointer-events:none;}' +
+        '#sunjae-web-splash .ws-inner{display:flex;flex-direction:column;align-items:center;gap:1.25rem;text-align:center;}' +
+        '#sunjae-web-splash .ws-icon{display:block;width:192px;height:192px;border:0;}' +
+        '#sunjae-web-splash .ws-title{margin:0;font:500 1.35rem/1.25 ui-sans-serif,system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;letter-spacing:.01em;color:#e7eefc;}' +
+        (reduce ? '' : '#sunjae-web-splash.is-fading{opacity:0;transition:opacity .28s ease;}');
+
+      var style = document.createElement('style');
+      style.id = 'sunjae-web-splash-style';
+      style.textContent = css;
+
+      var el = document.createElement('div');
+      el.id = 'sunjae-web-splash';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML =
+        '<div class="ws-inner">' +
+        '<img class="ws-icon" src="/icons/icon-512.png" width="192" height="192" alt="" />' +
+        '<p class="ws-title">SunJae.Log</p>' +
+        '</div>';
+
+      document.documentElement.appendChild(style);
+      document.documentElement.appendChild(el);
+
+      var gone = false;
+      var dismissing = false;
+
+      function finish() {
+        if (gone) return;
+        gone = true;
+        if (el.parentNode) el.parentNode.removeChild(el);
+        if (style.parentNode) style.parentNode.removeChild(style);
+        document.dispatchEvent(new CustomEvent('sunjae:web-splash-done'));
+      }
+
+      function dismiss() {
+        if (gone || dismissing) return;
+        dismissing = true;
+        if (reduce) {
+          finish();
+          return;
+        }
+        el.classList.add('is-fading');
+        setTimeout(finish, FADE_MS);
+      }
+
+      // 첫 페인트 이후 MIN_VISIBLE_MS 동안 보여 주고 페이드. 같은 기준 FORCE_MS 에는 강제로 걷는다.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          setTimeout(dismiss, MIN_VISIBLE_MS);
+          setTimeout(dismiss, FORCE_MS);
+        });
+      });
+      setTimeout(dismiss, 2000); // rAF 가 안 올 때의 안전장치
+    } catch (e) {}
+  })();
+</script><style>html{scroll-behavior:smooth;color:#e7eefc;background:#050b1f;font-size:17px}@media (width>=720px){html{font-size:18px}}body{color:#e7eefc;background:#050b1f;min-height:100vh;margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.8}.skip{position:absolute;top:auto;left:-999px}.skip:focus{z-index:10000;color:#fff;background:#0b1b3f;padding:.4rem .7rem;top:1rem;left:1rem}.app-shell{min-height:100vh}.console{z-index:1;grid-template-columns:minmax(0,1fr);min-height:100vh;display:grid;position:relative}@media (width>=860px){.console{grid-template-columns:272px minmax(0,1fr)}}.console.has-status-rail{grid-template-columns:minmax(0,1fr)}@media (width>=1100px){.console.has-status-rail{grid-template-columns:272px minmax(0,1fr) 280px}}.rail{display:none}@media (width>=860px){.rail{background:#081028eb;border-right:1px solid #94a3b838;flex-direction:column;display:flex}}.page,.main-wrap,main#content{min-width:0}.hero-banner{aspect-ratio:16/5.2;background:#0a1433;border-radius:12px;position:relative;overflow:hidden}@media (width<=860px){.hero-banner{aspect-ratio:16/7.5}}.hero-photo{object-fit:cover;width:100%;height:100%;display:block}.k9s-table-wrap{overflow:auto}.term-dock{z-index:40;position:fixed;bottom:0;left:0;right:0}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:1ms!important;animation-delay:0s!important}</style><link rel="preload" href="/_astro/fonts.DAK-W_wo.css" as="style"><link rel="stylesheet" href="/_astro/fonts.DAK-W_wo.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="/_astro/fonts.DAK-W_wo.css"></noscript><link rel="stylesheet" href="/_astro/global.CCJm7qpD.css"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="swap"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.D2mlxDM5.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050b1f"><script>
+  (function () {
+    try {
+      // owner UI only after terminal login as repo owner (set by Terminal)
+      if (localStorage.getItem('owner-mode') === '1') {
+        document.documentElement.setAttribute('data-owner', '1');
+      } else {
+        document.documentElement.removeAttribute('data-owner');
+      }
+    } catch (e) {}
+    try {
+      localStorage.removeItem('theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
+      // boot 화면이 나올 전체 로드(Motion.astro 와 같은 조건: 움직임 허용 + 이 탭에서 아직 안 봄)에서는
+      // boot 가 뜨기 전 첫 화면에 페이지가 비치지 않도록 boot 바탕색만 보이게 해 둔다. 설치 앱처럼 웹 스플래시가 없는 경우를 위해서.
+      // 봇·크롤러는 boot 를 건너뛴다(WebSplash.astro·Motion.astro 와 같은 UA 목록).
+      try {
+        var bootBot = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|linkedinbot|pinterest|redditbot|whatsapp|telegram|discordbot|applebot|googlebot|yandex|baidu|duckduck|semrush|ahrefs|mj12|bytespider/i.test(navigator.userAgent || '');
+        if (!bootBot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && sessionStorage.getItem('sunjae-boot-seen') !== '1') {
+          var root = document.documentElement;
+          var release = function () {
+            root.classList.remove('boot-pending');
+          };
+          root.classList.add('boot-pending');
+          document.addEventListener('sunjae:boot-done', release, { once: true });
+          document.addEventListener('DOMContentLoaded', function () {
+            if (!document.getElementById('boot')) release();
+          });
+          setTimeout(release, 4000); // 안전장치: 무슨 일이 있어도 본문은 보인다
+        }
+      } catch (e) {}
+      // ClientRouter 이동 때 <html> 속성이 새 문서 것으로 바뀌어 motion·주인 표시가 빠지므로, 교체 전에 새 문서에도 같은 규칙으로 붙인다.
+      if (!window.__sunjaeMotionSwap) {
+        window.__sunjaeMotionSwap = true;
+        document.addEventListener('astro:before-swap', function (event) {
+          var next = event.newDocument && event.newDocument.documentElement;
+          if (!next) return;
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) next.classList.add('motion');
+          try {
+            // 위 data-owner 규칙과 같음: owner-mode 깃발이 있을 때만. 로그아웃하면 깃발이 지워져 붙지 않는다.
+            if (localStorage.getItem('owner-mode') === '1') {
+              next.setAttribute('data-owner', '1');
+              // 확인 표시는 지금 페이지에서 이미 확인된 경우에만 그대로 넘긴다 (로그아웃·확인 실패 시 지금 페이지에서 먼저 지워짐).
+              if (document.documentElement.getAttribute('data-owner-verified') === '1') next.setAttribute('data-owner-verified', '1');
+            } else {
+              next.removeAttribute('data-owner');
+              next.removeAttribute('data-owner-verified');
+            }
+          } catch (e) {}
+        });
+      }
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', '#050b1f');
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script><style>
+  html.boot-pending,
+  html.boot-pending body {
+    background: #050b1f;
+  }
+  html.boot-pending body::before,
+  html.boot-pending body > :not(#boot) {
+    visibility: hidden !important;
+  }
+</style><title>Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기 · SunJae.Log</title><meta name="description" content="VMware 위 CentOS 7에 KVM과 Vagrant를 올려 서버 1대·노드 3대를 만들고, GitLab Runner가 git push를 받아 Ansible Playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다."><meta name="author" content="qkrtjswo03"><meta name="copyright" content="© 2026 qkrtjswo03. All Rights Reserved."><meta name="license" content="All Rights Reserved"><link rel="canonical" href="https://qkrtjswo03.github.io/blog/iac-vagrant-ansible-gitlab-cicd/"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="SunJae.Log"><script>
+  function registerSunjaeSw() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).catch(function () {});
+  }
+  registerSunjaeSw();
+  document.addEventListener('astro:page-load', registerSunjaeSw);
+  // 새 배포 확인: 열 때·화면으로 돌아올 때 새 서비스 워커를 찾고, 새 워커가 이 페이지를 넘겨받으면 한 번만 새로고침합니다.
+  (function () {
+    if (!('serviceWorker' in navigator) || window.__sunjaeSwUpdate) return;
+    window.__sunjaeSwUpdate = true;
+    var sw = navigator.serviceWorker;
+    var hadController = !!sw.controller;
+    var lastCheck = 0;
+    var pending = false;
+    var check = function () {
+      if (document.hidden || Date.now() - lastCheck < 30000) return;
+      lastCheck = Date.now();
+      sw.getRegistration('/').then(function (reg) {
+        if (reg) return reg.update();
+      }).catch(function () {});
+    };
+    var typing = function () {
+      var el = document.activeElement;
+      return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+    };
+    var reloadOnce = function () {
+      if (!pending || document.hidden || typing()) return;
+      pending = false;
+      try {
+        var last = Number(sessionStorage.getItem('sunjae-sw-reload') || 0);
+        if (Date.now() - last < 15000) return; // 연속 새로고침 방지
+        sessionStorage.setItem('sunjae-sw-reload', String(Date.now()));
+      } catch (e) {}
+      location.reload();
+    };
+    sw.addEventListener('controllerchange', function () {
+      // 첫 설치(이전 워커 없음)는 새로고침하지 않습니다.
+      if (!hadController) {
+        hadController = true;
+        return;
+      }
+      pending = true;
+      reloadOnce();
+    });
+    // 입력 중이었거나 화면이 꺼져 있었으면, 입력을 마치거나 화면으로 돌아왔을 때 새로고침합니다.
+    document.addEventListener('focusout', function () {
+      setTimeout(reloadOnce, 300);
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) return;
+      reloadOnce();
+      check();
+    });
+    window.addEventListener('load', check);
+    document.addEventListener('astro:page-load', check);
+  })();
+</script><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.90.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.91.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="alternate" type="application/rss+xml" title="SunJae.Log RSS" href="https://qkrtjswo03.github.io/rss.xml"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="naver-site-verification" content="1852822c3eabd90417fed21892be241192d61531"><meta property="og:type" content="article"><meta property="og:site_name" content="SunJae.Log"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기 · SunJae.Log"><meta property="og:description" content="VMware 위 CentOS 7에 KVM과 Vagrant를 올려 서버 1대·노드 3대를 만들고, GitLab Runner가 git push를 받아 Ansible Playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다."><meta property="og:url" content="https://qkrtjswo03.github.io/blog/iac-vagrant-ansible-gitlab-cicd/"><meta property="og:image" content="https://qkrtjswo03.github.io/og/posts/iac-vagrant-ansible-gitlab-cicd.png?v=482bffb7"><meta property="og:image:alt" content="Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기 · SunJae.Log"><meta name="twitter:description" content="VMware 위 CentOS 7에 KVM과 Vagrant를 올려 서버 1대·노드 3대를 만들고, GitLab Runner가 git push를 받아 Ansible Playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다."><meta name="twitter:image" content="https://qkrtjswo03.github.io/og/posts/iac-vagrant-ansible-gitlab-cicd.png?v=482bffb7"><meta name="twitter:image:alt" content="Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기"><meta property="article:published_time" content="2022-05-31T00:00:00.000Z"><meta property="article:modified_time" content="2022-05-31T00:00:00.000Z"><meta property="article:author" content="qkrtjswo03"><meta property="article:tag" content="IaC"><meta property="article:tag" content="Vagrant"><meta property="article:tag" content="Ansible"><meta property="article:tag" content="GitLab"><meta property="article:tag" content="CI/CD"><meta property="article:tag" content="KVM"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6293646207002542" crossorigin="anonymous"></script><script async data-goatcounter="https://sunjae.goatcounter.com/count" src="https://gc.zgo.at/count.js"></script><script type="application/ld+json">[{"@context":"https://schema.org","@type":"BlogPosting","headline":"Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기","description":"VMware 위 CentOS 7에 KVM과 Vagrant를 올려 서버 1대·노드 3대를 만들고, GitLab Runner가 git push를 받아 Ansible Playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다.","datePublished":"2022-05-31T00:00:00.000Z","dateModified":"2022-05-31T00:00:00.000Z","inLanguage":"ko-KR","author":{"@type":"Person","name":"qkrtjswo03","url":"https://qkrtjswo03.github.io/about/"},"publisher":{"@type":"Person","name":"qkrtjswo03","url":"https://qkrtjswo03.github.io"},"mainEntityOfPage":"https://qkrtjswo03.github.io/blog/iac-vagrant-ansible-gitlab-cicd/","url":"https://qkrtjswo03.github.io/blog/iac-vagrant-ansible-gitlab-cicd/","image":"https://qkrtjswo03.github.io/og/posts/iac-vagrant-ansible-gitlab-cicd.png?v=482bffb7","isAccessibleForFree":true,"keywords":"IaC, Vagrant, Ansible, GitLab, CI/CD, KVM"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://qkrtjswo03.github.io/"},{"@type":"ListItem","position":2,"name":"글","item":"https://qkrtjswo03.github.io/blog/"},{"@type":"ListItem","position":3,"name":"Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기","item":"https://qkrtjswo03.github.io/blog/iac-vagrant-ansible-gitlab-cicd/"}]}]</script><style>.astro-route-announcer{clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;width:1px;height:1px;position:absolute;top:0;left:0;overflow:hidden}@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media (prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),[data-astro-transition-scope]{animation:none!important}}
+.reading-progress[data-astro-cid-kw4rgypl]{top:var(--header-h,0px);z-index:40;pointer-events:none;background:0 0;width:100%;max-width:100%;height:3px;position:fixed;left:0;right:0;overflow:hidden}.reading-progress-fill[data-astro-cid-kw4rgypl]{background:linear-gradient(90deg, var(--accent), var(--accent-ink));width:100%;height:100%;box-shadow:0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);transform-origin:0;will-change:transform;transition:transform 90ms linear;display:block;transform:scaleX(0)}@media (prefers-reduced-motion:reduce){.reading-progress-fill[data-astro-cid-kw4rgypl]{will-change:auto;transition:none}}.read-resume[data-astro-cid-wd5qxze7]{left:50%;bottom:calc(var(--term-dock-collapsed-h,2.4rem) + .55rem + env(safe-area-inset-bottom,0px));z-index:24;border:1px solid color-mix(in srgb, var(--cyan) 40%, var(--line));max-width:min(20rem,100vw - 1.5rem);font-family:var(--mono);color:var(--ink-soft);backdrop-filter:blur(10px);background:#07101fe0;border-radius:999px;align-items:center;gap:.3rem;padding:.18rem .28rem .18rem .55rem;font-size:.68rem;line-height:1.2;display:inline-flex;position:fixed;transform:translate(-50%);box-shadow:0 0 0 1px #22d3ee1a,0 6px 16px #02081859}.read-resume[data-astro-cid-wd5qxze7][hidden]{display:none!important}.read-resume-msg[data-astro-cid-wd5qxze7]{color:#e8f3ff;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.read-resume-msg[data-astro-cid-wd5qxze7]:before{content:"$ ";color:var(--cyan)}.read-resume-go[data-astro-cid-wd5qxze7],.read-resume-dismiss[data-astro-cid-wd5qxze7]{border:1px solid color-mix(in srgb, var(--cyan) 40%, var(--line));color:var(--cyan);font:inherit;cursor:pointer;background:#08142ab3;border-radius:999px;padding:.12rem .4rem}.read-resume-go[data-astro-cid-wd5qxze7]:hover,.read-resume-dismiss[data-astro-cid-wd5qxze7]:hover{filter:brightness(1.15)}.read-resume-dismiss[data-astro-cid-wd5qxze7]{min-width:1.5rem;color:var(--ink-soft);padding-inline:.35rem}.prose img,.hero img{cursor:zoom-in}.img-zoom{width:100vw;max-width:none;height:100vh;max-height:none;color:inherit;background:#040a12e0;border:0;margin:0;padding:0}.img-zoom::backdrop{background:0 0}.img-zoom[open]{cursor:zoom-out;place-items:center;display:grid}.img-zoom img{object-fit:contain;border:1px solid var(--line,#334);background:var(--bg-muted,#0b1520);cursor:zoom-out;border-radius:4px;width:auto;max-width:min(96vw,1400px);height:auto;max-height:92vh;display:block;box-shadow:0 12px 48px #00000073}
+</style><script type="module" src="/_astro/page.I2sg3Kaz.js"></script></head><body><script type="module" src="/_astro/ReadingMarks.astro_astro_type_script_index_0_lang.DuQl9lIq.js"></script><div class="boot" id="boot" hidden><p class="boot-line" data-boot-line hidden>sunjae@k8s:~$ boot</p><p class="boot-line" data-boot-line hidden>sync posts</p><p class="boot-line" data-boot-line hidden>mount k9s</p><p class="boot-line boot-line is-ready" data-boot-line hidden>Ready</p></div><canvas class="matrix-rain" id="matrix-rain" aria-hidden="true"></canvas><button type="button" class="to-top" id="to-top" hidden aria-label="맨 위로">↑</button><script type="module" src="/_astro/Motion.astro_astro_type_script_index_0_lang.BownNEA7.js"></script><script type="module">var e=e=>e instanceof HTMLElement&&(e.tagName===`INPUT`||e.tagName===`TEXTAREA`||e.tagName===`SELECT`||e.isContentEditable||!!e.closest(`.term-shell, .term-editor`));document.addEventListener(`keydown`,t=>{if(t.key!==`/`||t.metaKey||t.ctrlKey||t.altKey||e(t.target))return;let n=document.querySelector(`#q`);n?(t.preventDefault(),t.stopPropagation(),n.focus(),n.select()):document.querySelector(`.k9s-frame`)||(t.preventDefault(),location.assign(`/search/`))},!0);</script><!-- Token copy is filled client-side so visitors/crawlers never see it in static HTML. --><!-- 잠긴 글 슬러그는 페이지에 넣지 않습니다. 주인은 토큰 확인 뒤에만 소스 저장소에서 목록을 받습니다. --><dialog data-astro-transition-persist="lock-dialog" class="post-lock-dialog" id="owner-lock-dialog" data-repo="qkrtjswo03/blog-src" aria-labelledby="owner-lock-title"></dialog><script type="module" src="/_astro/LockGate.astro_astro_type_script_index_0_lang.hwqKskU8.js"></script><a class="skip" href="#content">본문으로 건너뛰기</a><div class="app-shell has-term-dock"><div class="console is-post"><aside class="rail"><div class="rail-head"><a class="brand" href="/" aria-label="sunjae@k8s:~$ SunJae.Log 홈"><span class="ps1"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="caret" aria-hidden="true"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span><span class="sr-only">메뉴</span></button></div><div class="rail-body" id="site-nav"><div class="rail-intro"><p class="rail-title"><a href="/">SunJae.Log</a></p><p class="rail-lede">Exploring the Cloud Native World.</p><a class="repo-link" href="https://github.com/qkrtjswo03?tab=repositories" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 7.5 12 4l8 3.5v9L12 20l-8-3.5v-9Z"></path><path fill="none" stroke="currentColor" stroke-width="1.7" d="M12 11.2V20M4.2 7.7 12 11.2l7.8-3.5"></path></svg>저장소</a></div><nav class="site-nav" aria-label="주요"><a href="/blog/" aria-current="page" title="글" data-astro-prefetch="viewport"><span class="nav-cmd">get posts</span><span class="nav-cursor" aria-hidden="true">▌</span><span class="nav-ko">글</span></a><a href="/projects/" title="프로젝트" data-astro-prefetch="viewport"><span class="nav-cmd">get projects</span><span class="nav-ko">프로젝트</span></a><a href="/archive/" title="시리즈 모음" data-astro-prefetch="viewport"><span class="nav-cmd">get series</span><span class="nav-ko">시리즈 모음</span></a><a href="/about/" title="소개" data-astro-prefetch="viewport"><span class="nav-cmd">describe me</span><span class="nav-ko">소개</span></a></nav><nav class="page-tree" aria-label="페이지 트리" data-page-tree><p class="pt-head"><span class="pt-av" aria-hidden="true">S</span><span><b>SunJae.Log</b><small>페이지</small></span></p><ul class="pt-root"><li><details class="pt-node pt-cat"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">관측</span><span class="pt-cnt">20</span></summary><ul><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">멀티클러스터 Helm 모니터링</span><span class="pt-cnt">6</span></summary><ul><li><a class="pt-page" href="/blog/multicluster-monitoring-01-overview/" title="매니지먼트·비즈니스 멀티클러스터 Helm 모니터링 개요와 아키텍처"><span class="pt-num">1.</span>매니지먼트·비즈니스 멀티클러스터 Helm 모니터링 개요와 아키텍처</a></li><li><a class="pt-page" href="/blog/multicluster-monitoring-02-management-cluster/" title="매니지먼트 클러스터: Thanos·SeaweedFS와 Istio로 여는 Grafana"><span class="pt-num">2.</span>매니지먼트 클러스터: Thanos·SeaweedFS와 Istio로 여는 Grafana</a></li><li><a class="pt-page" href="/blog/multicluster-monitoring-03-business-metrics/" title="비즈니스 클러스터 메트릭: Prometheus Sidecar와 Discovery"><span class="pt-num">3.</span>비즈니스 클러스터 메트릭: Prometheus Sidecar와 Discovery</a></li><li><a class="pt-page" href="/blog/multicluster-monitoring-04-logs/" title="비즈니스 클러스터 로그 파이프라인: Alloy에서 Loki, SeaweedFS 백엔드"><span class="pt-num">4.</span>비즈니스 클러스터 로그 파이프라인: Alloy에서 Loki, SeaweedFS 백엔드</a></li><li><a class="pt-page" href="/blog/multicluster-monitoring-05-traces/" title="트레이싱 확장 구성의 트레이스: OpenTelemetry Collector에서 Tempo, SeaweedFS"><span class="pt-num">5.</span>트레이싱 확장 구성의 트레이스: OpenTelemetry Collector에서 Tempo, SeaweedFS</a></li><li><a class="pt-page" href="/blog/multicluster-monitoring-06-install-upgrade/" title="멀티클러스터 모니터링 설치·업그레이드와 검증: 메트릭·로그 구성에서 트레이싱 확장 구성으로"><span class="pt-num">6.</span>멀티클러스터 모니터링 설치·업그레이드와 검증: 메트릭·로그 구성에서 트레이싱 확장 구성으로</a></li></ul></details></li><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">OpenTelemetry·Tempo 트레이싱</span><span class="pt-cnt">4</span></summary><ul><li><a class="pt-page" href="/blog/otel-tempo-01-tempo-distributed/" title="Grafana Tempo 분산 배포: Trace·Span 개념부터 MinIO 백엔드, HA 구성까지"><span class="pt-num">1.</span>Grafana Tempo 분산 배포: Trace·Span 개념부터 MinIO 백엔드, HA 구성까지</a></li><li><a class="pt-page" href="/blog/otel-tempo-02-kind-first-trace/" title="kind에서 첫 Trace 보기: Collector, Auto-Instrumentation, Tempo, Grafana"><span class="pt-num">2.</span>kind에서 첫 Trace 보기: Collector, Auto-Instrumentation, Tempo, Grafana</a></li><li><a class="pt-page" href="/blog/otel-tempo-03-collector-operator/" title="OpenTelemetry Operator로 Collector 파이프라인 구성하기: 트레이스·메트릭·로그, zPages, Java 자동 계측"><span class="pt-num">3.</span>OpenTelemetry Operator로 Collector 파이프라인 구성하기: 트레이스·메트릭·로그, zPages, Java 자동 계측</a></li><li><a class="pt-page" href="/blog/otel-tempo-04-spanmetrics-service-graph/" title="Spanmetrics와 Service Graph: 트레이스에서 메트릭을 뽑아 Grafana 서비스 맵 그리기"><span class="pt-num">4.</span>Spanmetrics와 Service Graph: 트레이스에서 메트릭을 뽑아 Grafana 서비스 맵 그리기</a></li></ul></details></li><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">Thanos·Prometheus HA</span><span class="pt-cnt">3</span></summary><ul><li><a class="pt-page" href="/blog/thanos-ha-01-architecture/" title="Prometheus 한 대의 한계와 Thanos로 푸는 방법: HA·장기 저장·멀티 클러스터 설계"><span class="pt-num">1.</span>Prometheus 한 대의 한계와 Thanos로 푸는 방법: HA·장기 저장·멀티 클러스터 설계</a></li><li><a class="pt-page" href="/blog/thanos-ha-02-kind-test/" title="kind로 먼저 해 보는 Thanos Prometheus HA: Sidecar부터 Query까지"><span class="pt-num">2.</span>kind로 먼저 해 보는 Thanos Prometheus HA: Sidecar부터 Query까지</a></li><li><a class="pt-page" href="/blog/thanos-ha-03-multicluster-deploy/" title="매니지먼트·비즈니스 두 클러스터에 Thanos 배포하기: NodePort, HAProxy, Query 연결"><span class="pt-num">3.</span>매니지먼트·비즈니스 두 클러스터에 Thanos 배포하기: NodePort, HAProxy, Query 연결</a></li></ul></details></li><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">Grafana 대시보드 일원화와 중앙 인증</span><span class="pt-cnt">4</span></summary><ul><li><a class="pt-page" href="/blog/grafana-unified-dashboard-routing/" title="Grafana 대시보드 링크 일원화: 도메인 하나, 경로로 나누기"><span class="pt-num">1.</span>Grafana 대시보드 링크 일원화: 도메인 하나, 경로로 나누기</a></li><li><a class="pt-page" href="/blog/grafana-dashboard-route-rules/" title="Istio VirtualService로 Grafana 특정 대시보드 경로 만들기"><span class="pt-num">2.</span>Istio VirtualService로 Grafana 특정 대시보드 경로 만들기</a></li><li><a class="pt-page" href="/blog/grafana-oauth2-keycloak-auth/" title="OAuth2 Proxy와 Keycloak으로 Grafana 앞단 인증 붙이기"><span class="pt-num">3.</span>OAuth2 Proxy와 Keycloak으로 Grafana 앞단 인증 붙이기</a></li><li><a class="pt-page" href="/blog/grafana-download-dashboards-init-container/" title="Grafana 대시보드 JSON이 0바이트로 뜨던 이유: download-dashboards initContainer"><span class="pt-num">4.</span>Grafana 대시보드 JSON이 0바이트로 뜨던 이유: download-dashboards initContainer</a></li></ul></details></li><li><a class="pt-page" href="/blog/promtail-to-alloy-migration/" title="Promtail에서 Grafana Alloy로 로그 수집 옮기기">Promtail에서 Grafana Alloy로 로그 수집 옮기기</a></li><li><a class="pt-page" href="/blog/loki-memberlist-cluster-dns/" title="Loki가 memberlist에 못 붙던 이유: kubelet clusterDNS 한 줄">Loki가 memberlist에 못 붙던 이유: kubelet clusterDNS 한 줄</a></li><li><a class="pt-page" href="/blog/node-exporter-metrics-minimization/" title="Node Exporter 메트릭 줄이기: collector 끄기와 keep 필터">Node Exporter 메트릭 줄이기: collector 끄기와 keep 필터</a></li></ul></details></li><li><details class="pt-node pt-cat"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">네트워크</span><span class="pt-cnt">7</span></summary><ul><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">Istio Ambient</span><span class="pt-cnt">3</span></summary><ul><li><a class="pt-page" href="/blog/istio-ambient-01-overview/" title="Istio Ambient Mesh 개요: 사이드카 없이 ztunnel과 waypoint로 메시 만들기"><span class="pt-num">1.</span>Istio Ambient Mesh 개요: 사이드카 없이 ztunnel과 waypoint로 메시 만들기</a></li><li><a class="pt-page" href="/blog/istio-ambient-02-kind-ztunnel/" title="kind에서 Istio Ambient 설치 실습: istioctl, ztunnel, Bookinfo, Kiali"><span class="pt-num">2.</span>kind에서 Istio Ambient 설치 실습: istioctl, ztunnel, Bookinfo, Kiali</a></li><li><a class="pt-page" href="/blog/istio-ambient-03-helm-install/" title="Helm으로 Istio Ambient 설치하기: base, istiod, cni, ztunnel 순서"><span class="pt-num">3.</span>Helm으로 Istio Ambient 설치하기: base, istiod, cni, ztunnel 순서</a></li></ul></details></li><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">Istio 컨트롤 플레인</span><span class="pt-cnt">2</span></summary><ul><li><a class="pt-page" href="/blog/istio-paas-architecture/" title="Istio 아키텍처: 요청이 Pod까지 가는 길과 istiod가 하는 일"><span class="pt-num">1.</span>Istio 아키텍처: 요청이 Pod까지 가는 길과 istiod가 하는 일</a></li><li><a class="pt-page" href="/blog/istiod-outage-impact/" title="istiod가 내려가면: 기존 트래픽은 남고, 새 배포와 Service Discovery는 멈춘다"><span class="pt-num">2.</span>istiod가 내려가면: 기존 트래픽은 남고, 새 배포와 Service Discovery는 멈춘다</a></li></ul></details></li><li><a class="pt-page" href="/blog/cilium-network-policy-l3-l4-l7/" title="NetworkPolicy와 CiliumNetworkPolicy: L3·L4·L7 순서로 직접 막아 보기">NetworkPolicy와 CiliumNetworkPolicy: L3·L4·L7 순서로 직접 막아 보기</a></li><li><a class="pt-page" href="/blog/mtu-mss-edge-segmentation/" title="MTU 1500에서 MSS 1460까지: 엣지 데이터가 Segment로 쪼개지는 과정">MTU 1500에서 MSS 1460까지: 엣지 데이터가 Segment로 쪼개지는 과정</a></li></ul></details></li><li><details class="pt-node pt-cat"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">앱</span><span class="pt-cnt">6</span></summary><ul><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">스마트 냉장고 관리 앱</span><span class="pt-cnt">5</span></summary><ul><li><a class="pt-page" href="/blog/smart-fridge-01-overview/" title="[스마트 냉장고 1/5] 개요: 바코드 냉장고 관리 앱"><span class="pt-num">1.</span>개요: 바코드 냉장고 관리 앱</a></li><li><a class="pt-page" href="/blog/smart-fridge-02-zxing-barcode/" title="[스마트 냉장고 2/5] ZXing으로 바코드 스캔하기"><span class="pt-num">2.</span>ZXing으로 바코드 스캔하기</a></li><li><a class="pt-page" href="/blog/smart-fridge-03-php-mysql-json/" title="[스마트 냉장고 3/5] PHP·MySQL에서 바코드 JSON 조회"><span class="pt-num">3.</span>PHP·MySQL에서 바코드 JSON 조회</a></li><li><a class="pt-page" href="/blog/smart-fridge-04-kakao-login/" title="[스마트 냉장고 4/5] Kakao SDK로 로그인하기"><span class="pt-num">4.</span>Kakao SDK로 로그인하기</a></li><li><a class="pt-page" href="/blog/smart-fridge-05-food-register/" title="[스마트 냉장고 5/5] 식품 등록: 달력·카메라·앨범·URL Bitmap"><span class="pt-num">5.</span>식품 등록: 달력·카메라·앨범·URL Bitmap</a></li></ul></details></li><li><a class="pt-page" href="/blog/smart-multitap-k-hackathon/" title="제7회 K-Hackathon: Wi-Fi 스마트 멀티탭 (Leeds Multi-Tap)">제7회 K-Hackathon: Wi-Fi 스마트 멀티탭 (Leeds Multi-Tap)</a></li></ul></details></li><li><details class="pt-node pt-cat"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">엣지</span><span class="pt-cnt">7</span></summary><ul><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">KubeEdge 엣지 클라우드</span><span class="pt-cnt">7</span></summary><ul><li><a class="pt-page" href="/blog/kubeedge-overview/" title="KubeEdge 개요: 엣지 노드가 갖춰야 할 최소 조건"><span class="pt-num">1.</span>KubeEdge 개요: 엣지 노드가 갖춰야 할 최소 조건</a></li><li><a class="pt-page" href="/blog/kubeedge-architecture/" title="KubeEdge 아키텍처: CloudCore와 EdgeCore는 무엇으로 이뤄져 있나"><span class="pt-num">2.</span>KubeEdge 아키텍처: CloudCore와 EdgeCore는 무엇으로 이뤄져 있나</a></li><li><a class="pt-page" href="/blog/kubeedge-install-guide/" title="KubeEdge v1.22 설치: 기존 클러스터에 엣지 VM 한 대 붙이기"><span class="pt-num">3.</span>KubeEdge v1.22 설치: 기존 클러스터에 엣지 VM 한 대 붙이기</a></li><li><a class="pt-page" href="/blog/kubeedge-device-mapper-mqtt/" title="KubeEdge Device, Mapper, MQTT는 각각 무슨 일을 하나"><span class="pt-num">4.</span>KubeEdge Device, Mapper, MQTT는 각각 무슨 일을 하나</a></li><li><a class="pt-page" href="/blog/kubeedge-north-south-reliability/" title="KubeEdge North-South: 통신이 끊겨도 엣지 데이터가 남는 이유"><span class="pt-num">5.</span>KubeEdge North-South: 통신이 끊겨도 엣지 데이터가 남는 이유</a></li><li><a class="pt-page" href="/blog/edgemesh-overview/" title="EdgeMesh 개요: 엣지 노드끼리 직접 말하게 하는 서비스 메쉬"><span class="pt-num">6.</span>EdgeMesh 개요: 엣지 노드끼리 직접 말하게 하는 서비스 메쉬</a></li><li><a class="pt-page" href="/blog/edgemesh-p2p-east-west/" title="EdgeMesh 배포와 P2P(East-West) 통신: 다른 서브넷의 엣지 두 대 붙이기"><span class="pt-num">7.</span>EdgeMesh 배포와 P2P(East-West) 통신: 다른 서브넷의 엣지 두 대 붙이기</a></li></ul></details></li></ul></details></li><li><details class="pt-node pt-cat"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">운영체제</span><span class="pt-cnt">1</span></summary><ul><li><a class="pt-page" href="/blog/os-how-it-works/" title="운영체제는 어떻게 동작하나: 앱과 하드웨어 사이의 교통 관제사">운영체제는 어떻게 동작하나: 앱과 하드웨어 사이의 교통 관제사</a></li></ul></details></li><li><details class="pt-node pt-cat" open><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">쿠버네티스</span><span class="pt-cnt">30</span></summary><ul><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">Ceph on Kubernetes</span><span class="pt-cnt">2</span></summary><ul><li><a class="pt-page" href="/blog/rook-ceph-01-helm-deploy/" title="Rook-Ceph를 Helm으로 배포하기: Operator v1.15.7, 컨트롤 플레인 노드에 OSD 올리기"><span class="pt-num">1.</span>Rook-Ceph를 Helm으로 배포하기: Operator v1.15.7, 컨트롤 플레인 노드에 OSD 올리기</a></li><li><a class="pt-page" href="/blog/rook-ceph-02-ceph-csi-rbd-storageclass/" title="외부 Ceph를 Kubernetes에 붙이기: Ceph CSI(RBD) 설치와 StorageClass, PVC Pending 해결"><span class="pt-num">2.</span>외부 Ceph를 Kubernetes에 붙이기: Ceph CSI(RBD) 설치와 StorageClass, PVC Pending 해결</a></li></ul></details></li><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">GPU in Kubernetes</span><span class="pt-cnt">10</span></summary><ul><li><a class="pt-page" href="/blog/gpu-k8s-01-overview/" title="Kubernetes에서 GPU 쓰기 개요: Passthrough, Time-Slicing, MIG를 어떻게 나눌까"><span class="pt-num">1.</span>Kubernetes에서 GPU 쓰기 개요: Passthrough, Time-Slicing, MIG를 어떻게 나눌까</a></li><li><a class="pt-page" href="/blog/gpu-k8s-02-driver-gpu-operator/" title="NVIDIA 드라이버는 호스트에, GPU Operator는 Helm으로: A100 노드 준비"><span class="pt-num">2.</span>NVIDIA 드라이버는 호스트에, GPU Operator는 Helm으로: A100 노드 준비</a></li><li><a class="pt-page" href="/blog/gpu-k8s-03-passthrough/" title="Passthrough로 GPU 통째로 할당하기: 할당, 수정, 회수까지"><span class="pt-num">3.</span>Passthrough로 GPU 통째로 할당하기: 할당, 수정, 회수까지</a></li><li><a class="pt-page" href="/blog/gpu-k8s-04-time-slicing/" title="Time-Slicing으로 GPU 한 장을 여러 Pod가 나눠 쓰기"><span class="pt-num">4.</span>Time-Slicing으로 GPU 한 장을 여러 Pod가 나눠 쓰기</a></li><li><a class="pt-page" href="/blog/gpu-k8s-05-mig-a100-profile/" title="A100에서 MIG 켜기: 프로파일 라벨, Pod 할당, 수정, 회수"><span class="pt-num">5.</span>A100에서 MIG 켜기: 프로파일 라벨, Pod 할당, 수정, 회수</a></li><li><a class="pt-page" href="/blog/gpu-k8s-06-mig-per-gpu/" title="GPU가 두 장일 때 한 장에만 MIG 걸기: devices로 GPU 번호 지정"><span class="pt-num">6.</span>GPU가 두 장일 때 한 장에만 MIG 걸기: devices로 GPU 번호 지정</a></li><li><a class="pt-page" href="/blog/gpu-k8s-07-mig-b300-mixed/" title="B300에서 Mixed MIG 검증: GRID 드라이버 없이 1g·2g·3g를 섞어 쓰기"><span class="pt-num">7.</span>B300에서 Mixed MIG 검증: GRID 드라이버 없이 1g·2g·3g를 섞어 쓰기</a></li><li><a class="pt-page" href="/blog/gpu-k8s-08-mig-time-slicing/" title="MIG 위에 Time-Slicing 얹기: 인스턴스 하나를 여러 Pod가 나눠 쓰는 구성"><span class="pt-num">8.</span>MIG 위에 Time-Slicing 얹기: 인스턴스 하나를 여러 Pod가 나눠 쓰는 구성</a></li><li><a class="pt-page" href="/blog/gpu-k8s-09-vgpu-guest-driver/" title="vGPU Guest Driver 설치(Ubuntu 24.04): Nouveau 끄고 .deb로 설치하기"><span class="pt-num">9.</span>vGPU Guest Driver 설치(Ubuntu 24.04): Nouveau 끄고 .deb로 설치하기</a></li><li><a class="pt-page" href="/blog/gpu-k8s-10-dcgm-exporter-hpa/" title="DCGM Exporter 메트릭을 Prometheus로 모으고 GPU 메모리로 HPA 걸기"><span class="pt-num">10.</span>DCGM Exporter 메트릭을 Prometheus로 모으고 GPU 메모리로 HPA 걸기</a></li></ul></details></li><li><details class="pt-node pt-series"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">Kubernetes Hard Way HA 설치</span><span class="pt-cnt">12</span></summary><ul><li><a class="pt-page" href="/blog/k8s-hardway-01-overview/" title="[K8s Hard Way 1/12] 개요: 환경, VM 구성, 인증서·포트"><span class="pt-num">1.</span>개요: 환경, VM 구성, 인증서·포트</a></li><li><a class="pt-page" href="/blog/k8s-hardway-02-bastion-network/" title="[K8s Hard Way 2/12] Bastion과 노드 네트워크 구성"><span class="pt-num">2.</span>Bastion과 노드 네트워크 구성</a></li><li><a class="pt-page" href="/blog/k8s-hardway-03-certificates/" title="[K8s Hard Way 3/12] CA와 컴포넌트 클라이언트 인증서"><span class="pt-num">3.</span>CA와 컴포넌트 클라이언트 인증서</a></li><li><a class="pt-page" href="/blog/k8s-hardway-04-kubeconfig/" title="[K8s Hard Way 4/12] kubeconfig 생성"><span class="pt-num">4.</span>kubeconfig 생성</a></li><li><a class="pt-page" href="/blog/k8s-hardway-05-apiserver-etcd-sa-certs/" title="[K8s Hard Way 5/12] API 서버·etcd 인증서와 Service Account 키"><span class="pt-num">5.</span>API 서버·etcd 인증서와 Service Account 키</a></li><li><a class="pt-page" href="/blog/k8s-hardway-06-distribute-certs/" title="[K8s Hard Way 6/12] 인증서·kubeconfig 배포"><span class="pt-num">6.</span>인증서·kubeconfig 배포</a></li><li><a class="pt-page" href="/blog/k8s-hardway-07-etcd/" title="[K8s Hard Way 7/12] etcd 클러스터 구성"><span class="pt-num">7.</span>etcd 클러스터 구성</a></li><li><a class="pt-page" href="/blog/k8s-hardway-08-control-plane/" title="[K8s Hard Way 8/12] 컨트롤 플레인 부트스트랩"><span class="pt-num">8.</span>컨트롤 플레인 부트스트랩</a></li><li><a class="pt-page" href="/blog/k8s-hardway-09-worker01/" title="[K8s Hard Way 9/12] Worker01 구성 (수동 인증서)"><span class="pt-num">9.</span>Worker01 구성 (수동 인증서)</a></li><li><a class="pt-page" href="/blog/k8s-hardway-10-cilium-coredns/" title="[K8s Hard Way 10/12] Cilium CNI, RBAC, CoreDNS"><span class="pt-num">10.</span>Cilium CNI, RBAC, CoreDNS</a></li><li><a class="pt-page" href="/blog/k8s-hardway-11-network-test/" title="[K8s Hard Way 11/12] 네트워크 통신 테스트 (netshoot, echo, IPVS)"><span class="pt-num">11.</span>네트워크 통신 테스트 (netshoot, echo, IPVS)</a></li><li><a class="pt-page" href="/blog/k8s-hardway-12-tls-bootstrap-workers/" title="[K8s Hard Way 12/12] TLS Bootstrapping으로 Worker02·03 조인"><span class="pt-num">12.</span>TLS Bootstrapping으로 Worker02·03 조인</a></li></ul></details></li><li><a class="pt-page" href="/blog/seaweedfs-s3-velero-backup/" title="SeaweedFS를 S3로 올리고 Velero 백업 저장소에 붙이기">SeaweedFS를 S3로 올리고 Velero 백업 저장소에 붙이기</a></li><li><a class="pt-page" href="/blog/cnpg-postgresql-apache-age/" title="CloudNativePG로 PostgreSQL + Apache AGE 클러스터 올리기">CloudNativePG로 PostgreSQL + Apache AGE 클러스터 올리기</a></li><li><a class="pt-page" href="/blog/harbor-ha-cnpg-redis/" title="Harbor HA: CloudNativePG와 Redis(Valkey)로 외부 DB·캐시 붙이기">Harbor HA: CloudNativePG와 Redis(Valkey)로 외부 DB·캐시 붙이기</a></li><li><a class="pt-page" href="/blog/container-is-process-cgroups-oomkill/" title="컨테이너는 결국 프로세스다: 스케줄러·가상메모리·시스템콜로 보는 cgroups와 OOMKill">컨테이너는 결국 프로세스다: 스케줄러·가상메모리·시스템콜로 보는 cgroups와 OOMKill</a></li><li><a class="pt-page" href="/blog/kubeadm-ha-master3-haproxy/" title="kubeadm으로 Master 3대 HA 클러스터 구성하기 (HAProxy)">kubeadm으로 Master 3대 HA 클러스터 구성하기 (HAProxy)</a></li><li><a class="pt-page" href="/blog/iac-vagrant-ansible-gitlab-cicd/" aria-current="page" title="Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기">Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기</a></li></ul></details></li><li><details class="pt-node pt-cat"><summary><span class="pt-chev" aria-hidden="true"></span><span class="pt-lbl">AI</span><span class="pt-cnt">1</span></summary><ul><li><a class="pt-page" href="/blog/pathrag-guide/" title="PathRAG: 그래프에서 경로만 골라내는 RAG">PathRAG: 그래프에서 경로만 골라내는 RAG</a></li></ul></details></li></ul></nav><script type="module">var e=()=>{let e=document.querySelector(`[data-page-tree]`),t=e?.querySelector(`[aria-current="page"]`);if(!e||!t)return;let n=e.getBoundingClientRect(),r=t.getBoundingClientRect();e.scrollTop+=r.top-n.top-n.height/2+r.height/2};e(),document.addEventListener(`astro:page-load`,e);</script><div class="rail-foot"><nav class="rail-links" aria-label="바닥"><a href="/about/">소개</a><a href="/license/">저작권</a><a href="/privacy/">개인정보처리방침</a><a href="/contact/">문의</a><a href="/rss.xml">RSS</a></nav><p class="rail-status"><span class="status-dot" aria-hidden="true"></span><span class="status-word">Ready</span><span class="dim">© 2026 qkrtjswo03 · All Rights Reserved</span></p><div class="rail-uptime" title="uptime는 블로그 시작일(2026-11-03)부터 이 빌드 시각까지 경과한 일수입니다. last deploy는 빌드 시각(Asia/Seoul)입니다."><div class="rail-uptime-row"><p class="rail-uptime-kicker">$ uptime</p><p class="rail-uptime-value"><span class="rail-uptime-dot" aria-hidden="true"></span><span>15d</span></p></div><p class="rail-uptime-deploy">last deploy 2026-11-18 23:33 KST</p></div></div></div></aside><main id="content" class="page"><div class="reading-progress" aria-hidden="true" data-check="readprog-20261112-toc" data-astro-cid-kw4rgypl><span class="reading-progress-fill" data-astro-cid-kw4rgypl></span></div><script type="module">var e=new AbortController,t=()=>{e.abort(),e=new AbortController;let{signal:t}=e,n=document.querySelector(`.reading-progress-fill`),r=document.querySelector(`.post-main .prose`);if(!n||!r)return;let i=!1,a=()=>{i=!1;let e=r.getBoundingClientRect(),t=e.top+window.scrollY,a=Math.max(1,e.height-window.innerHeight*.6),o=(window.scrollY-t+window.innerHeight*.3)/a;n.style.transform=`scaleX(${Math.min(1,Math.max(0,o))})`},o=()=>{i||(i=!0,requestAnimationFrame(a))};if(window.addEventListener(`scroll`,o,{passive:!0,signal:t}),window.addEventListener(`resize`,o,{passive:!0,signal:t}),a(),!window.matchMedia(`(prefers-reduced-motion: reduce)`).matches&&`IntersectionObserver`in window){let e=new IntersectionObserver(t=>{for(let n of t)n.isIntersecting&&(n.target.classList.add(`is-scanning`),e.unobserve(n.target))},{threshold:.5});document.querySelectorAll(`.prose figure`).forEach(t=>{t.querySelector(`img[src*="/images/blog/"][src$=".png"]`)&&(t.classList.add(`diagram-scan`),e.observe(t))}),t.addEventListener(`abort`,()=>e.disconnect())}};t(),document.addEventListener(`astro:page-load`,t);</script><div class="read-resume" data-read-resume data-check="readfix-20261116" hidden data-astro-cid-wd5qxze7><span class="read-resume-msg" data-read-resume-msg data-astro-cid-wd5qxze7>이전에 읽던 위치로 이동</span><button type="button" class="read-resume-go" data-read-resume-go data-astro-cid-wd5qxze7>이어 읽기</button><button type="button" class="read-resume-dismiss" data-read-resume-dismiss aria-label="닫기" title="esc" data-astro-cid-wd5qxze7>×</button></div><script type="module" src="/_astro/ReadingResume.astro_astro_type_script_index_0_lang.DkggGz26.js"></script><script type="module">var e=[],t=!1,n=e=>{let{wrap:t,outer:n,hint:r}=e,i=t.scrollWidth>t.clientWidth+2;t.classList.toggle(`is-scrollable`,i),n.classList.toggle(`is-scrollable`,i),r.hidden=!i;let a=t.scrollWidth-t.clientWidth;t.classList.toggle(`is-at-end`,!i||t.scrollLeft>=a-2),t.classList.toggle(`is-at-start`,!i||t.scrollLeft<=2)},r=()=>{e.forEach(n)},i=()=>{e=[],document.querySelectorAll(`.console.is-post .post-main .md-body table, .console.is-post .prose.md-body table`).forEach(t=>{if(t.classList.contains(`k9s-table`)||t.closest(`.k9s, .k9s-table-wrap`))return;let r=t.closest(`.md-table-scroll`),i=t.closest(`.md-table-scroll-outer`),a=i?.querySelector(`.md-table-scroll-hint`)??null;if(!r||!i||!a){if(t.closest(`.md-table-scroll`))return;if(i=document.createElement(`div`),i.className=`md-table-scroll-outer`,r=document.createElement(`div`),r.className=`md-table-scroll`,r.setAttribute(`data-check`,`readfix-20261116`),r.setAttribute(`role`,`region`),r.setAttribute(`tabindex`,`0`),r.setAttribute(`aria-label`,`표, 옆으로 밀어 보기`),a=document.createElement(`p`),a.className=`md-table-scroll-hint`,a.hidden=!0,a.textContent=`← 옆으로 밀어 보기 →`,t.parentNode?.insertBefore(i,t),r.appendChild(t),i.appendChild(r),i.appendChild(a),r.addEventListener(`scroll`,()=>{let e=r.scrollWidth-r.clientWidth;r.classList.toggle(`is-at-end`,r.scrollLeft>=e-2),r.classList.toggle(`is-at-start`,r.scrollLeft<=2)},{passive:!0}),typeof ResizeObserver==`function`){let i=r,a=new ResizeObserver(()=>{let t=e.find(e=>e.wrap===i);t&&n(t)});a.observe(r),a.observe(t)}}let o={wrap:r,table:t,outer:i,hint:a};e.push(o),n(o)})};i(),document.addEventListener(`astro:page-load`,i),t||(t=!0,window.addEventListener(`resize`,r,{passive:!0}));</script><article class="post-layout" data-copy-guard data-copy-open><header class="post-header"><div class="post-crumbrow"><nav class="post-crumb" aria-label="경로"><a href="/blog/">SunJae.Log</a><span class="sep" aria-hidden="true">/</span><a href="/categories/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4/">쿠버네티스</a><span class="sep" aria-hidden="true">/</span><em aria-current="page">Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기</em></nav><button type="button" class="post-wide-btn" data-post-wide aria-pressed="false" title="본문 폭 넓게/좁게"><span aria-hidden="true">↔</span> 페이지 너비</button></div><h1>Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기</h1><p class="post-byline"><span class="post-av" aria-hidden="true">S</span><strong>SunJae</strong><span class="dot" aria-hidden="true"></span><span class="meta-item">작성 <time class="meta-mono" datetime="2022-05-31T00:00:00.000Z">2022.05.31</time></span><span class="meta-item meta-mono">12분 읽기</span><span class="meta-item meta-mono" data-gc-path="/blog/iac-vagrant-ansible-gitlab-cicd/" hidden>조회 <span data-gc-count>—</span></span><span class="post-lock-badge is-open" role="status" title="공개된 글"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0"></path></svg>공개</span></p><p class="lede">VMware 위 CentOS 7에 KVM과 Vagrant를 올려 서버 1대·노드 3대를 만들고, GitLab Runner가 git push를 받아 Ansible Playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다.</p><details class="post-fold"><summary>목차</summary><nav class="toc toc-preview" data-post-toc data-toc-variant="preview" aria-label="Sections"><p>Sections</p><ol><li><a href="#한-장으로-보기" data-toc-link data-toc-slug="한-장으로-보기">한 장으로 보기</a></li><li><a href="#목표" data-toc-link data-toc-slug="목표">목표</a></li><li><a href="#1-kvm-호스트-만들기" data-toc-link data-toc-slug="1-kvm-호스트-만들기">1. KVM 호스트 만들기</a></li><li><a href="#2-브릿지-네트워크" data-toc-link data-toc-slug="2-브릿지-네트워크">2. 브릿지 네트워크</a></li><li><a href="#3-vagrant로-4대-띄우기" data-toc-link data-toc-slug="3-vagrant로-4대-띄우기">3. Vagrant로 4대 띄우기</a></li><li><a href="#4-ansible로-노드-연결" data-toc-link data-toc-slug="4-ansible로-노드-연결">4. Ansible로 노드 연결</a></li><li><a href="#5-gitlab과-runner" data-toc-link data-toc-slug="5-gitlab과-runner">5. GitLab과 Runner</a></li><li><a href="#6-playbook과-gitlab-ciyml" data-toc-link data-toc-slug="6-playbook과-gitlab-ciyml">6. Playbook과 .gitlab-ci.yml</a></li><li><a href="#7-막혔던-곳" data-toc-link data-toc-slug="7-막혔던-곳">7. 막혔던 곳</a></li><li><a href="#8-덧붙임-같은-서버에서-kubespray" data-toc-link data-toc-slug="8-덧붙임-같은-서버에서-kubespray">8. 덧붙임: 같은 서버에서 Kubespray</a></li><li><a href="#정리" data-toc-link data-toc-slug="정리">정리</a></li></ol></nav><script type="module">var e=null,t=e=>{let t=e.trim();if(!t)return null;let n=Number.parseFloat(t);if(!Number.isFinite(n))return null;if(t.endsWith(`rem`)||t.endsWith(`em`)){let e=Number.parseFloat(getComputedStyle(document.documentElement).fontSize);return n*(Number.isFinite(e)&&e>0?e:16)}return n},n=()=>{let e=document.querySelector(`.rail`);if(e){let t=getComputedStyle(e);if((t.position===`sticky`||t.position===`fixed`)&&(t.top===`0px`||t.top===`0`)){let t=(e.querySelector(`.rail-head`)??e).getBoundingClientRect().height;if(t>0)return t+14}}let n=t(getComputedStyle(document.documentElement).getPropertyValue(`--header-h`));return(n!=null&&n>0?n:0)+14},r=()=>window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,i=e=>{e.classList.add(`is-toc-flash`),window.setTimeout(()=>e.classList.remove(`is-toc-flash`),1100)},a=(e,{push:t=!0}={})=>{let a=document.getElementById(e);if(!a)return!1;let o=a.getBoundingClientRect().top+window.scrollY-n();if(window.scrollTo({top:Math.max(0,o),behavior:r()?`auto`:`smooth`}),t){let t=`${location.pathname}${location.search}#${e}`;history.pushState(null,``,t)}return i(a),document.querySelectorAll(`[data-toc-link]`).forEach(t=>{t.classList.toggle(`is-active`,t.dataset.tocSlug===e)}),!0},o=()=>{e?.abort(),e=new AbortController;let{signal:t}=e,i=[...document.querySelectorAll(`[data-toc-link]`)];if(i.length===0)return;document.addEventListener(`click`,e=>{let t=e.target?.closest?.(`[data-toc-link]`);if(!t)return;let n=t.dataset.tocSlug;n&&(e.preventDefault(),a(n))},{signal:t});let o=[...new Set(i.map(e=>e.dataset.tocSlug).filter(Boolean))].map(e=>document.getElementById(e)).filter(e=>!!e),s=``,c=e=>{if(e===s)return;s=e,i.forEach(t=>t.classList.toggle(`is-active`,t.dataset.tocSlug===e));let t=document.querySelector(`[data-toc-follow]`),n=window.matchMedia(`(min-width: 1100px) and (max-width: 1679px)`).matches&&t?.classList.contains(`is-open`);if(!window.matchMedia(`(min-width: 1680px)`).matches&&!n)return;let a=document.querySelector(`.post-side [data-post-toc]`),o=a?.querySelector(`[data-toc-link].is-active`);o&&a&&o.scrollIntoView({block:`nearest`,inline:`nearest`,behavior:r()?`auto`:`smooth`})},l=()=>{let e=n()+8,t=o[0];for(let n of o)n.getBoundingClientRect().top-e<=0&&(t=n);t?.id&&c(t.id)};if(`IntersectionObserver`in window&&o.length){let e=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top)[0]?.target;t?.id&&c(t.id)},{rootMargin:`-${n()}px 0px -55% 0px`,threshold:[0,.1,1]});o.forEach(t=>e.observe(t)),t.addEventListener(`abort`,()=>e.disconnect())}let u=!1,d=()=>{u||(u=!0,requestAnimationFrame(()=>{u=!1,l()}))};window.addEventListener(`scroll`,d,{passive:!0,signal:t}),window.addEventListener(`resize`,d,{passive:!0,signal:t});let f=decodeURIComponent(location.hash.replace(/^#/,``));f&&document.getElementById(f)?window.requestAnimationFrame(()=>a(f,{push:!1})):o[0]&&c(o[0].id)},s=()=>{let e=document.querySelector(`[data-toc-follow]`),t=e?.querySelector(`.toc-follow-toggle`);if(!e||!t||t.dataset.bound===`1`)return;t.dataset.bound=`1`;let n=()=>window.matchMedia(`(min-width: 1100px) and (max-width: 1679px)`).matches,r=n=>{e.classList.toggle(`is-open`,n),t.setAttribute(`aria-expanded`,n?`true`:`false`)};t.addEventListener(`click`,t=>{t.stopPropagation(),n()&&r(!e.classList.contains(`is-open`))}),document.addEventListener(`pointerdown`,t=>{if(!n()||!e.classList.contains(`is-open`))return;let i=t.target;i instanceof Node&&e.contains(i)||r(!1)}),document.addEventListener(`keydown`,e=>{e.key===`Escape`&&r(!1)}),e.querySelectorAll(`[data-toc-link]`).forEach(e=>{e.addEventListener(`click`,()=>{n()&&r(!1)})}),window.matchMedia(`(min-width: 1100px) and (max-width: 1679px)`).addEventListener(`change`,e=>{e.matches||r(!1)})};o(),s(),document.addEventListener(`astro:page-load`,o),document.addEventListener(`astro:page-load`,s);</script></details><div class="list-head post-owner-row"><div class="owner-actions" data-owner-post-actions hidden></div><script type="module" src="/_astro/InlineEditor.astro_astro_type_script_index_0_lang.C3iNT2AA.js"></script></div></header><div class="post-main"><p class="post-lock-pending" data-locked-pending hidden>잠긴 글입니다. 저장소 주인만 본문을 볼 수 있습니다.</p><p class="post-lock-deploy" data-lock-deploy hidden></p><div class="post-lock-body" data-post-lock-body data-baked-locked="0"><aside class="verify-box" aria-label="검증 조건"><p class="verify-box-kicker">검증 조건</p><dl class="verify-box-grid"><div><dt>테스트 버전</dt><dd><ul class="verify-box-versions"><li>CentOS 7.9 (CentOS-7-x86_64-DVD-2009), kernel-lt 5.4.192</li><li>VMware Workstation 16</li><li>Kimchi/Wok 2.5.0</li><li>Kubespray release-2.17, Kubernetes Dashboard v2.3.1</li></ul></dd></div><div><dt>환경</dt><dd>VMware Workstation 16 위 CentOS 7 (KVM 호스트) → Vagrant(libvirt) 노드 4대, 테스트 환경</dd></div><div><dt>검증 시점</dt><dd><time datetime="2022-05-01">2022-05</time></dd></div><div class="verify-box-conclusion"><dt>핵심 결론</dt><dd>push 한 번에 노드 3대 배포까지 이었다. 파이프라인이 막힌 원인은 Runner 계정(gitlab-runner)의 sudo 권한과 SSH 키였다.</dd></div></dl></aside><div class="prose md-body" data-locked-prose><p>개인 프로젝트로 <strong>Vagrant(IaC) → Ansible → GitLab CI/CD</strong> 흐름을 직접 구성한 기록이다. 목표는 단순하다. 개발자가 <code>index.html</code>만 고쳐서 push하면, GitLab Runner가 Playbook을 돌려 노드 3대의 페이지가 알아서 바뀌게 한다. 모두 테스트 환경이라 IP는 그대로 적었고, 계정 비밀번호와 키는 뺐다.</p>
+<h2 id="한-장으로-보기">한 장으로 보기</h2>
+<figure>
+  <img src="/images/blog/iac-vagrant-ansible-gitlab-cicd/pipeline-flow.svg" alt="로컬 git에서 push하면 server의 GitLab이 .gitlab-ci.yml을 감지하고, GitLab Runner가 Ansible Playbook을 실행해 node1~node3에 httpd를 배포하는 흐름" />
+</figure>
+<h2 id="목표">목표</h2>
+<ol>
+<li>server에 GitLab을 설치한다. GitLab과 상관없이 먼저 <code>ansible-playbook</code>으로 node1~node3에 httpd를 배포해 본다.</li>
+<li>로컬 git 저장소에서 <code>index.html</code>을 만들어 push하면, GitLab Runner가 <code>.gitlab-ci.yml</code>을 실행해 각 노드의 <code>/var/www/html</code>로 파일을 옮긴다.</li>
+<li>이후에는 GitLab을 신경 쓰지 않고 <code>index.html</code>만 고쳐 push해도 각 노드의 페이지가 바뀌어야 한다.</li>
+</ol>
+<h2 id="1-kvm-호스트-만들기">1. KVM 호스트 만들기</h2>
+<p>VMware Workstation 16에 CentOS 7 Minimal VM을 만들었다. 안쪽에서 KVM을 쓰므로 Virtualization engine의 Intel VT-x/EPT(AMD-V/RVI) 가상화를 켰다.</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>CentOS-7-x86_64-DVD-2009</td>
+</tr>
+<tr>
+<td>메모리</td>
+<td>12GB</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>4 (코어당 1)</td>
+</tr>
+<tr>
+<td>네트워크</td>
+<td>VMnet8 (NAT)</td>
+</tr>
+</tbody>
+</table>
+<p>기본 환경은 아래 순서로 맞췄다.</p>
+<ul>
+<li>호스트 이름 변경, <code>net-tools</code> 설치</li>
+<li>firewalld와 NetworkManager 중지·비활성화</li>
+<li>SELinux 해제 후 <code>yum -y update</code></li>
+<li>ELRepo 레포를 등록해 <code>kernel-lt</code>(5.4.192)를 설치하고, <code>grub2-set-default</code>로 부팅 커널을 고정</li>
+</ul>
+<p>KVM 쪽은 <code>qemu-kvm</code>, <code>libvirt</code>, <code>virt-install</code> 등을 설치하고 <code>libvirtd</code>를 켰다. Wok/Kimchi 2.5.0 웹 UI도 올렸다. 가상화 지원 여부는 <code>grep -E '(vmx|svm)' /proc/cpuinfo</code>로 먼저 확인했다.</p>
+<h2 id="2-브릿지-네트워크">2. 브릿지 네트워크</h2>
+<p>VM이 211.183.3.0/24 대역의 IP를 받도록 리눅스 브릿지 <code>br0</code>를 만들고 물리 인터페이스를 그 포트로 넣었다.</p>
+<ul>
+<li>GRUB 커널 옵션에 <code>net.ifnames=0 biosdevname=0</code>을 넣어 인터페이스 이름을 <code>ens32</code>에서 <code>eth0</code>로 바꿨다.</li>
+<li><code>ifcfg-eth0</code>에서는 IP를 빼고 <code>ifcfg-br0</code>가 IP(211.183.3.77)를 갖게 했다.</li>
+<li><code>ip a</code>에서 <code>br0</code>에만 IP가 보이고 <code>brctl show</code>에 <code>br0</code>가 나오면 성공이다.</li>
+<li>forwarding 트래픽을 켜려고 <code>net.ipv4.ip_forward = 1</code>을 <code>/etc/sysctl.conf</code>에 넣었다.</li>
+</ul>
+<h2 id="3-vagrant로-4대-띄우기">3. Vagrant로 4대 띄우기</h2>
+<p>HashiCorp 레포를 추가해 Vagrant를 설치하고 <code>vagrant-libvirt</code> 플러그인을 붙였다. 인프라 환경을 오케스트레이션하는 도구에는 Vagrant(Ruby), CloudFormation(AWS, YAML), Heat(OpenStack, YAML)가 있고, 여기서는 Vagrant를 썼다.</p>
+<p><code>Vagrantfile</code>에는 <code>server</code> 1대와 <code>node1</code>~<code>node3</code>를 정의했다. 모두 <code>centos/7</code> 박스이고, 공용망(br0 브릿지)과 사설망 두 개를 붙였다.</p>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>공용망</th>
+<th>사설망</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>server</td>
+<td>211.183.3.200</td>
+<td>172.16.1.200</td>
+</tr>
+<tr>
+<td>node1</td>
+<td>211.183.3.201</td>
+<td>172.16.1.201</td>
+</tr>
+<tr>
+<td>node2</td>
+<td>211.183.3.202</td>
+<td>172.16.1.202</td>
+</tr>
+<tr>
+<td>node3</td>
+<td>211.183.3.203</td>
+<td>172.16.1.203</td>
+</tr>
+</tbody>
+</table>
+<p>server만 메모리 2048MB, CPU 2개를 주었다. 공개키 배포와 server의 Ansible 설치는 provisioner에 넣었다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="ruby"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">config.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">define</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "node1"</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583"> do</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8"> |cfg|</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">box</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583"> =</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "centos/7"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">host_name</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583"> =</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "node1"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">network</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> :public_network</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">type:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "bridge"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">dev:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "br0"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">mode:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "bridge"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">network_name:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "public"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">ip:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "211.183.3.201"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">network</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> :private_network</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">ip:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "172.16.1.201"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">provision</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "file"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">source:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "pkey.txt"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">destination:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "pkey.txt"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">provision</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "shell"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">inline:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "cat pkey.txt &gt;&gt; /home/vagrant/.ssh/authorized_keys"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  cfg.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">vm</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0">provision</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "shell"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">inline:</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF"> "systemctl restart sshd"</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#F97583">end</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D"># server는 provision에서 epel-release, ansible, vim, curl, wget을 설치</span></span></code></pre>
+<ul>
+<li><code>vagrant ssh</code>용 기본 인터페이스는 지우지 않는 편이 안전하다.</li>
+<li>동기화 오류가 나면 <code>yum -y install rsync</code>로 풀었다.</li>
+<li>설치가 끝나면 <code>virsh list --all</code>로 확인하고, <code>virsh autostart</code>로 4대를 자동 시작에 넣었다.</li>
+</ul>
+<figure>
+  <img src="/images/blog/iac-vagrant-ansible-gitlab-cicd/virsh-list-nodes.png" alt="virsh list --all 결과. cicdtest_server와 node1~node3 네 대가 running 상태" />
+</figure>
+<h2 id="4-ansible로-노드-연결">4. Ansible로 노드 연결</h2>
+<p>server에서 <code>ssh-keygen</code>으로 키를 만들고, 공개키를 <code>pkey.txt</code>에 담아 Vagrantfile provisioner로 각 노드의 <code>authorized_keys</code>에 넣었다. 그 뒤 <code>vagrant provision</code>을 다시 돌렸다.</p>
+<ol>
+<li><code>/etc/ansible/hosts</code>에 <code>[node]</code> 그룹으로 사설망 IP 세 개를 추가한다.</li>
+<li><code>ssh-keyscan</code>으로 <code>~/.ssh/known_hosts</code>에 호스트 키를 넣는다.</li>
+<li><code>ansible all -m ping</code>과 <code>ansible all -m shell -a 'hostname'</code>으로 세 노드가 응답하는지 확인한다.</li>
+</ol>
+<figure>
+  <img src="/images/blog/iac-vagrant-ansible-gitlab-cicd/ansible-ping.png" alt="ansible all -m ping 결과. 172.16.1.201~203 세 노드가 SUCCESS와 pong을 반환" />
+</figure>
+<h2 id="5-gitlab과-runner">5. GitLab과 Runner</h2>
+<p>server에 GitLab CE를 설치했다. 방화벽에 http·https와 8888/tcp를 열고, <code>EXTERNAL_URL</code>을 server 주소의 8888 포트로 지정했다. 설치 중 문제가 생기면 <code>gitlab-ctl reconfigure</code>와 stop/start를 먼저 해 보고, 그래도 안 되면 인터페이스 설정을 다시 본다.</p>
+<p>웹에서 그룹(Public)과 빈 프로젝트를 만들고, <strong>CI/CD → Runner</strong> 화면에서 Runner를 안내에 따라 등록했다.</p>
+<ul>
+<li><code>gitlab-runner</code>는 레포 push를 받아 작업을 실제로 실행하는 주체다.</li>
+<li>등록할 때 executor로 <code>shell</code>을 골랐고, 태그는 <code>build-server</code>로 지정했다.</li>
+</ul>
+<h2 id="6-playbook과-gitlab-ciyml">6. Playbook과 .gitlab-ci.yml</h2>
+<p>노드에는 httpd를 최신으로 설치하고, <code>index.html</code>을 템플릿으로 <code>/var/www/html</code>에 복사한 뒤 서비스를 띄웠다. 파일이 바뀌면 handler로 httpd를 재시작한다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">- </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">hosts</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">node</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  become</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">yes</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  tasks</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">Ensure Apache is at the latest version</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    yum</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">httpd</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      state</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">latest</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">Write the apache config file</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    template</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      src</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">index.html</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      dest</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">/var/www/html/index.html</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    notify</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">      - </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">restart apache</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">Ensure Apache is running</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    service</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">httpd</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      state</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">started</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  handlers</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">restart apache</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">    service</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">httpd</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">      state</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">restarted</span></span></code></pre>
+<p>파이프라인 파일은 <code>.gitlab-ci.yml</code>이다(<code>.yaml</code>이 아니다). 처음엔 <code>when: manual</code>로 수동 실행하게 두고, <code>master</code> 브랜치에서만 돌게 했다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">test-job</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  stage</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">deploy</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  only</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">    - </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">master</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  when</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">manual</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  script</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">    - </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">sudo ansible all --list-hosts</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">    - </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">ansible-playbook playbook.yaml -f 10</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D">   # 병렬 처리 10</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">  tags</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">    - </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">build-server</span></span></code></pre>
+<p>로컬 저장소에 <code>index.html</code>, <code>playbook.yaml</code>, <code>.gitlab-ci.yml</code> 세 파일을 두고 <code>git push origin master</code>를 했다. GitLab의 CI/CD Job에서 실행하면 세 노드가 모두 <code>changed</code>로 끝나고 <code>Job succeeded</code>가 나왔다. 각 노드 IP로 접속해 페이지가 바뀐 것도 확인했다.</p>
+<figure>
+  <img src="/images/blog/iac-vagrant-ansible-gitlab-cicd/pipeline-job-success.png" alt="GitLab Job 로그. ansible-playbook이 172.16.1.201~203에서 ok=5, changed=3, failed=0으로 끝나고 Job succeeded" />
+</figure>
+<h2 id="7-막혔던-곳">7. 막혔던 곳</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>원인</th>
+<th>해결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sudo: no tty present and no askpass program specified</code>로 Job 실패</td>
+<td>Runner 계정(<code>gitlab-runner</code>)이 비밀번호 없이 sudo를 못 씀</td>
+<td><code>/etc/sudoers</code>에 <code>gitlab-runner ALL=(ALL) NOPASSWD: ALL</code> 추가</td>
+</tr>
+<tr>
+<td>인증 오류</td>
+<td>SSH 키가 <code>vagrant</code> 계정 쪽에만 있음</td>
+<td><code>/home/vagrant/.ssh/*</code>를 <code>/home/gitlab-runner/.ssh/</code>로 복사하고 개인키를 <code>gitlab-runner</code> 소유로 <code>chown</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>gitlab-runner</code> 계정으로도 접속해 <code>ansible node -m ping</code>으로 핑을 확인했다.</p>
+<h2 id="8-덧붙임-같은-서버에서-kubespray">8. 덧붙임: 같은 서버에서 Kubespray</h2>
+<p>같은 server에서 Kubespray(release-2.17)로 마스터 1대·노드 3대 클러스터도 올려 봤다. 인벤토리를 만들고 <code>ansible all -m ping</code>까지는 쉬웠지만, 배포에서 여러 번 막혔다.</p>
+<ul>
+<li>Python 버전 충돌: <code>update-alternatives</code>로 파이썬을 바꿔 가며 해결했고, <code>libselinux-python3</code>와 <code>pip install selinux</code>로 SELinux 바인딩 오류도 풀었다.</li>
+<li>노드 메모리 부족: <code>Vagrantfile</code>의 메모리를 늘리고 <code>vagrant reload</code>.</li>
+<li>Docker를 먼저 설치하지 않아 실패했다. 이 구성에선 Kubernetes보다 Docker가 먼저다.</li>
+<li>kubeadm <code>permission denied</code>: <code>credentials</code> 폴더를 직접 만들고 권한을 777로 주어 해결했다.</li>
+<li>끝에 <code>ignored=1</code>이 남았지만 배포는 성공했고, 약 48시간이 걸렸다.</li>
+<li>일반 사용자 <code>kubectl</code>은 <code>admin.conf</code>를 <code>$HOME/.kube/config</code>로 복사하고 <code>chown</code>해서 풀었다.</li>
+</ul>
+<p>이후 Kubernetes Dashboard v2.3.1을 올리고 서비스 타입을 ClusterIP에서 NodePort로 바꿔 접속했다. HTTPS 주소로 들어가야 하고, Bearer 토큰으로 로그인하면 화면은 열리지만 admin 역할이 없으면 정보가 비어 보인다는 데까지 확인했다.</p>
+<h2 id="정리">정리</h2>
+<ul>
+<li>Vagrant로 서버와 노드 4대를 코드로 정의하고, 키 배포·Ansible 설치까지 provisioner에 넣었다.</li>
+<li>Playbook 한 장으로 노드 3대에 httpd를 배포했고, 같은 Playbook을 GitLab Runner가 push마다 실행하게 이었다.</li>
+<li>이번에 파이프라인이 막힌 곳은 Runner 계정의 sudo와 SSH 키였다.</li>
+</ul>
+</div><section class="post-end" aria-label="글 마무리"><p class="post-labels"><span class="post-labels-k">라벨</span><a class="post-label" href="/tags/iac/">IaC</a><a class="post-label" href="/tags/vagrant/">Vagrant</a><a class="post-label" href="/tags/ansible/">Ansible</a><a class="post-label" href="/tags/gitlab/">GitLab</a><a class="post-label" href="/tags/ci-cd/">CI/CD</a><a class="post-label" href="/tags/kvm/">KVM</a></p><nav class="pager" aria-label="다른 글"><a href="/blog/smart-multitap-k-hackathon/"><span>← 이전 글 페이지</span><strong>제7회 K-Hackathon: Wi-Fi 스마트 멀티탭 (Leeds Multi-Tap)</strong></a><a class="next" href="/blog/kubeadm-ha-master3-haproxy/"><span>다음 글 페이지 →</span><strong>kubeadm으로 Master 3대 HA 클러스터 구성하기 (HAProxy)</strong></a></nav><nav class="related-posts" id="related-posts" aria-label="관련 페이지"><p class="related-kicker">관련 페이지</p><ul><li><a href="/blog/rook-ceph-02-ceph-csi-rbd-storageclass/"><span class="related-mark" aria-hidden="true">*</span>외부 Ceph를 Kubernetes에 붙이기: Ceph CSI(RBD) 설치와 StorageClass, PVC Pending 해결</a></li><li><a href="/blog/rook-ceph-01-helm-deploy/"><span class="related-mark" aria-hidden="true">*</span>Rook-Ceph를 Helm으로 배포하기: Operator v1.15.7, 컨트롤 플레인 노드에 OSD 올리기</a></li><li><a href="/blog/gpu-k8s-10-dcgm-exporter-hpa/"><span class="related-mark" aria-hidden="true">*</span>DCGM Exporter 메트릭을 Prometheus로 모으고 GPU 메모리로 HPA 걸기</a></li></ul></nav></section></div></div><aside class="post-side" data-toc-follow data-check="tocfollow-20261112"><button type="button" class="toc-follow-toggle" aria-expanded="false" aria-controls="toc-follow-panel">목차</button><div class="toc-follow-panel" id="toc-follow-panel"><nav class="toc" data-post-toc data-toc-variant="side" aria-label="이 페이지에서"><p>이 페이지에서</p><ol><li><a href="#한-장으로-보기" data-toc-link data-toc-slug="한-장으로-보기">한 장으로 보기</a></li><li><a href="#목표" data-toc-link data-toc-slug="목표">목표</a></li><li><a href="#1-kvm-호스트-만들기" data-toc-link data-toc-slug="1-kvm-호스트-만들기">1. KVM 호스트 만들기</a></li><li><a href="#2-브릿지-네트워크" data-toc-link data-toc-slug="2-브릿지-네트워크">2. 브릿지 네트워크</a></li><li><a href="#3-vagrant로-4대-띄우기" data-toc-link data-toc-slug="3-vagrant로-4대-띄우기">3. Vagrant로 4대 띄우기</a></li><li><a href="#4-ansible로-노드-연결" data-toc-link data-toc-slug="4-ansible로-노드-연결">4. Ansible로 노드 연결</a></li><li><a href="#5-gitlab과-runner" data-toc-link data-toc-slug="5-gitlab과-runner">5. GitLab과 Runner</a></li><li><a href="#6-playbook과-gitlab-ciyml" data-toc-link data-toc-slug="6-playbook과-gitlab-ciyml">6. Playbook과 .gitlab-ci.yml</a></li><li><a href="#7-막혔던-곳" data-toc-link data-toc-slug="7-막혔던-곳">7. 막혔던 곳</a></li><li><a href="#8-덧붙임-같은-서버에서-kubespray" data-toc-link data-toc-slug="8-덧붙임-같은-서버에서-kubespray">8. 덧붙임: 같은 서버에서 Kubespray</a></li><li><a href="#정리" data-toc-link data-toc-slug="정리">정리</a></li></ol></nav></div></aside></article><script>
+    (function () {
+      var article = document.querySelector('[data-post-lock-body][data-baked-locked="1"]');
+      if (!article) return;
+      article.setAttribute('hidden', '');
+      if (document.documentElement.getAttribute('data-owner-verified') === '1') return;
+      var prose = article.querySelector('[data-locked-prose]');
+      if (prose) prose.replaceChildren();
+    })();
+  </script><script>
+    // 페이지 너비 토글: 선택은 이 브라우저에만 저장한다. 이동할 때마다 다시 적용한다.
+    (function () {
+      var KEY = 'blog-post-wide';
+      var apply = function () {
+        var wide = false;
+        try { wide = localStorage.getItem(KEY) === '1'; } catch (e) {}
+        document.documentElement.toggleAttribute('data-post-wide', wide);
+        document.querySelectorAll('[data-post-wide]').forEach(function (b) {
+          if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', wide ? 'true' : 'false');
+        });
+      };
+      apply();
+      if (window.__postWideBound) return;
+      window.__postWideBound = true;
+      document.addEventListener('astro:after-swap', apply);
+      document.addEventListener('astro:page-load', apply);
+      document.addEventListener('click', function (event) {
+        var t = event.target;
+        var btn = t && t.closest && t.closest('button[data-post-wide]');
+        if (!btn) return;
+        var next = document.documentElement.hasAttribute('data-post-wide') ? '0' : '1';
+        try { localStorage.setItem(KEY, next); } catch (e) {}
+        apply();
+      });
+    })();
+  </script><!-- sunjae-copy-open --><dialog data-astro-transition-persist="img-zoom" class="img-zoom" id="img-zoom" aria-label="이미지 확대"></dialog><script type="module">var e=()=>{let e=document.getElementById(`img-zoom`);return e instanceof HTMLDialogElement?e:null},t=()=>{let t=e();t&&t.dataset.zoomBound!==`1`&&(t.dataset.zoomBound=`1`,t.addEventListener(`cancel`,e=>{e.preventDefault(),t.open&&t.close()}),t.addEventListener(`close`,()=>{t.querySelector(`img`)?.remove()}))};window.__sunjaeZoom||(window.__sunjaeZoom=!0,document.addEventListener(`click`,t=>{let n=e();if(!n)return;let r=t.target;if(!(r instanceof Element))return;if(n.open){t.preventDefault(),n.close();return}let i=r.closest(`.prose img, .hero img`);if(!(i instanceof HTMLImageElement)||!i.src)return;t.preventDefault(),t.stopPropagation();let a=n.querySelector(`img`);a instanceof HTMLImageElement||(a=document.createElement(`img`),n.appendChild(a)),a.src=i.currentSrc||i.src,a.alt=i.alt||``,n.showModal()})),t(),document.addEventListener(`astro:page-load`,t);</script><script type="module">var e=/^\s*[\$%]\s+/,t=/^\s*[\w.-]+@[\w.~-]+(?::[^\s#$]*)?[#\$]\s+/;function n(n){return e.test(n)||t.test(n)}function r(n){return e.test(n)?n.replace(e,``):t.test(n)?n.replace(t,``):n}function i(e){let t=[];for(let i of e.replace(/\n$/,``).split(`
+`))n(i)&&t.push(r(i));return t.join(`
+`)}function a(e){return e.map(e=>e.replace(/\n$/,``)).join(`
+`)}var o=null,s=e=>{if(!e)return{};let t=e.replaceAll(`&quot;`,`"`).replaceAll(`&#39;`,`'`).replaceAll(`&amp;`,`&`),n={},r=/(\w+)=(?:"([^"]*)"|'([^']*)'|(\S+))/g,i;for(;i=r.exec(t);){let e=i[1],t=i[2]??i[3]??i[4]??``;(e===`title`||e===`cwd`||e===`warn`)&&(n[e]=t)}return n},c=e=>[`bash`,`sh`,`shell`,`zsh`,`console`,`shellsession`].includes(e),l=e=>[`text`,`output`,`log`,`plaintext`].includes(e),u=(e,t)=>{let n=e.querySelector(`code`)??e,r=[...n.querySelectorAll(`.code-line`)],o=r.length?a(r.map(e=>e.textContent||``)):n.textContent||``;return t===`all`?o.replace(/\n$/,``):i(o)},d=(e,t)=>{if(l(t)){e.dataset.codeKind=`output`;return}if(!c(t))return;let r=e.querySelector(`code`);if(!r)return;let i=r.textContent||``;if(!i.split(`
+`).some(e=>n(e))){e.dataset.codeKind=`script`;return}e.dataset.codeKind=`session`,r.innerHTML;let a=i.split(`
+`);a.length&&a[a.length-1]===``&&a.pop(),r.innerHTML=a.map(e=>`<span class="${n(e)?`code-line is-cmd`:`code-line is-out`}">${e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`)||` `}</span>`).join(``)},f=e=>{if(e.dataset.codeEnhanced===`1`)return;e.dataset.codeEnhanced=`1`;let t=(e.getAttribute(`data-language`)||e.dataset.language||``).toLowerCase(),n=s(e.getAttribute(`data-meta`));d(e,t);let r=document.createElement(`div`);r.className=`code-block`,e.dataset.codeKind&&(r.dataset.codeKind=e.dataset.codeKind),e.parentNode?.insertBefore(r,e),r.appendChild(e);let i=document.createElement(`div`);i.className=`code-head`;let a=document.createElement(`div`);a.className=`code-head-meta`;let o=e.dataset.codeKind||``;if(o===`output`||l(t)){let e=document.createElement(`span`);e.className=`code-pill is-output`,e.textContent=`OUTPUT`,a.appendChild(e)}else if(t){let e=document.createElement(`span`);e.className=`code-pill`,e.textContent=t,a.appendChild(e)}if(n.title){let e=document.createElement(`span`);e.className=`code-title`,e.textContent=n.title,a.appendChild(e)}if(n.cwd){let e=document.createElement(`span`);e.className=`code-cwd`,e.textContent=n.cwd,a.appendChild(e)}if(n.warn){let e=document.createElement(`span`);e.className=`code-warn`,e.textContent=`⚠ ${n.warn}`,a.appendChild(e)}i.appendChild(a);let c=o===`session`?`commands`:`all`,f=document.createElement(`button`);f.type=`button`,f.className=`copy-button`,f.dataset.copy=`1`,f.textContent=c===`commands`?`copy cmds`:`copy`,f.title=c===`commands`?`프롬프트 제외한 명령만 복사`:`전체 복사`,f.addEventListener(`click`,async()=>{try{let t=u(e,c);await navigator.clipboard.writeText(t),f.textContent=`copied`,window.setTimeout(()=>{f.textContent=c===`commands`?`copy cmds`:`copy`},1200)}catch{f.textContent=`fail`,window.setTimeout(()=>{f.textContent=c===`commands`?`copy cmds`:`copy`},1200)}}),i.appendChild(f),r.insertBefore(i,e)},p=()=>{o?.abort(),o=new AbortController,document.querySelectorAll(`.prose pre.astro-code`).forEach(f)};p(),document.addEventListener(`astro:page-load`,p);</script><script type="module" src="/_astro/PostLayout.astro_astro_type_script_index_0_lang.CblaLhR7.js"></script><script type="module">var e=null,t=()=>{let e=document.querySelector(`.post-main .prose`);e&&e.querySelectorAll(`h2[id], h3[id]`).forEach(e=>{if(e.querySelector(`:scope > .heading-anchor`))return;let t=document.createElement(`a`);t.className=`heading-anchor`,t.href=`#${e.id}`,t.textContent=`#`,t.setAttribute(`aria-label`,`이 제목 링크`),e.append(t)})},n=()=>{e?.disconnect(),t();let n=document.querySelector(`.post-main .prose`);n&&(e=new MutationObserver(()=>t()),e.observe(n,{childList:!0}))};n(),document.addEventListener(`astro:page-load`,n);</script><script type="module">document.addEventListener(`keydown`,e=>{if(e.key!==`Backspace`||e.metaKey||e.ctrlKey||e.altKey)return;let t=e.target;t instanceof HTMLElement&&([`INPUT`,`TEXTAREA`,`SELECT`].includes(t.tagName)||t.isContentEditable||t.closest(`.term-shell`))||(e.preventDefault(),history.length>1&&history.back())});</script><p class="page-source owner-only" data-page-source-mount hidden></p></main></div><aside data-astro-transition-persist="vim-dock" class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true" data-check="vimauto-20261112-autohide"><div class="term-dock-resize" id="term-dock-resize" role="separator" aria-orientation="horizontal" aria-label="터미널 높이 조절" title="드래그해서 높이 조절"></div><div class="term-dock-head"><span class="term-dock-title">$ vim</span><div class="term-dock-actions"><button type="button" class="term-dock-lock" id="term-dock-lock" aria-pressed="false" aria-label="터미널 고정 해제됨" title="고정 (호버 없이 펼침 유지)"><svg class="term-dock-lock-icon term-dock-lock-icon--unlocked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 7.5-1.9"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><svg class="term-dock-lock-icon term-dock-lock-icon--locked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" hidden><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 8 0v3"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><span class="term-dock-lock-label">고정</span></button><span class="owner-only" data-owner-new-post hidden></span><a class="owner-login-quiet" href="#term-login" title="저장소 주인 로그인 (:login)">login</a><a href="/terminal/">전체 화면</a></div></div><section class="term-shell term-shell--panel" data-repo="qkrtjswo03/blog-src" data-base="main" data-variant="panel" data-term-index="sunjae-term-hide-locked"><div class="term-titlebar" aria-hidden="true"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">sunjae@github — qkrtjswo03/blog-src</span><span class="term-branch" id="term-branch">main</span></div><div class="term-log" id="term-log" role="log" aria-live="polite" tabindex="0"></div><form class="term-line" id="term-form" autocomplete="off"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">github</span><span class="ps1-path" id="term-cwd">:~</span><span class="ps1-sigil">$</span></span><label class="sr-only" for="term-input">명령</label><input id="term-input" name="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send" placeholder="help"></form><div class="term-editor" id="term-editor" hidden><div class="term-editor-bar"><span id="term-editor-path">-</span><span class="term-editor-state" id="term-editor-state"></span></div><textarea id="term-editor-text" spellcheck="false" aria-label="파일 내용"></textarea><div class="term-editor-actions"><button type="button" class="term-btn" id="term-editor-save">임시 저장 (<span id="term-editor-lines">0</span>줄)</button><button type="button" class="term-btn" id="term-editor-commit">커밋</button><button type="button" class="term-btn" id="term-editor-pr">커밋 후 PR</button><button type="button" class="term-btn term-btn-ghost" id="term-editor-cancel">닫기</button></div></div></section><script type="module" src="/_astro/Terminal.astro_astro_type_script_index_0_lang.B8KuGOtF.js"></script></aside></div><script type="module" src="/_astro/Header.astro_astro_type_script_index_0_lang.BfwyXe18.js"></script><script type="module" src="/_astro/Header.astro_astro_type_script_index_1_lang.DP-D3qJ9.js"></script><script>(function(){const code = "sunjae";
+
+    (function () {
+      var base = 'https://' + code + '.goatcounter.com/counter/';
+      var mem = {};
+      function get(path) {
+        if (mem[path]) return mem[path];
+        var key = 'gc:' + path, hit;
+        try { hit = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+        if (hit && Date.now() - hit.t < 300000) return (mem[path] = Promise.resolve(hit.c));
+        var url = base + encodeURIComponent(path) + '.json';
+        return (mem[path] = fetch(url, { credentials: 'omit', mode: 'cors' })
+          .then(function (r) {
+            if (r.status === 404) return '0';
+            if (!r.ok) return Promise.reject(0);
+            return r.json().then(function (j) {
+              return j && j.count != null ? String(j.count) : '0';
+            });
+          })
+          .then(function (c) { try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), c: c })); } catch (e) {} return c; })
+          .catch(function () { return '0'; }));
+      }
+      function run() {
+        document.querySelectorAll('[data-gc-path]').forEach(function (el) {
+          var out = el.querySelector('[data-gc-count]') || el;
+          get(el.getAttribute('data-gc-path')).then(function (c) {
+            out.textContent = String(c).trim(); el.hidden = false;
+          }, function () { out.textContent = '—'; });
+        });
+      }
+      var boot = function () { run(); };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+      document.addEventListener('astro:page-load', run);
+    })();
+  })();</script><script type="module" src="/_astro/TouchPrefetch.astro_astro_type_script_index_0_lang.BGJ0Gma2.js"></script></body></html>

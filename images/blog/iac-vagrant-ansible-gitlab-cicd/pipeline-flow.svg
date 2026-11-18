@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" width="960" height="300" role="img" aria-label="git push에서 GitLab Runner, Ansible, 노드 3대까지 이어지는 배포 흐름">
+  <style>
+    .box{fill:#161b22;stroke:#30363d;stroke-width:1.5}
+    .hl{fill:#1f2a3a;stroke:#58a6ff;stroke-width:1.5}
+    .t{font:600 15px 'Noto Sans KR',system-ui,sans-serif;fill:#e6edf3}
+    .s{font:400 12px 'Noto Sans KR',system-ui,sans-serif;fill:#9da7b3}
+    .a{stroke:#58a6ff;stroke-width:2;fill:none;marker-end:url(#h)}
+  </style>
+  <defs><marker id="h" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#58a6ff"/></marker></defs>
+  <rect width="960" height="300" fill="#0d1117"/>
+  <rect class="box" x="24" y="110" width="150" height="80" rx="10"/>
+  <text class="t" x="99" y="144" text-anchor="middle">로컬 git</text>
+  <text class="s" x="99" y="166" text-anchor="middle">index.html 수정 후 push</text>
+  <rect class="hl" x="228" y="110" width="170" height="80" rx="10"/>
+  <text class="t" x="313" y="144" text-anchor="middle">GitLab (server)</text>
+  <text class="s" x="313" y="166" text-anchor="middle">.gitlab-ci.yml 감지</text>
+  <rect class="hl" x="452" y="110" width="170" height="80" rx="10"/>
+  <text class="t" x="537" y="144" text-anchor="middle">GitLab Runner</text>
+  <text class="s" x="537" y="166" text-anchor="middle">shell executor</text>
+  <rect class="hl" x="676" y="110" width="150" height="80" rx="10"/>
+  <text class="t" x="751" y="144" text-anchor="middle">Ansible</text>
+  <text class="s" x="751" y="166" text-anchor="middle">playbook.yaml -f 10</text>
+  <rect class="box" x="868" y="30" width="72" height="56" rx="8"/><text class="t" x="904" y="64" text-anchor="middle">node1</text>
+  <rect class="box" x="868" y="122" width="72" height="56" rx="8"/><text class="t" x="904" y="156" text-anchor="middle">node2</text>
+  <rect class="box" x="868" y="214" width="72" height="56" rx="8"/><text class="t" x="904" y="248" text-anchor="middle">node3</text>
+  <path class="a" d="M174 150H226"/><path class="a" d="M398 150H450"/><path class="a" d="M622 150H674"/>
+  <path class="a" d="M826 140L866 64"/><path class="a" d="M826 150H866"/><path class="a" d="M826 160L866 238"/>
+  <text class="s" x="904" y="288" text-anchor="middle">httpd 배포</text>
+</svg>

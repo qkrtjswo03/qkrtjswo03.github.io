@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="ko" data-theme="dark"><head><style>
+  /* 스플래시 스크립트보다 먼저 칠해, 본문이 한 프레임도 비치지 않게 한다. 사이트 기본 배경과 같다. */
+  html { background: #050b1f; }
+</style><script>
+  (function () {
+    try {
+      var KEY = 'sunjae-web-splash';
+      if (sessionStorage.getItem(KEY) === '1') return;
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
+      if (typeof navigator.standalone === 'boolean' && navigator.standalone) return;
+      var ua = navigator.userAgent || '';
+      if (/bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|linkedinbot|pinterest|redditbot|whatsapp|telegram|discordbot|applebot|googlebot|yandex|baidu|duckduck|semrush|ahrefs|mj12|bytespider/i.test(ua)) {
+        return;
+      }
+
+      sessionStorage.setItem(KEY, '1');
+
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var MIN_VISIBLE_MS = 1100;
+      var FADE_MS = 280;
+      var FORCE_MS = 1500;
+
+      var css =
+        '#sunjae-web-splash{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;margin:0;padding:1.25rem;background:#050b1f;color:#e7eefc;opacity:1;pointer-events:none;}' +
+        '#sunjae-web-splash .ws-inner{display:flex;flex-direction:column;align-items:center;gap:1.25rem;text-align:center;}' +
+        '#sunjae-web-splash .ws-icon{display:block;width:192px;height:192px;border:0;}' +
+        '#sunjae-web-splash .ws-title{margin:0;font:500 1.35rem/1.25 ui-sans-serif,system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;letter-spacing:.01em;color:#e7eefc;}' +
+        (reduce ? '' : '#sunjae-web-splash.is-fading{opacity:0;transition:opacity .28s ease;}');
+
+      var style = document.createElement('style');
+      style.id = 'sunjae-web-splash-style';
+      style.textContent = css;
+
+      var el = document.createElement('div');
+      el.id = 'sunjae-web-splash';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML =
+        '<div class="ws-inner">' +
+        '<img class="ws-icon" src="/icons/icon-512.png" width="192" height="192" alt="" />' +
+        '<p class="ws-title">SunJae.Log</p>' +
+        '</div>';
+
+      document.documentElement.appendChild(style);
+      document.documentElement.appendChild(el);
+
+      var gone = false;
+      var dismissing = false;
+
+      function finish() {
+        if (gone) return;
+        gone = true;
+        if (el.parentNode) el.parentNode.removeChild(el);
+        if (style.parentNode) style.parentNode.removeChild(style);
+        document.dispatchEvent(new CustomEvent('sunjae:web-splash-done'));
+      }
+
+      function dismiss() {
+        if (gone || dismissing) return;
+        dismissing = true;
+        if (reduce) {
+          finish();
+          return;
+        }
+        el.classList.add('is-fading');
+        setTimeout(finish, FADE_MS);
+      }
+
+      // 첫 페인트 이후 MIN_VISIBLE_MS 동안 보여 주고 페이드. 같은 기준 FORCE_MS 에는 강제로 걷는다.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          setTimeout(dismiss, MIN_VISIBLE_MS);
+          setTimeout(dismiss, FORCE_MS);
+        });
+      });
+      setTimeout(dismiss, 2000); // rAF 가 안 올 때의 안전장치
+    } catch (e) {}
+  })();
+</script><style>html{scroll-behavior:smooth;color:#e7eefc;background:#050b1f;font-size:17px}@media (width>=720px){html{font-size:18px}}body{color:#e7eefc;background:#050b1f;min-height:100vh;margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.8}.skip{position:absolute;top:auto;left:-999px}.skip:focus{z-index:10000;color:#fff;background:#0b1b3f;padding:.4rem .7rem;top:1rem;left:1rem}.app-shell{min-height:100vh}.console{z-index:1;grid-template-columns:minmax(0,1fr);min-height:100vh;display:grid;position:relative}@media (width>=860px){.console{grid-template-columns:272px minmax(0,1fr)}}.console.has-status-rail{grid-template-columns:minmax(0,1fr)}@media (width>=1100px){.console.has-status-rail{grid-template-columns:272px minmax(0,1fr) 280px}}.rail{display:none}@media (width>=860px){.rail{background:#081028eb;border-right:1px solid #94a3b838;flex-direction:column;display:flex}}.page,.main-wrap,main#content{min-width:0}.hero-banner{aspect-ratio:16/5.2;background:#0a1433;border-radius:12px;position:relative;overflow:hidden}@media (width<=860px){.hero-banner{aspect-ratio:16/7.5}}.hero-photo{object-fit:cover;width:100%;height:100%;display:block}.k9s-table-wrap{overflow:auto}.term-dock{z-index:40;position:fixed;bottom:0;left:0;right:0}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:1ms!important;animation-delay:0s!important}</style><link rel="preload" href="/_astro/fonts.DAK-W_wo.css" as="style"><link rel="stylesheet" href="/_astro/fonts.DAK-W_wo.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="/_astro/fonts.DAK-W_wo.css"></noscript><link rel="stylesheet" href="/_astro/global.CCJm7qpD.css"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="swap"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.D2mlxDM5.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050b1f"><script>
+  (function () {
+    try {
+      // owner UI only after terminal login as repo owner (set by Terminal)
+      if (localStorage.getItem('owner-mode') === '1') {
+        document.documentElement.setAttribute('data-owner', '1');
+      } else {
+        document.documentElement.removeAttribute('data-owner');
+      }
+    } catch (e) {}
+    try {
+      localStorage.removeItem('theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
+      // boot 화면이 나올 전체 로드(Motion.astro 와 같은 조건: 움직임 허용 + 이 탭에서 아직 안 봄)에서는
+      // boot 가 뜨기 전 첫 화면에 페이지가 비치지 않도록 boot 바탕색만 보이게 해 둔다. 설치 앱처럼 웹 스플래시가 없는 경우를 위해서.
+      // 봇·크롤러는 boot 를 건너뛴다(WebSplash.astro·Motion.astro 와 같은 UA 목록).
+      try {
+        var bootBot = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|linkedinbot|pinterest|redditbot|whatsapp|telegram|discordbot|applebot|googlebot|yandex|baidu|duckduck|semrush|ahrefs|mj12|bytespider/i.test(navigator.userAgent || '');
+        if (!bootBot && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && sessionStorage.getItem('sunjae-boot-seen') !== '1') {
+          var root = document.documentElement;
+          var release = function () {
+            root.classList.remove('boot-pending');
+          };
+          root.classList.add('boot-pending');
+          document.addEventListener('sunjae:boot-done', release, { once: true });
+          document.addEventListener('DOMContentLoaded', function () {
+            if (!document.getElementById('boot')) release();
+          });
+          setTimeout(release, 4000); // 안전장치: 무슨 일이 있어도 본문은 보인다
+        }
+      } catch (e) {}
+      // ClientRouter 이동 때 <html> 속성이 새 문서 것으로 바뀌어 motion·주인 표시가 빠지므로, 교체 전에 새 문서에도 같은 규칙으로 붙인다.
+      if (!window.__sunjaeMotionSwap) {
+        window.__sunjaeMotionSwap = true;
+        document.addEventListener('astro:before-swap', function (event) {
+          var next = event.newDocument && event.newDocument.documentElement;
+          if (!next) return;
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) next.classList.add('motion');
+          try {
+            // 위 data-owner 규칙과 같음: owner-mode 깃발이 있을 때만. 로그아웃하면 깃발이 지워져 붙지 않는다.
+            if (localStorage.getItem('owner-mode') === '1') {
+              next.setAttribute('data-owner', '1');
+              // 확인 표시는 지금 페이지에서 이미 확인된 경우에만 그대로 넘긴다 (로그아웃·확인 실패 시 지금 페이지에서 먼저 지워짐).
+              if (document.documentElement.getAttribute('data-owner-verified') === '1') next.setAttribute('data-owner-verified', '1');
+            } else {
+              next.removeAttribute('data-owner');
+              next.removeAttribute('data-owner-verified');
+            }
+          } catch (e) {}
+        });
+      }
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', '#050b1f');
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script><style>
+  html.boot-pending,
+  html.boot-pending body {
+    background: #050b1f;
+  }
+  html.boot-pending body::before,
+  html.boot-pending body > :not(#boot) {
+    visibility: hidden !important;
+  }
+</style><title>CI/CD · SunJae.Log</title><meta name="description" content="CI/CD 태그가 달린 글 1편입니다."><meta name="author" content="qkrtjswo03"><meta name="copyright" content="© 2026 qkrtjswo03. All Rights Reserved."><meta name="license" content="All Rights Reserved"><link rel="canonical" href="https://qkrtjswo03.github.io/tags/ci-cd/"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="SunJae.Log"><script>
+  function registerSunjaeSw() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).catch(function () {});
+  }
+  registerSunjaeSw();
+  document.addEventListener('astro:page-load', registerSunjaeSw);
+  // 새 배포 확인: 열 때·화면으로 돌아올 때 새 서비스 워커를 찾고, 새 워커가 이 페이지를 넘겨받으면 한 번만 새로고침합니다.
+  (function () {
+    if (!('serviceWorker' in navigator) || window.__sunjaeSwUpdate) return;
+    window.__sunjaeSwUpdate = true;
+    var sw = navigator.serviceWorker;
+    var hadController = !!sw.controller;
+    var lastCheck = 0;
+    var pending = false;
+    var check = function () {
+      if (document.hidden || Date.now() - lastCheck < 30000) return;
+      lastCheck = Date.now();
+      sw.getRegistration('/').then(function (reg) {
+        if (reg) return reg.update();
+      }).catch(function () {});
+    };
+    var typing = function () {
+      var el = document.activeElement;
+      return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+    };
+    var reloadOnce = function () {
+      if (!pending || document.hidden || typing()) return;
+      pending = false;
+      try {
+        var last = Number(sessionStorage.getItem('sunjae-sw-reload') || 0);
+        if (Date.now() - last < 15000) return; // 연속 새로고침 방지
+        sessionStorage.setItem('sunjae-sw-reload', String(Date.now()));
+      } catch (e) {}
+      location.reload();
+    };
+    sw.addEventListener('controllerchange', function () {
+      // 첫 설치(이전 워커 없음)는 새로고침하지 않습니다.
+      if (!hadController) {
+        hadController = true;
+        return;
+      }
+      pending = true;
+      reloadOnce();
+    });
+    // 입력 중이었거나 화면이 꺼져 있었으면, 입력을 마치거나 화면으로 돌아왔을 때 새로고침합니다.
+    document.addEventListener('focusout', function () {
+      setTimeout(reloadOnce, 300);
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) return;
+      reloadOnce();
+      check();
+    });
+    window.addEventListener('load', check);
+    document.addEventListener('astro:page-load', check);
+  })();
+</script><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.90.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/pretendard/PretendardVariable.subset.91.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jetbrains/jetbrains-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="alternate" type="application/rss+xml" title="SunJae.Log RSS" href="https://qkrtjswo03.github.io/rss.xml"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="naver-site-verification" content="1852822c3eabd90417fed21892be241192d61531"><meta property="og:type" content="website"><meta property="og:site_name" content="SunJae.Log"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="CI/CD · SunJae.Log"><meta property="og:description" content="CI/CD 태그가 달린 글 1편입니다."><meta property="og:url" content="https://qkrtjswo03.github.io/tags/ci-cd/"><meta property="og:image" content="https://qkrtjswo03.github.io/og-default.png?v=db3d2ee8"><meta property="og:image:alt" content="CI/CD · SunJae.Log"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="CI/CD · SunJae.Log"><meta name="twitter:description" content="CI/CD 태그가 달린 글 1편입니다."><meta name="twitter:image" content="https://qkrtjswo03.github.io/og-default.png?v=db3d2ee8"><meta name="twitter:image:alt" content="CI/CD · SunJae.Log"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6293646207002542" crossorigin="anonymous"></script><script async data-goatcounter="https://sunjae.goatcounter.com/count" src="https://gc.zgo.at/count.js"></script><style>.astro-route-announcer{clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;width:1px;height:1px;position:absolute;top:0;left:0;overflow:hidden}@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media (prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),[data-astro-transition-scope]{animation:none!important}}
+</style><link rel="stylesheet" href="/_astro/PostList.B1cxRqmy.css"><script type="module" src="/_astro/page.I2sg3Kaz.js"></script></head><body><script type="module" src="/_astro/ReadingMarks.astro_astro_type_script_index_0_lang.DuQl9lIq.js"></script><div class="boot" id="boot" hidden><p class="boot-line" data-boot-line hidden>sunjae@k8s:~$ boot</p><p class="boot-line" data-boot-line hidden>sync posts</p><p class="boot-line" data-boot-line hidden>mount k9s</p><p class="boot-line boot-line is-ready" data-boot-line hidden>Ready</p></div><canvas class="matrix-rain" id="matrix-rain" aria-hidden="true"></canvas><button type="button" class="to-top" id="to-top" hidden aria-label="맨 위로">↑</button><script type="module" src="/_astro/Motion.astro_astro_type_script_index_0_lang.BownNEA7.js"></script><script type="module">var e=e=>e instanceof HTMLElement&&(e.tagName===`INPUT`||e.tagName===`TEXTAREA`||e.tagName===`SELECT`||e.isContentEditable||!!e.closest(`.term-shell, .term-editor`));document.addEventListener(`keydown`,t=>{if(t.key!==`/`||t.metaKey||t.ctrlKey||t.altKey||e(t.target))return;let n=document.querySelector(`#q`);n?(t.preventDefault(),t.stopPropagation(),n.focus(),n.select()):document.querySelector(`.k9s-frame`)||(t.preventDefault(),location.assign(`/search/`))},!0);</script><!-- Token copy is filled client-side so visitors/crawlers never see it in static HTML. --><!-- 잠긴 글 슬러그는 페이지에 넣지 않습니다. 주인은 토큰 확인 뒤에만 소스 저장소에서 목록을 받습니다. --><dialog data-astro-transition-persist="lock-dialog" class="post-lock-dialog" id="owner-lock-dialog" data-repo="qkrtjswo03/blog-src" aria-labelledby="owner-lock-title"></dialog><script type="module" src="/_astro/LockGate.astro_astro_type_script_index_0_lang.hwqKskU8.js"></script><a class="skip" href="#content">본문으로 건너뛰기</a><div class="app-shell has-term-dock"><div class="console has-status-rail"><aside class="rail"><div class="rail-head"><a class="brand" href="/" aria-label="sunjae@k8s:~$ SunJae.Log 홈"><span class="ps1"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="caret" aria-hidden="true"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="bars" aria-hidden="true"></span><span class="sr-only">메뉴</span></button></div><div class="rail-body" id="site-nav"><div class="rail-intro"><p class="rail-title"><a href="/">SunJae.Log</a></p><p class="rail-lede">Exploring the Cloud Native World.</p><a class="repo-link" href="https://github.com/qkrtjswo03?tab=repositories" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 7.5 12 4l8 3.5v9L12 20l-8-3.5v-9Z"></path><path fill="none" stroke="currentColor" stroke-width="1.7" d="M12 11.2V20M4.2 7.7 12 11.2l7.8-3.5"></path></svg>저장소</a></div><nav class="site-nav" aria-label="주요"><a href="/blog/" title="글" data-astro-prefetch="viewport"><span class="nav-cmd">get posts</span><span class="nav-ko">글</span></a><a href="/projects/" title="프로젝트" data-astro-prefetch="viewport"><span class="nav-cmd">get projects</span><span class="nav-ko">프로젝트</span></a><a href="/archive/" title="시리즈 모음" data-astro-prefetch="viewport"><span class="nav-cmd">get series</span><span class="nav-ko">시리즈 모음</span></a><a href="/about/" title="소개" data-astro-prefetch="viewport"><span class="nav-cmd">describe me</span><span class="nav-ko">소개</span></a></nav><div class="rail-foot"><nav class="rail-links" aria-label="바닥"><a href="/about/">소개</a><a href="/license/">저작권</a><a href="/privacy/">개인정보처리방침</a><a href="/contact/">문의</a><a href="/rss.xml">RSS</a></nav><p class="rail-status"><span class="status-dot" aria-hidden="true"></span><span class="status-word">Ready</span><span class="dim">© 2026 qkrtjswo03 · All Rights Reserved</span></p><div class="rail-uptime" title="uptime는 블로그 시작일(2026-11-03)부터 이 빌드 시각까지 경과한 일수입니다. last deploy는 빌드 시각(Asia/Seoul)입니다."><div class="rail-uptime-row"><p class="rail-uptime-kicker">$ uptime</p><p class="rail-uptime-value"><span class="rail-uptime-dot" aria-hidden="true"></span><span>15d</span></p></div><p class="rail-uptime-deploy">last deploy 2026-11-18 23:33 KST</p></div></div></div></aside><main id="content" class="page"><header class="page-intro"><p class="cmd"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">k8s</span><span class="ps1-path">:~</span><span class="ps1-sigil">$</span></span><span class="cmd-text">kubectl get posts -l tag=CI/CD</span></p><h1>CI/CD</h1><p>1개의 글</p></header><div class="k9s" data-k9s data-paths="[{&quot;id&quot;:&quot;k8s-build&quot;,&quot;ns&quot;:&quot;k8s-build&quot;,&quot;title&quot;:&quot;Kubernetes 처음 구축하기&quot;,&quot;blurb&quot;:&quot;Hard Way로 컨트롤 플레인부터 올리고, kubeadm HA도 이어서 본다.&quot;,&quot;slugs&quot;:[&quot;k8s-hardway-01-overview&quot;,&quot;k8s-hardway-02-bastion-network&quot;,&quot;k8s-hardway-03-certificates&quot;,&quot;k8s-hardway-04-kubeconfig&quot;,&quot;k8s-hardway-05-apiserver-etcd-sa-certs&quot;,&quot;k8s-hardway-06-distribute-certs&quot;,&quot;k8s-hardway-07-etcd&quot;,&quot;k8s-hardway-08-control-plane&quot;,&quot;k8s-hardway-09-worker01&quot;,&quot;k8s-hardway-10-cilium-coredns&quot;,&quot;k8s-hardway-11-network-test&quot;,&quot;k8s-hardway-12-tls-bootstrap-workers&quot;,&quot;kubeadm-ha-master3-haproxy&quot;]},{&quot;id&quot;:&quot;loki-troubleshoot&quot;,&quot;ns&quot;:&quot;loki-troubleshoot&quot;,&quot;title&quot;:&quot;Loki·관측 장애 해결&quot;,&quot;blurb&quot;:&quot;memberlist·메트릭·대시보드 이슈를 순서대로 좁힌다.&quot;,&quot;slugs&quot;:[&quot;loki-memberlist-cluster-dns&quot;,&quot;node-exporter-metrics-minimization&quot;,&quot;grafana-download-dashboards-init-container&quot;]},{&quot;id&quot;:&quot;kubeedge&quot;,&quot;ns&quot;:&quot;kubeedge&quot;,&quot;title&quot;:&quot;KubeEdge 엣지 따라가기&quot;,&quot;blurb&quot;:&quot;개요부터 DeviceTwin·DIL·EdgeMesh까지.&quot;,&quot;slugs&quot;:[&quot;kubeedge-overview&quot;,&quot;kubeedge-architecture&quot;,&quot;kubeedge-install-guide&quot;,&quot;kubeedge-device-mapper-mqtt&quot;,&quot;kubeedge-north-south-reliability&quot;,&quot;edgemesh-overview&quot;,&quot;edgemesh-p2p-east-west&quot;]},{&quot;id&quot;:&quot;istio&quot;,&quot;ns&quot;:&quot;istio&quot;,&quot;title&quot;:&quot;Istio 컨트롤 플레인&quot;,&quot;blurb&quot;:&quot;아키텍처와 istiod 장애 영향을 이어서 읽는다.&quot;,&quot;slugs&quot;:[&quot;istio-paas-architecture&quot;,&quot;istiod-outage-impact&quot;]},{&quot;id&quot;:&quot;grafana-auth&quot;,&quot;ns&quot;:&quot;grafana-auth&quot;,&quot;title&quot;:&quot;Grafana 경로·중앙 인증&quot;,&quot;blurb&quot;:&quot;도메인 일원화 → VirtualService → OAuth2/Keycloak.&quot;,&quot;slugs&quot;:[&quot;grafana-unified-dashboard-routing&quot;,&quot;grafana-dashboard-route-rules&quot;,&quot;grafana-oauth2-keycloak-auth&quot;,&quot;grafana-download-dashboards-init-container&quot;]},{&quot;id&quot;:&quot;osi-network&quot;,&quot;ns&quot;:&quot;osi-network&quot;,&quot;title&quot;:&quot;OSI·패킷·정책으로 보는 네트워크&quot;,&quot;blurb&quot;:&quot;계층·MTU/MSS·NetworkPolicy를 기초부터.&quot;,&quot;slugs&quot;:[&quot;mtu-mss-edge-segmentation&quot;,&quot;cilium-network-policy-l3-l4-l7&quot;]},{&quot;id&quot;:&quot;smart-fridge&quot;,&quot;ns&quot;:&quot;smart-fridge&quot;,&quot;title&quot;:&quot;스마트 냉장고 앱 시리즈&quot;,&quot;blurb&quot;:&quot;바코드 스캔부터 식품 등록까지 5단계.&quot;,&quot;slugs&quot;:[&quot;smart-fridge-01-overview&quot;,&quot;smart-fridge-02-zxing-barcode&quot;,&quot;smart-fridge-03-php-mysql-json&quot;,&quot;smart-fridge-04-kakao-login&quot;,&quot;smart-fridge-05-food-register&quot;]},{&quot;id&quot;:&quot;multicluster-helm-monitoring&quot;,&quot;ns&quot;:&quot;mc-monitoring&quot;,&quot;title&quot;:&quot;멀티클러스터 Helm 모니터링&quot;,&quot;blurb&quot;:&quot;매니지먼트와 비즈니스 클러스터에 차트를 나눠 올려 메트릭·로그·트레이스를 한 Grafana에서 본다.&quot;,&quot;slugs&quot;:[&quot;multicluster-monitoring-01-overview&quot;,&quot;multicluster-monitoring-02-management-cluster&quot;,&quot;multicluster-monitoring-03-business-metrics&quot;,&quot;multicluster-monitoring-04-logs&quot;,&quot;multicluster-monitoring-05-traces&quot;,&quot;multicluster-monitoring-06-install-upgrade&quot;]}]" data-context-category data-context-tag="CI/CD" data-context-year><div class="k9s-frame" role="region" aria-label="글 목록" tabindex="0"><div class="k9s-top"><span class="k9s-pill">ctx sunjae-blog</span><span>&lt;posts&gt;</span><span data-k9s-count>1 items</span><span class="k9s-keys" aria-label="단축키"><span><b>&lt;enter&gt;</b> open</span><span><b>j/k ↑/↓</b> move</span><span data-owner-key-edit hidden><b>e</b> edit</span><span><b>esc</b> clear</span></span><span class="k9s-crumbs" data-k9s-status>Ready</span></div><p class="k9s-pods-line" data-k9s-pods aria-label="글 pod 상태 요약">pods: 1 Completed</p><div class="k9s-nsbar" data-k9s-nsbar aria-label="주제 경로 namespace"><span class="k9s-nsbar-label">ns:</span><button type="button" class="k9s-ns-chip is-active" data-ns="all" aria-pressed="true">all</button><button type="button" class="k9s-ns-chip" data-ns="k8s-build" data-ns-title="Kubernetes 처음 구축하기" title="Kubernetes 처음 구축하기 — Hard Way로 컨트롤 플레인부터 올리고, kubeadm HA도 이어서 본다." aria-pressed="false">k8s-build<span class="k9s-ns-chip-count">13</span></button><button type="button" class="k9s-ns-chip" data-ns="loki-troubleshoot" data-ns-title="Loki·관측 장애 해결" title="Loki·관측 장애 해결 — memberlist·메트릭·대시보드 이슈를 순서대로 좁힌다." aria-pressed="false">loki-troubleshoot<span class="k9s-ns-chip-count">3</span></button><button type="button" class="k9s-ns-chip" data-ns="kubeedge" data-ns-title="KubeEdge 엣지 따라가기" title="KubeEdge 엣지 따라가기 — 개요부터 DeviceTwin·DIL·EdgeMesh까지." aria-pressed="false">kubeedge<span class="k9s-ns-chip-count">7</span></button><button type="button" class="k9s-ns-chip" data-ns="istio" data-ns-title="Istio 컨트롤 플레인" title="Istio 컨트롤 플레인 — 아키텍처와 istiod 장애 영향을 이어서 읽는다." aria-pressed="false">istio<span class="k9s-ns-chip-count">2</span></button><button type="button" class="k9s-ns-chip" data-ns="grafana-auth" data-ns-title="Grafana 경로·중앙 인증" title="Grafana 경로·중앙 인증 — 도메인 일원화 → VirtualService → OAuth2/Keycloak." aria-pressed="false">grafana-auth<span class="k9s-ns-chip-count">4</span></button><button type="button" class="k9s-ns-chip" data-ns="osi-network" data-ns-title="OSI·패킷·정책으로 보는 네트워크" title="OSI·패킷·정책으로 보는 네트워크 — 계층·MTU/MSS·NetworkPolicy를 기초부터." aria-pressed="false">osi-network<span class="k9s-ns-chip-count">2</span></button><button type="button" class="k9s-ns-chip" data-ns="smart-fridge" data-ns-title="스마트 냉장고 앱 시리즈" title="스마트 냉장고 앱 시리즈 — 바코드 스캔부터 식품 등록까지 5단계." aria-pressed="false">smart-fridge<span class="k9s-ns-chip-count">5</span></button><button type="button" class="k9s-ns-chip" data-ns="multicluster-helm-monitoring" data-ns-title="멀티클러스터 Helm 모니터링" title="멀티클러스터 Helm 모니터링 — 매니지먼트와 비즈니스 클러스터에 차트를 나눠 올려 메트릭·로그·트레이스를 한 Grafana에서 본다." aria-pressed="false">mc-monitoring<span class="k9s-ns-chip-count">6</span></button><a class="k9s-ns-link" href="/paths/">$ get paths</a></div><form class="k9s-filter" data-k9s-filter><label class="sr-only" for="k9s-filter-q-main">글 필터</label><input id="k9s-filter-q-main" type="search" name="k9s-q" placeholder="제목 · 주제 · 태그 · 본문·코드" aria-label="글 필터" autocomplete="off" spellcheck="false"><button type="button" data-k9s-filter-close class="k9s-filter-close">esc</button></form><p class="sr-only">글 목록. 주제, 이름, 상태, 날짜. / 로 필터, Enter 로 열기, j/k 또는 화살표로 이동.</p><div class="k9s-table-wrap"><table class="k9s-table"><thead><tr><th scope="col" class="k9s-col-step" hidden>STEP</th><th scope="col" class="k9s-ns">NAMESPACE</th><th scope="col" class="k9s-name">NAME</th><th scope="col" class="k9s-ready">READY</th><th scope="col" class="k9s-status">STATUS</th><th scope="col" class="k9s-age">AGE</th></tr></thead><tbody data-k9s-body><tr class="k9s-row is-active" data-ord="0" data-search="vagrant로 노드를 띄우고 ansible·gitlab ci로 push 한 번에 배포하기 vmware 위 centos 7에 kvm과 vagrant를 올려 서버 1대·노드 3대를 만들고, gitlab runner가 git push를 받아 ansible playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다. 쿠버네티스 iac vagrant ansible gitlab ci/cd kvm" data-url="/blog/iac-vagrant-ansible-gitlab-cicd/" data-slug="iac-vagrant-ansible-gitlab-cicd" data-title="Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기" data-desc="VMware 위 CentOS 7에 KVM과 Vagrant를 올려 서버 1대·노드 3대를 만들고, GitLab Runner가 git push를 받아 Ansible Playbook으로 각 노드에 httpd 페이지를 배포하게 한 테스트 환경 구성과 막힌 지점을 정리했다." data-ns="쿠버네티스" data-age="2022.05.31" data-locked="0" data-baked-locked="0"><td class="k9s-step" hidden data-k9s-step>—</td><td class="k9s-ns">쿠버네티스</td><td class="k9s-name"><a href="/blog/iac-vagrant-ansible-gitlab-cicd/">Vagrant로 노드를 띄우고 Ansible·GitLab CI로 push 한 번에 배포하기</a><span class="k9s-lock-status" data-lock-status role="img" title="공개된 글" aria-label="공개된 글"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M16 11V7.5a4 4 0 1 0-8 0"></path></svg></span><button type="button" class="k9s-lock-btn" data-k9s-lock title="잠금" aria-label="잠금" aria-pressed="false"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M16 11V7.5a4 4 0 1 0-8 0"></path></svg></button><div class="k9s-snippets" data-k9s-snippets hidden></div></td><td class="k9s-ready">1/1</td><td class="k9s-status is-completed" data-pod-status="Completed" data-unlocked-status="Completed">Completed</td><td class="k9s-age"><time datetime="2022-05-31T00:00:00.000Z">2022.05.31</time></td></tr></tbody></table></div><aside class="k9s-preview" data-k9s-preview hidden><p class="k9s-preview-ns" data-k9s-preview-ns></p><p class="k9s-preview-title" data-k9s-preview-title></p><p class="k9s-preview-desc" data-k9s-preview-desc></p><p class="k9s-preview-age" data-k9s-preview-age></p></aside></div></div><noscript><style>.k9s-row.is-child[hidden]{display:table-row!important}.k9s-group{display:none!important}</style></noscript><script type="module" src="/_astro/PostList.astro_astro_type_script_index_0_lang.BslhTxh4.js"></script><p class="page-source owner-only" data-page-source-mount hidden></p></main><aside class="status-rail" aria-label="클러스터 상태"><details class="status-drawer" data-check="mside-20261112"><summary class="status-drawer-summary"><span class="status-drawer-cmd">$ kubectl get status</span><span class="status-ready"><span class="status-dot" aria-hidden="true"></span>Ready</span></summary><div class="status-drawer-body"><div class="status-block"><div class="status-head"><span class="k9s-pill">ctx sunjae-blog</span><span class="status-ready"><span class="status-dot" aria-hidden="true"></span>Ready</span></div><dl class="status-metrics"><div><dt>POSTS</dt><dd>72</dd></div><div><dt>NS</dt><dd>9</dd></div><div><dt>LATEST</dt><dd title="2026-11-12" data-check="latestdock-20261112-vimclear"><time datetime="2026-11-12">26.11.12</time></dd></div><div data-gc-path="TOTAL" hidden title="사이트 전체 방문(GoatCounter)"><dt>VIEWS</dt><dd data-gc-count>—</dd></div><div title="서울 현재 시각 (KST)"><dt>KST</dt><dd data-kst-clock>--:--:--</dd></div></dl><p class="status-live"><span class="status-cpu" title="이 브라우저 탭의 메인 스레드 사용률(실측)" aria-label="이 브라우저 탭의 메인 스레드 사용률">TAB CPU <b data-live-cpu>0%</b><svg class="cpu-spark" data-cpu-spark viewBox="0 0 64 16" width="64" height="16" focusable="false" aria-hidden="true"><polyline data-cpu-spark-line fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round" points="0,14.50 64,14.50"></polyline></svg></span><span>PODS <b data-live-pods>72</b></span></p><ul class="status-ns"><li><span class="ns-name">관측</span><span class="ns-share" title="29%"><span class="ns-share-fill" style="width: 29%"></span></span><span class="ns-count">21</span></li><li><span class="ns-name">네트워크</span><span class="ns-share" title="11%"><span class="ns-share-fill" style="width: 11%"></span></span><span class="ns-count">8</span></li><li><span class="ns-name">보안</span><span class="ns-share" title="3%"><span class="ns-share-fill" style="width: 3%"></span></span><span class="ns-count">2</span></li><li><span class="ns-name">앱</span><span class="ns-share" title="8%"><span class="ns-share-fill" style="width: 8%"></span></span><span class="ns-count">6</span></li><li><span class="ns-name">엣지</span><span class="ns-share" title="10%"><span class="ns-share-fill" style="width: 10%"></span></span><span class="ns-count">7</span></li><li><span class="ns-name">운영체제</span><span class="ns-share" title="1%"><span class="ns-share-fill" style="width: 1%"></span></span><span class="ns-count">1</span></li><li><span class="ns-name">쿠버네티스</span><span class="ns-share" title="42%"><span class="ns-share-fill" style="width: 42%"></span></span><span class="ns-count">30</span></li><li><span class="ns-name">트러블슈팅</span><span class="ns-share" title="4%"><span class="ns-share-fill" style="width: 4%"></span></span><span class="ns-count">3</span></li><li><span class="ns-name">AI</span><span class="ns-share" title="1%"><span class="ns-share-fill" style="width: 1%"></span></span><span class="ns-count">1</span></li></ul><div class="status-events"><p class="status-label">$ kubectl get events</p><ul class="event-log"><li style="--i: 0"><a href="/blog/multicluster-monitoring-06-install-upgrade/"><span class="event-meta"><span class="event-age">2026-11-12</span><span class="event-type">Normal</span></span><span class="event-msg">멀티클러스터 모니터링 설치·업그레이드와 검증: 메트릭·로그 구성에서 트레이싱 확장 구성으로</span></a></li><li style="--i: 1"><a href="/blog/multicluster-monitoring-05-traces/"><span class="event-meta"><span class="event-age">2026-11-12</span><span class="event-type">Normal</span></span><span class="event-msg">트레이싱 확장 구성의 트레이스: OpenTelemetry Collector에서 Tempo, SeaweedFS</span></a></li><li style="--i: 2"><a href="/blog/multicluster-monitoring-04-logs/"><span class="event-meta"><span class="event-age">2026-11-12</span><span class="event-type">Normal</span></span><span class="event-msg">비즈니스 클러스터 로그 파이프라인: Alloy에서 Loki, SeaweedFS 백엔드</span></a></li></ul></div></div><div class="status-block"><p class="status-label">$ get projects</p><ul class="mini-projects"><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 205"><img src="/logos/kubeedge.svg" alt="KubeEdge 엣지 클라우드 동작 검증 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">KubeEdge 엣지 클라우드 동작 검증</span><span class="mini-kind">엣지 · 기술 검증</span></span></a></li><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 158"><img src="/logos/grafana.svg" alt="멀티 클러스터 관측 스택 통합 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">멀티 클러스터 관측 스택 통합</span><span class="mini-kind">관측 · PaaS</span></span></a></li><li><a class="mini-project" href="/projects/"><span class="mini-logo" style="--h: 285"><img src="/logos/keycloak.svg" alt="통합 대시보드 접근과 중앙 인증 로고" loading="lazy" decoding="async"></span><span class="mini-body"><span class="mini-title">통합 대시보드 접근과 중앙 인증</span><span class="mini-kind">보안 · 인증</span></span></a></li></ul><a class="status-more" href="/projects/">전체 프로젝트 →</a></div><div class="status-block"><p class="status-label">$ get certs</p><ul class="mini-certs"><li><a class="mini-cert" href="/about/#certs" title="CKAD"><span class="mini-cert-frame"><img src="/certs/ckad.webp" alt="" width="113" height="85" loading="lazy" decoding="async"></span><span>CKAD</span></a></li><li><a class="mini-cert" href="/about/#certs" title="CKA"><span class="mini-cert-frame"><img src="/certs/cka.webp" alt="" width="113" height="85" loading="lazy" decoding="async"></span><span>CKA</span></a></li><li><a class="mini-cert" href="/about/#certs" title="NCP"><span class="mini-cert-frame"><img src="/certs/ncp.webp" alt="" width="113" height="85" loading="lazy" decoding="async"></span><span>NCP</span></a></li><li><a class="mini-cert" href="/about/#certs" title="NCA"><span class="mini-cert-frame"><img src="/certs/nca.webp" alt="" width="113" height="85" loading="lazy" decoding="async"></span><span>NCA</span></a></li></ul></div></div></details></aside><script type="module">var e=1600,t=e=>Number.isFinite(e)?Math.min(100,Math.max(0,Math.round(e))):0,n=(e,t,n,r)=>{let i=e+t;return Math.max(0,Math.min(i,r)-Math.max(e,n))},r=(r,i,a=e)=>{if(!(a>0))return 0;let o=i-a,s=0;for(let e of r)s+=n(e.startTime,e.duration,o,i);return t(s/a*100)},i=(n,r,i=e)=>{if(!(i>0))return 0;let a=r-i,o=0;for(let e of n){if(e.ranAt<a||e.scheduledAt>r)continue;let t=Math.max(e.scheduledAt,a),n=Math.min(e.ranAt,r);o+=Math.max(0,n-t)}return t(o/i*100)},a=e=>!!e?.supportedEntryTypes?.includes(`longtask`),o=(e,n,r=16)=>{let i=e.concat(t(n));return i.length>r?i.slice(i.length-r):i},s=(e,t)=>{let n=t?.w??64,r=t?.h??16,i=t?.pad??1.5,a=t?.min??0,o=t?.max??100,s=Math.max(1e-6,o-a),c=Math.max(e.length-1,1);return(e.length?e:[a]).map((e,t)=>{let l=t/c*n,u=r-i-(Math.min(o,Math.max(a,e))-a)/s*(r-i*2);return`${l.toFixed(2)},${u.toFixed(2)}`}).join(` `)},c=new Intl.DateTimeFormat(`en-GB`,{timeZone:`Asia/Seoul`,hour:`2-digit`,minute:`2-digit`,second:`2-digit`,hour12:!1}),l=Array.from({length:16},()=>0),u=[],d=[],f=a(typeof PerformanceObserver<`u`?PerformanceObserver:void 0),p=0,m,h=e=>{let t=s(e);document.querySelectorAll(`[data-cpu-spark-line]`).forEach(e=>{e.setAttribute(`points`,t)})},g=e=>{l=o(l,e),h(l),document.querySelectorAll(`[data-live-cpu]`).forEach(t=>{t.textContent=`${e}%`})},_=t=>{let n=t-e*2;for(;u.length&&u[0].startTime+u[0].duration<n;)u.shift();for(;d.length&&d[0].ranAt<n;)d.shift()},v=()=>{let e=performance.now();return _(e),f?r(u,e):i(d,e)},y=()=>{let e=c.format(new Date);document.querySelectorAll(`[data-kst-clock]`).forEach(t=>{t.textContent=e}),document.hidden?h(l):g(v())},b=()=>{let e=performance.now()+50,t=()=>{if(document.hidden)return;let n=performance.now();d.push({scheduledAt:e,ranAt:n}),e=n+50,p=window.setTimeout(t,50)};p=window.setTimeout(t,50)},x=()=>{window.clearTimeout(p),p=0};if(!window.__sunjaeStatus){if(window.__sunjaeStatus=!0,f)try{m=new PerformanceObserver(e=>{for(let t of e.getEntries())u.push({startTime:t.startTime,duration:t.duration})});try{m.observe({type:`longtask`,buffered:!0})}catch{m.observe({type:`longtask`})}}catch{f=!1,b()}else b();h(l),y(),setInterval(y,e),document.addEventListener(`visibilitychange`,()=>{document.hidden?x():(u.length=0,d.length=0,f||b())})}var S=window.matchMedia(`(min-width: 1101px)`),C=()=>{document.querySelectorAll(`.status-drawer`).forEach(e=>{e.open=S.matches})};C(),S.addEventListener(`change`,C);</script></div><aside data-astro-transition-persist="vim-dock" class="term-dock" id="term-dock" aria-label="웹 터미널" data-collapsed="true" data-check="vimauto-20261112-autohide"><div class="term-dock-resize" id="term-dock-resize" role="separator" aria-orientation="horizontal" aria-label="터미널 높이 조절" title="드래그해서 높이 조절"></div><div class="term-dock-head"><span class="term-dock-title">$ vim</span><div class="term-dock-actions"><button type="button" class="term-dock-lock" id="term-dock-lock" aria-pressed="false" aria-label="터미널 고정 해제됨" title="고정 (호버 없이 펼침 유지)"><svg class="term-dock-lock-icon term-dock-lock-icon--unlocked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 7.5-1.9"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><svg class="term-dock-lock-icon term-dock-lock-icon--locked" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" hidden><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 8 0v3"></path><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="16" r="1.2" fill="currentColor"></circle></svg><span class="term-dock-lock-label">고정</span></button><span class="owner-only" data-owner-new-post hidden></span><a class="owner-login-quiet" href="#term-login" title="저장소 주인 로그인 (:login)">login</a><a href="/terminal/">전체 화면</a></div></div><section class="term-shell term-shell--panel" data-repo="qkrtjswo03/blog-src" data-base="main" data-variant="panel" data-term-index="sunjae-term-hide-locked"><div class="term-titlebar" aria-hidden="true"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">sunjae@github — qkrtjswo03/blog-src</span><span class="term-branch" id="term-branch">main</span></div><div class="term-log" id="term-log" role="log" aria-live="polite" tabindex="0"></div><form class="term-line" id="term-form" autocomplete="off"><span class="ps1" aria-hidden="true"><span class="ps1-user">sunjae</span><span class="ps1-at">@</span><span class="ps1-host">github</span><span class="ps1-path" id="term-cwd">:~</span><span class="ps1-sigil">$</span></span><label class="sr-only" for="term-input">명령</label><input id="term-input" name="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send" placeholder="help"></form><div class="term-editor" id="term-editor" hidden><div class="term-editor-bar"><span id="term-editor-path">-</span><span class="term-editor-state" id="term-editor-state"></span></div><textarea id="term-editor-text" spellcheck="false" aria-label="파일 내용"></textarea><div class="term-editor-actions"><button type="button" class="term-btn" id="term-editor-save">임시 저장 (<span id="term-editor-lines">0</span>줄)</button><button type="button" class="term-btn" id="term-editor-commit">커밋</button><button type="button" class="term-btn" id="term-editor-pr">커밋 후 PR</button><button type="button" class="term-btn term-btn-ghost" id="term-editor-cancel">닫기</button></div></div></section><script type="module" src="/_astro/Terminal.astro_astro_type_script_index_0_lang.B8KuGOtF.js"></script></aside></div><script type="module" src="/_astro/Header.astro_astro_type_script_index_0_lang.BfwyXe18.js"></script><script type="module" src="/_astro/Header.astro_astro_type_script_index_1_lang.DP-D3qJ9.js"></script><script>(function(){const code = "sunjae";
+
+    (function () {
+      var base = 'https://' + code + '.goatcounter.com/counter/';
+      var mem = {};
+      function get(path) {
+        if (mem[path]) return mem[path];
+        var key = 'gc:' + path, hit;
+        try { hit = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+        if (hit && Date.now() - hit.t < 300000) return (mem[path] = Promise.resolve(hit.c));
+        var url = base + encodeURIComponent(path) + '.json';
+        return (mem[path] = fetch(url, { credentials: 'omit', mode: 'cors' })
+          .then(function (r) {
+            if (r.status === 404) return '0';
+            if (!r.ok) return Promise.reject(0);
+            return r.json().then(function (j) {
+              return j && j.count != null ? String(j.count) : '0';
+            });
+          })
+          .then(function (c) { try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), c: c })); } catch (e) {} return c; })
+          .catch(function () { return '0'; }));
+      }
+      function run() {
+        document.querySelectorAll('[data-gc-path]').forEach(function (el) {
+          var out = el.querySelector('[data-gc-count]') || el;
+          get(el.getAttribute('data-gc-path')).then(function (c) {
+            out.textContent = String(c).trim(); el.hidden = false;
+          }, function () { out.textContent = '—'; });
+        });
+      }
+      var boot = function () { run(); };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+      document.addEventListener('astro:page-load', run);
+    })();
+  })();</script><script type="module" src="/_astro/TouchPrefetch.astro_astro_type_script_index_0_lang.BGJ0Gma2.js"></script></body></html>
