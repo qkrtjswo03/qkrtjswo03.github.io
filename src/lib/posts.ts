@@ -43,13 +43,16 @@ export function readingMinutes(markdown: string): number {
   return Math.max(1, Math.round(chars / 450));
 }
 
-export function searchText(post: BlogPost): string {
-  // k9s `/` 필터: 제목·설명·카테고리·태그만 (본문은 노이즈가 커서 제외)
+export function searchText(post: BlogPost, includeBody = false): string {
+  // 홈의 k9s `/` 필터는 제목·설명·주제·태그만 본다.
+  // 검색 페이지는 본문 평문까지 포함한다. 잠긴 글 본문은 어느 쪽에도 넣지 않는다.
+  const body = includeBody && !post.data.locked ? plainText(post.body ?? '') : '';
   return [
     post.data.title,
     post.data.locked ? '' : post.data.description,
     ...(post.data.categories ?? []),
     ...(post.data.tags ?? []),
+    body,
   ]
     .join(' ')
     .toLowerCase();

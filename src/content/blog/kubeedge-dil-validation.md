@@ -79,7 +79,7 @@ Pod Eviction 가능 (약 340초 이후 다른 노드로 재스케줄링 가능)
 
 - 물리 서버 3대 위에 OpenStack VM 11대
 - 클라우드 1곳 + 엣지 1대. 엣지는 다른 망에 있고 게이트웨이 2대를 거쳐 접속
-- Kubernetes 1.32.8, KubeEdge 1.23.1
+- Kubernetes 1.32.8, KubeEdge 1.23.1. [설치 글](/blog/kubeedge-install-guide/)의 v1.22 / Kubernetes 1.30과는 다른 환경이다.
 
 ### 테스트 앱
 

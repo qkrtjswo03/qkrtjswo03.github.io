@@ -17,6 +17,8 @@ draft: false
 
 [아키텍처](/blog/kubeedge-architecture/)를 정리했으니 실제로 붙여 봤다. 목표는 **이미 있는 Kubernetes 클러스터에 엣지 VM 한 대를 붙이는 최소 테스트 구성**이다. 사내 Kubernetes PaaS 테스트 클러스터를 클라우드 영역으로 그대로 쓰고, CloudCore와 EdgeCore만 더했다.
 
+이 글의 클러스터는 Kubernetes 1.30에 KubeEdge v1.22.0을 올린 구성이다. 시리즈 뒤에서 DeviceTwin을 시험하고 DIL을 검증한 환경은 그다음 버전인 Kubernetes 1.32.8, KubeEdge 1.23.1이다.
+
 > 글의 IP와 호스트 이름은 예시 값으로 바꿨다. 클러스터 내부망은 `10.0.10.x`, 외부 접근망은 `10.0.20.x`로 적었다.
 
 ## 1. 구성

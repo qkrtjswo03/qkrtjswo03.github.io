@@ -1,6 +1,6 @@
 # SunJae.Log
 
-클라우드, 인프라, AI 운영을 적는 한국어 기술 블로그입니다. 주소는 [https://qkrtjswo03.github.io](https://qkrtjswo03.github.io) 이고, GitHub Pages 사용자 사이트라 저장소 루트에서 제공됩니다.
+클라우드, 인프라, 엣지 운영을 적는 한국어 기술 블로그입니다. 주소는 [https://qkrtjswo03.github.io](https://qkrtjswo03.github.io) 이고, GitHub Pages 사용자 사이트라 저장소 루트에서 제공됩니다.
 
 ## 왜 Astro인가
 
@@ -102,8 +102,8 @@ npm run dev
 - 사이트맵: `/sitemap-index.xml`
 - robots: `/robots.txt`
 - RSS: `/rss.xml`
-- 글 검색은 `/search/`에서 페이지 안의 목록을 거릅니다. 별도 검색 서버는 없습니다.
-- 기본 화면은 어두운 터미널입니다. 오른쪽 위 버튼으로 밝은 화면을 켤 수 있고, 고른 값은 이 브라우저에만 저장됩니다.
+- 글 검색은 `/search/`에서 제목, 본문, 주제, 태그를 이 페이지 안에서 거릅니다. 별도 검색 서버는 없습니다. 잠긴 글의 본문은 검색에 넣지 않습니다.
+- 화면은 어두운 터미널로 고정되어 있습니다.
 
 ## 글 쓰기 버튼 (소유자)
 

@@ -6,11 +6,11 @@ categories:
   - 쿠버네티스
 tags:
   - 쿠버네티스
-  - kubernetes
+  - Kubernetes
   - hard-way
-  - cilium
-  - coredns
-  - helm
+  - Cilium
+  - CoreDNS
+  - Helm
 series: k8s-hardway
 seriesOrder: 10
 draft: false

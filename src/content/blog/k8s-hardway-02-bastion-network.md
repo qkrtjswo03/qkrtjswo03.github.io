@@ -6,7 +6,7 @@ categories:
   - 쿠버네티스
 tags:
   - 쿠버네티스
-  - kubernetes
+  - Kubernetes
   - hard-way
   - bastion
   - netplan
@@ -35,6 +35,8 @@ apt upgrade -y;\
 apt install net-tools htop vim openssl ipset python3-pip -y;\
 pip install scp paramiko
 ```
+
+이 설정은 닫힌 실습망의 Bastion에서만 쓴다. `PermitRootLogin yes`와 비밀번호 로그인은 외부에 열린 서버에 두면 안 된다.
 
 ## Bastion 서버 구성 (  Ubuntu NetPlan으로 고정 IP 설정하기 )
 

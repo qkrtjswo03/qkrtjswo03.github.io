@@ -33,6 +33,8 @@ draft: false
 
 ## 환경
 
+설치 글은 그 전 단계인 [v1.22 / Kubernetes 1.30](/blog/kubeedge-install-guide/)이다. 아래 측정은 올려 둔 다음 환경이다.
+
 - KubeEdge v1.23.1, Device API `devices.kubeedge.io/v1beta1`
 - 엣지 두 대: **edge-a**(Mosquitto + 가상 Mapper + Device), **edge-b**(Mosquitto만, 대조군)
 - CloudCore는 클라우드 워커 2대에서 Pod로 실행

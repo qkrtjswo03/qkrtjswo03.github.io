@@ -6,9 +6,9 @@ categories:
   - 쿠버네티스
 tags:
   - 쿠버네티스
-  - kubernetes
+  - Kubernetes
   - hard-way
-  - cilium
+  - Cilium
   - netshoot
   - ipvs
 series: k8s-hardway
