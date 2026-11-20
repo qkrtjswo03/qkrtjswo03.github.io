@@ -6,7 +6,7 @@ categories:
   - 쿠버네티스
 tags:
   - 쿠버네티스
-  - kubernetes
+  - Kubernetes
   - hard-way
   - etcd
 series: k8s-hardway

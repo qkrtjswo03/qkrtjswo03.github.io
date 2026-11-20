@@ -1,7 +1,7 @@
 ---
 title: "KubeEdge Device, Mapper, MQTT는 각각 무슨 일을 하나"
 description: "KubeEdge로 실제 장치를 붙이려면 Device와 Mapper, MQTT 브로커가 어디서 끊기고 이어지는지부터 구분해야 한다. 헷갈렸던 구조를 한 번에 정리했다."
-pubDate: 2026-11-03
+pubDate: 2026-11-05T09:25:00+09:00
 categories:
   - 엣지
 tags:

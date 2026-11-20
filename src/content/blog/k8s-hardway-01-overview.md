@@ -6,10 +6,10 @@ categories:
   - 쿠버네티스
 tags:
   - 쿠버네티스
-  - kubernetes
+  - Kubernetes
   - hard-way
   - etcd
-  - cilium
+  - Cilium
   - certificates
 series: k8s-hardway
 seriesOrder: 1
